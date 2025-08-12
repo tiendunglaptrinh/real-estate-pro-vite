@@ -1,0 +1,70 @@
+.wrapper_footer {
+  width: 100%;
+  background-color: var(--primary1);
+  padding-bottom: 40px;
+}
+.name_logo {
+  width: 350px;
+  margin-top: 30px;
+  margin-left: 50px;
+  margin-bottom: 20px;
+}
+.content_footer {
+  padding: 0 30px 30px 100px;
+}
+.title_info {
+  font-size: 25px;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--primary2);
+  margin-bottom: 20px;
+}
+.phone_info,
+.email_info,
+.adress_info {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+.info_text {
+  color: #fff;
+  font-size: 15px;
+}
+.link_img {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.link_img > img {
+  width: 50px;
+}
+.app_info {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  margin-top: 20px;
+}
+.ggplay,
+.appstore {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+.icon_footer {
+  width: 70px;
+  height: 70px;
+}
+.app_name {
+  color: #fff;
+  font-size: 20px;
+}
+.explore > .info_text {
+  margin-bottom: 8px;
+  margin-left: 15px;
+}
+.copyright {
+  color: #fff;
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+}

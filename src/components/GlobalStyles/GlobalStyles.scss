@@ -1,0 +1,140 @@
+@import 'normalize.css';
+
+:root {
+  // Primary color
+    --primary1: #0B2C3D;
+    --primary2: #B2935D;
+
+    // Accent color
+    --accent1: #009BA1;
+    --accent2: #355C7D;
+    --accent3: #EFBB35;
+    --accent4: #115ca8;
+
+    --white: #ffffff;
+    --black: #000000;
+
+    --shadow-light: 0px 1px 1px #ede6e6;
+
+    --hover-light: #caedff;
+
+    // Font weight
+    --fwbold: 700;
+    --fwsemibold: 700;
+    --fsmedium: 500;
+
+    // Font-size
+    --fs-header: 18px;
+    --fs-text: 16px;
+    --fs-num-large: 30px;
+    --fs-num-smaill: 20px;
+
+    --ffamily: 'ProximaNova', sans-serif;
+
+    // background color:
+    --background1: rgba(0,0,0,0.6);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: var(--ffamily);
+    font-size: 1.6rem;
+    line-height: 1.5;
+    text-rendering: optimizespeed;
+    color: var(--text-color);
+    overflow-y: overlay;
+    & > a{
+        text-decoration: none;
+    }
+}
+
+// Scrollbar CSS
+html *::-webkit-scrollbar {
+    border-radius: 0;
+    width: 8px;
+}
+
+html *::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.15);
+}
+
+html *::-webkit-scrollbar-track {
+    border-radius: 0;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+button,
+input,
+[tabindex] {
+    outline: none;
+    border: none;
+}
+
+body a {
+    color: var(--text-color);
+    text-decoration: none;
+}
+
+// // Fonts emmbeded
+// @font-face {
+//     font-family: ProximaNova;
+//     src: url('/assets/fonts/Proxima-Nova-Regular.woff2');
+//     font-weight: 400;
+// }
+
+// @font-face {
+//     font-family: ProximaNova;
+//     src: url('/assets/fonts/ProximaNova-Semibold.woff2');
+//     font-weight: 600;
+// }
+
+// @font-face {
+//     font-family: ProximaNova;
+//     src: url('/assets/fonts/Proxima-Nova-Bold.woff');
+//     font-weight: 700;
+// }
+
+// @font-face {
+//     font-family: SofiaPro;
+//     src: url('/assets/fonts/sofiapro-bold.woff');
+//     font-weight: 700;
+// }
+
+// Custom tippy tooltip
+body {
+    .tippy-box {
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.6rem;
+        line-height: 2.2rem;
+        background-color: rgba(84, 84, 84, 0.92);
+    }
+
+    .tippy-arrow {
+        color: rgba(84, 84, 84, 0.92);
+    }
+
+    .tippy-content {
+        padding: 8px 9px;
+    }
+
+    .tippy-box[data-placement^='bottom'] > .tippy-arrow:before {
+        top: -8px;
+    }
+}
+
+//---------------- FIX BOOSTRAP -----------------
+.dropdown-menu{
+    padding: 0 !important;
+    margin: 0 !important;
+}

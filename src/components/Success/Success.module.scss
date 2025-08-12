@@ -1,0 +1,47 @@
+.wrapper_success {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #00000080;
+  z-index: 1000;
+}
+.success {
+  position: absolute;
+  width: 400px;
+  height: 250px;
+  border-radius: 10px;
+  background: #fff;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 20px;
+}
+.tick {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  position: absolute;
+  border-radius: 50%;
+  align-items: center;
+  background: #6dbd30;
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 20px));
+  justify-content: center;
+}
+.icon {
+  font-size: 25px;
+  color: #fff;
+}
+.title {
+  font-size: 22px;
+  margin-top: 35px;
+  text-align: center;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.text {
+  font-size: 15px;
+  margin-bottom: 30px;
+}
