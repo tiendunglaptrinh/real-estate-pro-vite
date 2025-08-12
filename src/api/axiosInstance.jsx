@@ -2,7 +2,7 @@ import axios from "axios";
 
 const client = axios.create({
   baseURL: "http://localhost:3000", // URL backend đúng
-  timeout: 5000,
+  timeout: 10000,
   headers: {
     "Content-Type": "application/json",
   },

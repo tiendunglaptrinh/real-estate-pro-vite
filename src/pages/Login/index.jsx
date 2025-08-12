@@ -3,7 +3,7 @@ import classNames from "classnames/bind";
 import styles from "./login.module.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faLock } from "@fortawesome/free-solid-svg-icons";
-import { Button, Spinner, Success, ImageSlider, } from "@components/component";
+import { Button, Spinner, Success, ImageSlider } from "@components/component";
 import React from "react";
 import gg from "@images/google.png";
 import apple from "@images/apple.png";
@@ -11,14 +11,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { fetchApi } from "@utils/utils.jsx";
 import bg from "@backgrounds/bg_login.png";
 import ReCAPTCHA from "react-google-recaptcha";
-import process from 'process';
+// import process from 'process';
 
 const cx = classNames.bind(styles);
 
 const LoginPage = () => {
-  console.log("RE-mounted");
-  console.log(React);
-
   const navigate = useNavigate();
 
   const [isChecked, setIsChecked] = useState(false);
@@ -43,6 +40,11 @@ const LoginPage = () => {
     setError(null);
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => navigate("/"), 2000);
+
+    return () => clearTimeout(timer);
+  }, [isShowSuccess, navigate])
   // const LOGIN_LOCK_EXPIRE = "LOGIN_LOCK_EXPIRE";
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
@@ -50,17 +52,7 @@ const LoginPage = () => {
   //-------------- END INPUT INFOR --------------
 
   useEffect(() => {
-    // Khi component mount, check xem còn lock chưa từ localStorage
-    const expireAt = Number(localStorage.getItem("LOGIN_LOCK_EXPIRE"));
-    console.log("call effect 1:");
-    if (expireAt && expireAt > Date.now()) {
-      const remaining = Math.ceil((expireAt - Date.now()) / 1000);
-      setLocktime(remaining);
-    }
-  }, []);
-
-  useEffect(() => {
-    console.log("call effect 2:");
+    console.log("call effect locking time:");
     if (locktime <= 0) {
       setLocked(false);
       setError(null);
@@ -94,7 +86,8 @@ const LoginPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const body = { info_user: infoUser, password: password };
+      const captchaToken = re_captcha.current?.getValue();
+      const body = { info_user: infoUser, password: password, token_captcha: captchaToken };
       const url_login = "/account/login";
       const response_data = await fetchApi(url_login, {
         method: "post",
@@ -128,9 +121,9 @@ const LoginPage = () => {
     }
   };
 
-  if (isShowSuccess) return <Success />;
   return (
     <div className={cx("wrapper_loginform")}>
+      { isShowSuccess && <Success />} 
       {loading && <Spinner />}
       <div className={cx("wrapper_login")}>
         <form className={cx("login_content")} onSubmit={handleSubmit}>
@@ -145,6 +138,7 @@ const LoginPage = () => {
                 required
                 type="text"
                 placeholder="Số điện thoại hoặc email"
+                autoComplete="current-username"
               />
             </div>
             <div className={cx("info_input")}>
@@ -154,13 +148,14 @@ const LoginPage = () => {
                 placeholder="Nhập mật khẩu"
                 value={password}
                 onChange={handlePasswordChange}
+                autoComplete="current-password"
                 required
               />
             </div>
             {showCaptcha && (
               <div className={cx("wrapper_captcha")}>
                 <ReCAPTCHA
-                  sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+                  sitekey={import.meta.env.VITE_RECAPTCHA_SITE_KEY}
                   ref={re_captcha}
                 />
               </div>

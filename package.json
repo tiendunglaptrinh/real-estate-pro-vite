@@ -16,6 +16,8 @@
     "axios": "^1.11.0",
     "bootstrap": "^5.3.7",
     "classnames": "^2.5.1",
+    "framer-motion": "^12.23.12",
+    "lottie-react": "^2.4.1",
     "normalize.css": "^8.0.1",
     "prop-types": "^15.8.1",
     "react": "^19.1.1",
