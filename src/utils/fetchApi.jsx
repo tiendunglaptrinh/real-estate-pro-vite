@@ -1,4 +1,4 @@
-import client from "../api/axiosInstance.jsx";
+import client from "@api/axiosInstance.jsx";
 
 const fetchAPI = async (
   url,

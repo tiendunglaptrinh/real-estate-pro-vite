@@ -1,11 +1,12 @@
 import classnames from "classnames/bind";
+import { useState, useEffect } from 'react';
 import styles from "./Homepage.module.scss";
 import LayoutHeader from "../../layouts/LayoutHeader";
 import banner from "@images/banner.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faMoneyBills } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
-import { InputSearch, Button, ButtonCollapse } from "@components/component";
+import { InputSearch, Button, ButtonCollapse, TransitionPage } from "@components/component";
 const cx = classnames.bind(styles);
 
 const Banner = () => {
@@ -495,8 +496,19 @@ const ContentHomepage = () => {
 };
 
 const HomePage = () => {
+  const [transition, setTransition] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTransition(false);
+    }, 500); // fake delay 0.5s
+
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <LayoutHeader>
+      <TransitionPage show={transition} />
       <ContentHomepage />
     </LayoutHeader>
   );

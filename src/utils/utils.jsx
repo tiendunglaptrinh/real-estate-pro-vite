@@ -1,3 +1,4 @@
 import fetchApi from "./fetchApi";
+import getCurrentUser from "./getCurrentUser";
 
-export { fetchApi };
+export { fetchApi, getCurrentUser };

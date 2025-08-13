@@ -6,6 +6,7 @@ import ButtonCollapse from "./ButtonCollapse";
 import Success from "./Success";
 import Spinner from "./Spinner";
 import ImageSlider from "./ImageSlider";
+import TransitionPage from "./TransitionPage";
 
 export {
   Header,
@@ -16,4 +17,5 @@ export {
   Success,
   Spinner,
   ImageSlider,
+  TransitionPage,
 };

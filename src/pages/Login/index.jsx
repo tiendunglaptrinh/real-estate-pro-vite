@@ -29,6 +29,7 @@ const LoginPage = () => {
   const re_captcha = useRef();
   const [locktime, setLocktime] = useState(0);
   const [locked, setLocked] = useState(false);
+  const [flagLogin, setFlagLogin] = useState(true);
 
   //-------------- BEGIN INPUT INFOR --------------
   const handleInfoUserChange = (e) => {
@@ -40,19 +41,62 @@ const LoginPage = () => {
     setError(null);
   };
 
-  useEffect(() => {
-    const timer = setTimeout(() => navigate("/"), 2000);
+  const getUser = async () => {
+    const url_get_me = "account/me";
+    try {
+      const response_data = await fetchApi(url_get_me, {
+        method: "get",
+        body: null,
+        skipAuth: false,
+      });
+      return response_data;
+    } catch (err) {
+      if (err?.response) {
+        console.error("API Error:", err.response);
+        return err.response;
+      } else {
+        console.error("Unexpected Error:", err);
+        return { success: false, message: "Network error or unexpected error" };
+      }
+    }
+  };
 
+useEffect(() => {
+  let timer;
+  setLoading(true);
+
+  const checkLogin = async () => {
+    const data = await getUser();
+    if (data?.success) {
+      console.log(">>>")
+      console.log("✅ Haved login before");
+      timer = setTimeout(() => navigate("/"), 2000);
+    } else {
+      console.log("❌ Not logged in");
+      setFlagLogin(false);
+    }
+  };
+
+  checkLogin();
+
+  return () => clearTimeout(timer);
+}, [navigate]);
+
+  useEffect(() => {
+    if (!flagLogin) { setLoading(false); }
+  }, [flagLogin])
+
+  useEffect(() => {
+    if (!isShowSuccess) return;
+    const timer = setTimeout(() => navigate("/"), 2000);
     return () => clearTimeout(timer);
-  }, [isShowSuccess, navigate])
-  // const LOGIN_LOCK_EXPIRE = "LOGIN_LOCK_EXPIRE";
+  }, [isShowSuccess, navigate]);
   const handleCheckboxChange = () => {
     setIsChecked(!isChecked);
   };
   //-------------- END INPUT INFOR --------------
 
   useEffect(() => {
-    console.log("call effect locking time:");
     if (locktime <= 0) {
       setLocked(false);
       setError(null);
@@ -87,13 +131,21 @@ const LoginPage = () => {
     setError(null);
     try {
       const captchaToken = re_captcha.current?.getValue();
-      const body = { info_user: infoUser, password: password, token_captcha: captchaToken };
+      const body = {
+        info_user: infoUser,
+        password: password,
+        token_captcha: captchaToken,
+      };
       const url_login = "/account/login";
       const response_data = await fetchApi(url_login, {
         method: "post",
         body,
         skipAuth: true,
       });
+
+      if (response_data.success) {
+        localStorage.setItem(import.meta.env.VITE_TOKEN_LOGIN, response_data.access_token);
+      }
       console.log("LOGIN >>> check data fetch: ", response_data);
       setShowSuccess(true);
     } catch (err) {
@@ -123,7 +175,7 @@ const LoginPage = () => {
 
   return (
     <div className={cx("wrapper_loginform")}>
-      { isShowSuccess && <Success />} 
+      {isShowSuccess && <Success />}
       {loading && <Spinner />}
       <div className={cx("wrapper_login")}>
         <form className={cx("login_content")} onSubmit={handleSubmit}>

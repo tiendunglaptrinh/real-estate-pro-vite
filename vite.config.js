@@ -13,6 +13,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@assets': path.resolve(__dirname, './src/assets'),
+      '@api': path.resolve(__dirname, './src/api'),
       '@animations': path.resolve(__dirname, './src/assets/animations'),
       '@images': path.resolve(__dirname, './src/assets/images'),
       '@backgrounds': path.resolve(__dirname, './src/assets/backgrounds'),
