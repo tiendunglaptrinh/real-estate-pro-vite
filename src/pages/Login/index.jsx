@@ -127,6 +127,15 @@ useEffect(() => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+  if (showCaptcha) {
+    const captchaToken = re_captcha.current?.getValue();
+    if (!captchaToken) {
+      setError("Vui lòng xác nhận captcha trước khi đăng nhập!");
+      return;
+    }
+  }
+
+
     setLoading(true);
     setError(null);
     try {

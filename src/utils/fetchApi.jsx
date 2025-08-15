@@ -1,6 +1,6 @@
 import client from "@api/axiosInstance.jsx";
 
-const fetchAPI = async (
+const fetchApi = async (
   url,
   { method = "get", body = null, params = null, skipAuth = false } = {}
 ) => {
@@ -27,4 +27,4 @@ const fetchAPI = async (
   } 
 };
 
-export default fetchAPI;
+export default fetchApi;

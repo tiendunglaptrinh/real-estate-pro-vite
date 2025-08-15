@@ -22,6 +22,8 @@
   margin-top: 30px;
   font-weight: 400;
 }
+
+// ------------------- STEP tạo tin đăng ---------------------------
 .step_new_post {
   display: flex;
   align-items: center;
@@ -75,6 +77,8 @@
 .info_step_item:nth-child(2) {
   margin-right: 140px;
 }
+
+// --------------------------------- INFO CHUNG ---------------------------------
 .box_info {
   position: absolute;
   top: 50%;
@@ -101,6 +105,26 @@
   font-weight: 500;
   margin-bottom: 15px;
 }
+
+.hover_item_strong {
+  transition: 0.2s;
+  box-sizing: border-box;
+  &:hover {
+    transition: 0.2s;
+    box-shadow: 1px 2px 5px #333;
+  }
+}
+
+.hover_item_light {
+  transition: 0.2s;
+  box-sizing: border-box;
+  &:hover {
+    transition: 0.2s;
+    box-shadow: 1px 2px 5px #656464;
+  }
+}
+
+// ---------------------------- Section: NEEDS ---------------------------------
 .type_estate {
   display: flex;
   align-items: center;
@@ -116,7 +140,14 @@
   padding: 20px;
   border-radius: 15px;
   cursor: pointer;
+  transition: 0.2s;
+  box-sizing: border-box;
+  &:hover {
+    transition: 0.2s;
+    box-shadow: 1px 2px 5px #333;
+  }
 }
+
 .type_sell > img {
   width: 50px;
 }
@@ -129,36 +160,44 @@
 }
 .type_rent.active {
   background: #cadbf3;
-  border: 1px solid #fff;
 }
 .type_sell.active {
   background: #cadbf3;
-  border: 1px solid #fff;
 }
 .child_adress {
   display: flex;
   gap: 20px;
   justify-content: space-between;
 }
-.address_option {
+
+//-------------------------------- Part ADDRESS -------------------------
+
+.address_part {
   display: flex;
-  gap: 7px;
-  flex-direction: column;
+  gap: 10px;
+  justify-content: space-between;
+}
+
+.address_full {
+  background: #fff;
+  color: #000;
+  margin-top: 10px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  border-radius: 7px;
+  box-shadow: 0px 1px 2px #695f5f;
+}
+
+.part_address {
+  width: 30%;
+  padding: 12px;
+  border-radius: 7px;
+  cursor: pointer;
   font-size: 15px;
 }
-.address_option > input {
-  padding: 13px 10px;
-  font-size: 15px;
-  border-radius: 7px;
-}
-input.parent_address {
-  width: 100%;
-  margin-top: 15px;
-  height: 50px;
-  padding: 5px 15px;
-  border-radius: 7px;
-  font-size: 17px;
-}
+
+//-------------------------------- Part Thông tin chính -------------------------
 .option_sub_title {
   font-size: 16px;
   font-weight: 500;
@@ -197,7 +236,8 @@ input.parent_address {
 .m2 {
   position: absolute;
   display: block;
-  top: 39px;
+  top: 50%;
+  transform: translateY(25%);
   right: 10px;
   font-size: 16px;
   font-weight: 500;
@@ -263,6 +303,6 @@ input.parent_address {
   padding: 10px;
   font-size: 16px;
 }
-.submit_step1{
+.submit_step1 {
   margin-left: auto;
 }

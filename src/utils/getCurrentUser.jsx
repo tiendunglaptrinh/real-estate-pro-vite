@@ -7,7 +7,6 @@ const getCurrentUser = async () => {
     const storedUser = localStorage.getItem(key);
 
     if (storedUser && storedUser !== "null" && storedUser !== "undefined") {
-      console.log(">> Utils >> getUser >> current user (cached):", storedUser);
       return JSON.parse(storedUser);
     }
 
@@ -19,7 +18,6 @@ const getCurrentUser = async () => {
     });
 
     if (response_data?.success) {
-      console.log(">> response:", response_data);
       localStorage.setItem(key, JSON.stringify(response_data.user));
       return response_data.user;
     }
@@ -29,7 +27,6 @@ const getCurrentUser = async () => {
     return null;
 
   } catch (error) {
-    console.error("❌ Error getting current user:", error);
     localStorage.removeItem(key);
     return null;
   }

@@ -1,9 +1,9 @@
 import HomePage from "./Homepage";
-// import Post from "./Posts";
-// import NewPost from "./NewPost";
 import Unauthorized from "./Unauthorized";
 import LoginPage from './Login';
 import TestUseEffect from "../test";
-// import RegisterPage from './Register';
+import PostDetail from "./PostDetail";
+import NotFound from "./NotFound";
+import NewPost from "./NewPost";
 
-export { HomePage, Unauthorized, LoginPage, TestUseEffect};
+export { HomePage, Unauthorized, LoginPage, TestUseEffect, PostDetail, NotFound, NewPost};

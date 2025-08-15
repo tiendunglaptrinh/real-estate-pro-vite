@@ -1,12 +1,20 @@
 import classnames from "classnames/bind";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import styles from "./Homepage.module.scss";
 import LayoutHeader from "../../layouts/LayoutHeader";
 import banner from "@images/banner.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faMoneyBills } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
-import { InputSearch, Button, ButtonCollapse, TransitionPage } from "@components/component";
+import {
+  InputSearch,
+  Button,
+  ButtonCollapse,
+  TransitionPage,
+  Spinner,
+} from "@components/component";
+import { fetchApi } from "@utils/utils";
+import { useNavigate } from 'react-router-dom';
 const cx = classnames.bind(styles);
 
 const Banner = () => {
@@ -182,309 +190,111 @@ const News = () => {
 };
 
 const ListPost = () => {
+  const [posts, setPosts] = useState([]);
+  const [limitPost, setLimitPost] = useState(2); // handle cho nút xem thêm bất động sản ở cuối
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const url_getPost = "post/get-posts";
+        const response_data = await fetchApi(url_getPost, {
+          method: "get",
+          body: null,
+          params: {
+            limit: limitPost,
+          },
+        });
+
+        if (response_data.success) {
+          console.log("Get post successfully: ", response_data.data_posts);
+          setPosts(response_data.data_posts);
+        } else {
+          console.log("Get post failed");
+          return;
+        }
+      } catch (err) {
+        throw err.message;
+      }
+    };
+    fetchPost();
+  }, [limitPost]);
+
+  const handleWatchMorePost = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setLimitPost((prev) => prev * 2);
+    }, 1000);
+  };
+
+  const navigate = useNavigate();
+  const handleClickSinglePost = (id) => {
+    const url = `/post/${id}`;
+    setLoading(true);
+    navigate(url);
+  } 
+
   return (
     <div className={cx("wrapper_posts")}>
+      {loading && <Spinner />}
       <div className={cx("post_sub_title")}>Tìm kiếm nhiều nhất</div>
       <div className={cx("post_main_title")}>Bất động sản dành cho bạn</div>
       <div className={cx("row", "list_post")}>
-        <div className={cx("col-3", "list_item")}>
-          <div className={cx("img_post_item")}>
-            <img
-              src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
-              alt=""
-            />
-          </div>
-          <div className={cx("content_post")}>
-            <div className={cx("name_post")}>
-              Chính chủ nhượng căn góc 3PN 96.87 m2 view hồ dự Khai Sơn
+        {posts.map((post) => (
+          <div key={post._id} className={cx("col-3", "list_item")} onClick={() => handleClickSinglePost(post._id)}>
+            <div className={cx("img_post_item")}>
+              {" "}
+              <img
+                src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
+                alt=""
+              />{" "}
             </div>
-            <div className={cx("adress_post")}>
-              <FontAwesomeIcon
-                icon={faLocationDot}
-                fontSize="18px"
-                color="#848484"
-              />
-              <div className={cx("adress")}>Thanh Đa, Hà Nội</div>
-            </div>
-            <div className={cx("date_post")}>Ngày hôm nay</div>
-            <div className={cx("line")}></div>
-            <div className={cx("info_post")}>
-              <div className={cx("price_post")}>
+            <div className={cx("content_post")}>
+              <div className={cx("name_post")}> {post.title} </div>
+              <div className={cx("adress_post")}>
                 <FontAwesomeIcon
-                  icon={faMoneyBills}
+                  icon={faLocationDot}
                   fontSize="18px"
                   color="#848484"
                 />
-                <div className={cx("cost")}>Giá:</div>
-                <div className={cx("price")}>4.2 tỷ</div>
-                <div className={cx("size_post")}>96 m2</div>
-                <div className={cx("heart")}>
+                <div className={cx("adress")}>{post.address}</div>
+              </div>
+              <div className={cx("date_post")}>Ngày hôm nay</div>
+              <div className={cx("line")}></div>
+              <div className={cx("info_post")}>
+                <div className={cx("price_post")}>
                   <FontAwesomeIcon
-                    icon={faHeart}
+                    icon={faMoneyBills}
                     fontSize="18px"
                     color="#848484"
                   />
+                  <div className={cx("cost")}>Giá:</div>
+                  <div
+                    className={cx("price")}
+                  >{`${post.price} ${post.unit_price}`}</div>
+                  <div className={cx("size_post")}>{`${post.acreage} m2`}</div>
+                  <div className={cx("heart")}>
+                    <FontAwesomeIcon
+                      icon={faHeart}
+                      fontSize="18px"
+                      color="#848484"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className={cx("col-3", "list_item")}>
-          <div className={cx("img_post_item")}>
-            <img
-              src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
-              alt=""
-            />
-          </div>
-          <div className={cx("content_post")}>
-            <div className={cx("name_post")}>
-              Chính chủ nhượng căn góc 3PN 96.87 m2 view hồ dự Khai Sơn
-            </div>
-            <div className={cx("adress_post")}>
-              <FontAwesomeIcon
-                icon={faLocationDot}
-                fontSize="18px"
-                color="#848484"
-              />
-              <div className={cx("adress")}>Thanh Đa, Hà Nội</div>
-            </div>
-            <div className={cx("date_post")}>Ngày hôm nay</div>
-            <div className={cx("line")}></div>
-            <div className={cx("info_post")}>
-              <div className={cx("price_post")}>
-                <FontAwesomeIcon
-                  icon={faMoneyBills}
-                  fontSize="18px"
-                  color="#848484"
-                />
-                <div className={cx("cost")}>Giá:</div>
-                <div className={cx("price")}>4.2 tỷ</div>
-                <div className={cx("size_post")}>96 m2</div>
-                <div className={cx("heart")}>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    fontSize="18px"
-                    color="#848484"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={cx("col-3", "list_item")}>
-          <div className={cx("img_post_item")}>
-            <img
-              src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
-              alt=""
-            />
-          </div>
-          <div className={cx("content_post")}>
-            <div className={cx("name_post")}>
-              Chính chủ nhượng căn góc 3PN 96.87 m2 view hồ dự Khai Sơn
-            </div>
-            <div className={cx("adress_post")}>
-              <FontAwesomeIcon
-                icon={faLocationDot}
-                fontSize="18px"
-                color="#848484"
-              />
-              <div className={cx("adress")}>Thanh Đa, Hà Nội</div>
-            </div>
-            <div className={cx("date_post")}>Ngày hôm nay</div>
-            <div className={cx("line")}></div>
-            <div className={cx("info_post")}>
-              <div className={cx("price_post")}>
-                <FontAwesomeIcon
-                  icon={faMoneyBills}
-                  fontSize="18px"
-                  color="#848484"
-                />
-                <div className={cx("cost")}>Giá:</div>
-                <div className={cx("price")}>4.2 tỷ</div>
-                <div className={cx("size_post")}>96 m2</div>
-                <div className={cx("heart")}>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    fontSize="18px"
-                    color="#848484"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={cx("col-3", "list_item")}>
-          <div className={cx("img_post_item")}>
-            <img
-              src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
-              alt=""
-            />
-          </div>
-          <div className={cx("content_post")}>
-            <div className={cx("name_post")}>
-              Chính chủ nhượng căn góc 3PN 96.87 m2 view hồ dự Khai Sơn
-            </div>
-            <div className={cx("adress_post")}>
-              <FontAwesomeIcon
-                icon={faLocationDot}
-                fontSize="18px"
-                color="#848484"
-              />
-              <div className={cx("adress")}>Thanh Đa, Hà Nội</div>
-            </div>
-            <div className={cx("date_post")}>Ngày hôm nay</div>
-            <div className={cx("line")}></div>
-            <div className={cx("info_post")}>
-              <div className={cx("price_post")}>
-                <FontAwesomeIcon
-                  icon={faMoneyBills}
-                  fontSize="18px"
-                  color="#848484"
-                />
-                <div className={cx("cost")}>Giá:</div>
-                <div className={cx("price")}>4.2 tỷ</div>
-                <div className={cx("size_post")}>96 m2</div>
-                <div className={cx("heart")}>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    fontSize="18px"
-                    color="#848484"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={cx("col-3", "list_item")}>
-          <div className={cx("img_post_item")}>
-            <img
-              src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
-              alt=""
-            />
-          </div>
-          <div className={cx("content_post")}>
-            <div className={cx("name_post")}>
-              Chính chủ nhượng căn góc 3PN 96.87 m2 view hồ dự Khai Sơn
-            </div>
-            <div className={cx("adress_post")}>
-              <FontAwesomeIcon
-                icon={faLocationDot}
-                fontSize="18px"
-                color="#848484"
-              />
-              <div className={cx("adress")}>Thanh Đa, Hà Nội</div>
-            </div>
-            <div className={cx("date_post")}>Ngày hôm nay</div>
-            <div className={cx("line")}></div>
-            <div className={cx("info_post")}>
-              <div className={cx("price_post")}>
-                <FontAwesomeIcon
-                  icon={faMoneyBills}
-                  fontSize="18px"
-                  color="#848484"
-                />
-                <div className={cx("cost")}>Giá:</div>
-                <div className={cx("price")}>4.2 tỷ</div>
-                <div className={cx("size_post")}>96 m2</div>
-                <div className={cx("heart")}>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    fontSize="18px"
-                    color="#848484"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={cx("col-3", "list_item")}>
-          <div className={cx("img_post_item")}>
-            <img
-              src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
-              alt=""
-            />
-          </div>
-          <div className={cx("content_post")}>
-            <div className={cx("name_post")}>
-              Chính chủ nhượng căn góc 3PN 96.87 m2 view hồ dự Khai Sơn
-            </div>
-            <div className={cx("adress_post")}>
-              <FontAwesomeIcon
-                icon={faLocationDot}
-                fontSize="18px"
-                color="#848484"
-              />
-              <div className={cx("adress")}>Thanh Đa, Hà Nội</div>
-            </div>
-            <div className={cx("date_post")}>Ngày hôm nay</div>
-            <div className={cx("line")}></div>
-            <div className={cx("info_post")}>
-              <div className={cx("price_post")}>
-                <FontAwesomeIcon
-                  icon={faMoneyBills}
-                  fontSize="18px"
-                  color="#848484"
-                />
-                <div className={cx("cost")}>Giá:</div>
-                <div className={cx("price")}>4.2 tỷ</div>
-                <div className={cx("size_post")}>96 m2</div>
-                <div className={cx("heart")}>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    fontSize="18px"
-                    color="#848484"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className={cx("col-3", "list_item")}>
-          <div className={cx("img_post_item")}>
-            <img
-              src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
-              alt=""
-            />
-          </div>
-          <div className={cx("content_post")}>
-            <div className={cx("name_post")}>
-              Chính chủ nhượng căn góc 3PN 96.87 m2 view hồ dự Khai Sơn
-            </div>
-            <div className={cx("adress_post")}>
-              <FontAwesomeIcon
-                icon={faLocationDot}
-                fontSize="18px"
-                color="#848484"
-              />
-              <div className={cx("adress")}>Thanh Đa, Hà Nội</div>
-            </div>
-            <div className={cx("date_post")}>Ngày hôm nay</div>
-            <div className={cx("line")}></div>
-            <div className={cx("info_post")}>
-              <div className={cx("price_post")}>
-                <FontAwesomeIcon
-                  icon={faMoneyBills}
-                  fontSize="18px"
-                  color="#848484"
-                />
-                <div className={cx("cost")}>Giá:</div>
-                <div className={cx("price")}>4.2 tỷ</div>
-                <div className={cx("size_post")}>96 m2</div>
-                <div className={cx("heart")}>
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    fontSize="18px"
-                    color="#848484"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        ))}
+      </div>
+      <div className={cx("btn_more")} onClick={handleWatchMorePost}>
+        <Button width="150px" height="50px" background="#009BA1" color="#fff">
+          Xem tất cả
+        </Button>
       </div>
     </div>
   );
 };
+
 const ContentHomepage = () => {
   return (
     <>

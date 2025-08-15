@@ -14,7 +14,6 @@ client.interceptors.request.use(
     if (token && !config.skipAuth) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log(">>> axios request config:", config);
     return config;
   },
   (error) => Promise.reject(error)
