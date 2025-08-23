@@ -7,7 +7,7 @@ const getCurrentUser = async () => {
     const storedUser = localStorage.getItem(key);
 
     if (storedUser && storedUser !== "null" && storedUser !== "undefined") {
-      return JSON.parse(storedUser);
+      localStorage.removeItem(key);
     }
 
     const response_data = await fetchAPI("/account/me", {
@@ -27,6 +27,7 @@ const getCurrentUser = async () => {
     return null;
 
   } catch (error) {
+    console.log("get current user error: ", error.message);
     localStorage.removeItem(key);
     return null;
   }
