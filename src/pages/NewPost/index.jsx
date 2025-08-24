@@ -27,6 +27,7 @@ import style from "./NewPost.module.scss";
 const cx = classNames.bind(style);
 
 const ContentNewPost = () => {
+  // ------------------- General logic --------------------
   const [step1, setStep1] = useState(true);
   const [step2, setStep2] = useState(false);
   const [step3, setStep3] = useState(false);
@@ -34,6 +35,34 @@ const ContentNewPost = () => {
   const [error, setError] = useState(null);
   const [showPopupErr, setShowPopupErr] = useState(false);
 
+  // Message tooltip
+  const messageTooltip = {
+    needs: "Chọn nhu cầu mà bạn mong muốn cho bài đăng.",
+    address: "Nhập thông tin địa chỉ của bất động sản của bạn.",
+    main_info:
+      "Lựa chọn loại hình bất động sản của bạn, điền đẩy đủ các thông số được yêu cầu.",
+    property:
+      "Thêm các cơ sở hạ tầng có trong bất động sản của bạn, tùy chỉnh số lượng sẵn có.",
+    facility: "Thêm các tiện ích được tích hợp sẵn trong bất động sản của bạn.",
+    description:
+      "Thêm các mô tả cho bài đăng bất động sản của bạn một cách rõ ràng, chi tiết để bài đăng dễ tiếp cận với người dùng.",
+    image:
+      "Thêm các hình ảnh về các bất động sản của bạn, ít nhất 3 hình ảnh. Về video, bạn có thể thêm đường dẫn video hoặc không thêm tùy ý.",
+  };
+
+  const errrorMessage = {
+    needs: "Vui lòng chọn nhu cầu của bạn về bài đăng bất động sản !!!",
+    address:
+      "Vui lòng nhập đầy đủ thông tin địa chỉ cho bài đăng bất động sản !!!",
+    category: "Vui lòng chọn loại hình bất động sản !!!",
+    area: "Vui lòng nhập diện tích của bất động sản !!!",
+    price: "Vui lòng nhập mức giá của bất động sản mà bạn mong muốn !!!",
+    unit_price: "Vui lòng nhập đơn vị giá cho mức giá của bất động sản !!!",
+    title: "Vui lòng nhập tiêu đề cho bài đăng bất động sản của bạn !!!",
+    description: "Vui lòng nhập thông tin mô tả về bất động sản !!!",
+  };
+
+  // ---------------------------- Logic Step 1 ----------------------------------
   // Options: needs
   const [isSell, setIsSell] = useState(false);
   const [isRent, setIsRent] = useState(false);
@@ -136,6 +165,7 @@ const ContentNewPost = () => {
   // Options: main info
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [acreage, setAcreage] = useState("");
   const [price, setPrice] = useState("");
   const [unitPrice, setUnitPrice] = useState("");
@@ -158,7 +188,7 @@ const ContentNewPost = () => {
   }, [needs]);
 
   const handleChangeCategory = (e) => {
-    setCategoryName(e.target.value);
+    setCategoryId(e.target.value);
   };
 
   // Options: Property Component
@@ -288,33 +318,169 @@ const ContentNewPost = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleSubmitStep1 = () => {
+  const handleSubmitStep1 = async () => {
     setLoading(true);
 
-    const body = {};
-    body.needs = needs;
-    body.address = address;
-
     if (!needs) {
-      setError("Vui lòng chọn nhu cầu đăng tin !!!");
+      setError(errrorMessage.needs);
+      setLoading(false);
       setShowPopupErr(true);
+      return;
     }
-    console.log("needs: ", needs);
-    console.log("address: ", address);
-    console.log("category: ", categoryName);
-    console.log("area: ", acreage);
-    console.log("price: ", price);
-    console.log("unit price: ", unitPrice);
-    console.log("property: ", submitProp);
-    console.log("facilities: ", submitFaci);
-    console.log("fullname: ", nameContact);
-    console.log("emai: ", emailContact);
-    console.log("phone: ", phoneContact);
-    console.log("id: ", id);
-    console.log("title: ", title);
-    console.log("descriptions: ", description);
-    console.log("latitude: ", latlong[0]);
-    console.log("longitude: ", latlong[1]);
+
+    if (!address.wardName || !address.provinceName) {
+      setError(errrorMessage.address);
+      setLoading(false);
+      setShowPopupErr(true);
+      return;
+    }
+
+    if (!acreage) {
+      setError(errrorMessage.area);
+      setLoading(false);
+      setShowPopupErr(true);
+      return;
+    }
+
+    if (!price) {
+      setError(errrorMessage.price);
+      setLoading(false);
+      setShowPopupErr(true);
+      return;
+    }
+    if (!unitPrice) {
+      setError(errrorMessage.unit_price);
+      setLoading(false);
+      setShowPopupErr(true);
+      return;
+    }
+
+    if (!categoryId) {
+      setError(errrorMessage.category);
+      setLoading(false);
+      setShowPopupErr(true);
+      return;
+    }
+
+    if (!title) {
+      setError(errrorMessage.title);
+      setLoading(false);
+      setShowPopupErr(true);
+      return;
+    }
+
+    if (!description) {
+      setError(errrorMessage.description);
+      setLoading(false);
+      setShowPopupErr(true);
+      return;
+    }
+
+    // console.log("needs: ", needs);
+    // console.log("address: ", address);
+    // console.log("category: ", categoryName);
+    // console.log("area: ", acreage);
+    // console.log("price: ", price);
+    // console.log("unit price: ", unitPrice);
+    // console.log("property: ", submitProp);
+    // console.log("facilities: ", submitFaci);
+    // console.log("fullname: ", nameContact);
+    // console.log("emai: ", emailContact);
+    // console.log("phone: ", phoneContact);
+    // console.log("id: ", id);
+    // console.log("title: ", title);
+    // console.log("descriptions: ", description);
+    // console.log("latitude: ", latlong[0]);
+    // console.log("longitude: ", latlong[1]);
+
+    const body = {
+      needs: needs,
+      address: address.wardFullName,
+      province: address.provinceName,
+      ward: address.wardName,
+      category_id: categoryId,
+      acreage,
+      price,
+      unit_price: unitPrice,
+      property_components: submitProp.map((item) => item.id),
+      facilities: submitFaci.map((item) => item.id),
+      title,
+      description,
+      latitude: latlong[0],
+      longitude: latlong[1],
+    };
+
+    console.log(">>> check body: ", body);
+
+    const url = "/post/create/step1";
+    const response_data = await fetchApi(url, {
+      method: "post",
+      body,
+      skipAuth: false,
+    });
+
+    if (response_data.success) {
+      setLoading(false);
+      setStep2(true);
+    }
+  };
+
+  // ---------------------------- Logic Step 2 ----------------------------------
+
+  // Options: Image & Video
+  const [images, setImages] = useState([]);
+  const [videoUrl, setVideoUrl] = useState("");
+
+  const handleUploadImages = (e) => {
+    const files = Array.from(e.target.files);
+
+    setImages((prev) => {
+      // Lọc ảnh mới, loại bỏ ảnh đã tồn tại
+      const newFiles = files.filter(
+        (file) =>
+          !prev.some(
+            (prevFile) =>
+              prevFile.name === file.name &&
+              prevFile.size === file.size &&
+              prevFile.lastModified === file.lastModified
+          )
+      );
+      return [...prev, ...newFiles];
+    });
+  };
+
+  const handleIgnoreImage = (index) => {
+    // Xóa ảnh theo index
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSubmitStep2 = async () => {
+    setLoading(true);
+
+    if (!images) {
+      setError(errrorMessage.image);
+      setLoading(false);
+      setShowPopupErr(true);
+      return;
+    }
+
+    const body = {
+      images: images,
+      video_url: videoUrl
+    }
+
+    const url = "/create/step2";
+    const response_data = await fetchApi(url,{
+      method: "post",
+      body,
+      skipAuth: false
+    })
+
+    if (response_data.success) {
+      console.log(">>>[SUCCESSFULL]: check response data: ", response_data);
+      setLoading(false);
+      setStep3(true);
+    }
   };
   return (
     <div className={cx("wrapper_new_post")}>
@@ -351,444 +517,553 @@ const ContentNewPost = () => {
         </div>
       </div>
       <div className={cx("right_content")}>
-        <div className={cx("box_info")}>
-          {/* ----------------- Nhu cầu: Mua/ Bán ------------------ */}
-          <div className={cx("info_option")}>
-            <div className={cx("option_title")}>Nhu cầu</div>
-            <HintTooltip
-              id="needs-tooltip"
-              message="Chọn nhu cầu mà bạn muốn"
-            />
-            <div className={cx("type_estate")}>
-              <div
-                className={cx("type_sell", { active: isSell })}
-                onClick={handleChooseSell}
-              >
-                <img src={isSell ? sell_white : sell} alt="" />
-                <div className={cx("sell_title", { active: isSell })}>Bán</div>
-              </div>
-              <div
-                className={cx("type_rent", { active: isRent })}
-                onClick={handleChooseRent}
-              >
-                <img src={isRent ? rent_white : rent} alt="" />
-                <div className={cx("sell_title", { active: isRent })}>
-                  Cho thuê
+        {step1 && !step2 && (
+          <div className={cx("box_info")}>
+            {/* ----------------- Nhu cầu: Mua/ Bán ------------------ */}
+            <div className={cx("info_option")}>
+              <div className={cx("option_title")}>Nhu cầu</div>
+              <HintTooltip
+                id="needs-tooltip"
+                className={cx("needs_tooltip")}
+                message={messageTooltip.needs}
+              />
+              <div className={cx("type_estate")}>
+                <div
+                  className={cx("type_sell", { active: isSell })}
+                  onClick={handleChooseSell}
+                >
+                  <img src={isSell ? sell_white : sell} alt="" />
+                  <div className={cx("sell_title", { active: isSell })}>
+                    Bán
+                  </div>
+                </div>
+                <div
+                  className={cx("type_rent", { active: isRent })}
+                  onClick={handleChooseRent}
+                >
+                  <img src={isRent ? rent_white : rent} alt="" />
+                  <div className={cx("sell_title", { active: isRent })}>
+                    Cho thuê
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-          {/* ----------------- Địa chỉ ------------------ */}
-          <div className={cx("info_option")}>
-            <div className={cx("option_title")}>Địa chỉ</div>
-            <div className={cx("option_address")}>
-              <div className={cx("address_part")}>
-                {/* Province */}
-                <select
-                  name="province"
-                  className={cx("part_address", "hover_item_light")}
-                  value={address.provinceCode || ""}
-                  onChange={(e) => {
-                    const code = e.target.value;
-                    const name =
-                      provinces.find((p) => p.code === code)?.name || "";
-                    setCodeProvince(code); // fetch wards
-                    handleInputChange("provinceCode", code);
-                    handleInputChange("provinceName", name);
+            {/* ----------------- Địa chỉ ------------------ */}
+            <div className={cx("info_option", "address_option")}>
+              <div className={cx("option_title")}>Địa chỉ</div>
+              <HintTooltip
+                id="address-tooltip"
+                className={cx("address_tooltip")}
+                message={messageTooltip.address}
+              />
+              <div className={cx("option_address")}>
+                <div className={cx("address_part")}>
+                  {/* Province */}
+                  <select
+                    name="province"
+                    className={cx("part_address", "hover_item_light")}
+                    value={address.provinceCode || ""}
+                    onChange={(e) => {
+                      const code = e.target.value;
+                      const name =
+                        provinces.find((p) => p.code === code)?.name || "";
+                      setCodeProvince(code); // fetch wards
+                      handleInputChange("provinceCode", code);
+                      handleInputChange("provinceName", name);
 
-                    // reset ward khi đổi tỉnh
-                    handleInputChange("wardCode", "");
-                    handleInputChange("wardName", "");
-                    handleInputChange("wardFullName", name);
-                  }}
-                >
-                  <option value="">-- Chọn Tỉnh/Thành phố --</option>
-                  {provinces.map((p) => (
-                    <option key={p.code} value={p.code}>
-                      {p.name}
-                    </option>
-                  ))}
-                </select>
+                      // reset ward khi đổi tỉnh
+                      handleInputChange("wardCode", "");
+                      handleInputChange("wardName", "");
+                      handleInputChange("wardFullName", name);
+                    }}
+                  >
+                    <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                    {provinces.map((p) => (
+                      <option key={p.code} value={p.code}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
 
-                {/* Ward */}
-                <select
-                  name="ward"
-                  className={cx("part_address", "hover_item_light")}
-                  value={address.wardCode || ""}
-                  onChange={(e) => {
-                    const code = e.target.value;
-                    const wardObj = wards.find((w) => w.code === code);
-                    handleInputChange("wardCode", code);
-                    handleInputChange("wardName", wardObj?.name || "");
-                    handleInputChange("wardFullName", wardObj?.fullName || "");
-                  }}
-                  disabled={!address.provinceCode}
-                >
-                  <option value="">-- Chọn Xã/Phường --</option>
-                  {wards.map((w) => (
-                    <option key={w.code} value={w.code}>
-                      {w.name}
-                    </option>
-                  ))}
-                </select>
+                  {/* Ward */}
+                  <select
+                    name="ward"
+                    className={cx("part_address", "hover_item_light")}
+                    value={address.wardCode || ""}
+                    onChange={(e) => {
+                      const code = e.target.value;
+                      const wardObj = wards.find((w) => w.code === code);
+                      handleInputChange("wardCode", code);
+                      handleInputChange("wardName", wardObj?.name || "");
+                      handleInputChange(
+                        "wardFullName",
+                        wardObj?.fullName || ""
+                      );
+                    }}
+                    disabled={!address.provinceCode}
+                  >
+                    <option value="">-- Chọn Xã/Phường --</option>
+                    {wards.map((w) => (
+                      <option key={w.code} value={w.code}>
+                        {w.name}
+                      </option>
+                    ))}
+                  </select>
 
-                {/* Rest of address */}
-                <input
-                  type="text"
-                  className={cx("part_address", "hover_item_light")}
-                  value={address.rest || ""}
-                  onChange={(e) => handleInputChange("rest", e.target.value)}
-                  placeholder="Đường/Số nhà"
-                />
+                  {/* Rest of address */}
+                  <input
+                    type="text"
+                    className={cx("part_address", "hover_item_light")}
+                    value={address.rest || ""}
+                    onChange={(e) => handleInputChange("rest", e.target.value)}
+                    placeholder="Đường/Số nhà"
+                  />
+                </div>
+
+                {/* Full Address */}
+                <div className={cx("address_full")}>
+                  {`Địa chỉ hiển thị: ${address.rest} ${address.wardFullName}`}
+                  <button
+                    className={cx("submit_address")}
+                    onClick={() => handleSubmitAddress()}
+                  >
+                    {" "}
+                    Xác nhận địa chỉ{" "}
+                  </button>
+                </div>
+                {/* Hiển thị lat long trên map */}
+                {submitSuccess && (
+                  <MarkerAddress
+                    latlong={latlong}
+                    address={`${address.rest}, ${address.wardFullName}`}
+                  />
+                )}
               </div>
-
-              {/* Full Address */}
-              <div className={cx("address_full")}>
-                {`Địa chỉ hiển thị: ${address.rest} ${address.wardFullName}`}
-                <button
-                  className={cx("submit_address")}
-                  onClick={() => handleSubmitAddress()}
-                >
-                  {" "}
-                  Xác nhận địa chỉ{" "}
-                </button>
-              </div>
-              {/* Hiển thị lat long trên map */}
-              {submitSuccess && (
-                <MarkerAddress
-                  latlong={latlong}
-                  address={`${address.rest}, ${address.wardFullName}`}
-                />
-              )}
             </div>
-          </div>
-          {/* ----------------- Thông tin chính bất động sản ------------------ */}
-          <div className={cx("info_option")}>
-            <div className={cx("option_title")}>Thông tin chính</div>
-            <div className={cx("option_sub_title")}>Loại bất động sản</div>
-            <select
-              className={cx("select_option")}
-              name="category"
-              value={categoryName}
-              onChange={(e) => handleChangeCategory(e)}
+            {/* ----------------- Thông tin chính bất động sản ------------------ */}
+            <div className={cx("info_option")}>
+              <div className={cx("option_title")}>Thông tin chính</div>
+              <div className={cx("option_sub_title")}>Loại bất động sản</div>
+              <select
+                className={cx("select_option")}
+                name="category"
+                value={categoryId}
+                onChange={(e) => handleChangeCategory(e)}
+              >
+                <option value="">-- Chọn loại hình bất động sản --</option>
+                {categories.map((ele) => (
+                  <option key={ele._id} value={ele._id}>
+                    {ele.category}
+                  </option>
+                ))}
+              </select>
+              <div className={cx("wrapper_sub_option")}>
+                <div className={cx("sub_info_option")}>
+                  <div className={cx("option_sub_title")}>Diện tích</div>
+                  <input
+                    type="number"
+                    name="acreage"
+                    value={acreage}
+                    placeholder="Ex: 95.5"
+                    onChange={(e) => {
+                      setAcreage(e.target.value);
+                    }}
+                  />
+                  <span className={cx("m2")}>m&sup2;</span>
+                </div>
+                <div className={cx("sub_info_option")}>
+                  <div className={cx("option_sub_title")}>Mức giá</div>
+                  <input
+                    type="number"
+                    name="price"
+                    value={price}
+                    placeholder="Ex: 2.5"
+                    onChange={(e) => {
+                      setPrice(e.target.value);
+                    }}
+                  />
+                </div>
+                <div className={cx("sub_info_option")}>
+                  <div className={cx("option_sub_title")}>Đơn vị</div>
+                  <select
+                    name="unitPrice"
+                    value={unitPrice}
+                    onChange={(e) => setUnitPrice(e.target.value)}
+                  >
+                    <option value="milion">Triệu đồng</option>
+                    <option value="tens_milion">Chục triệu đồng</option>
+                    <option value="hundreds_milion">Trăm Triệu đồng</option>
+                    <option value="bilion">Tỷ đồng</option>
+                    <option value="milion_per_m2">Triệu đồng/m&sup2;</option>
+                    <option value="tens_milion_per_m2">
+                      Chục triệu đồng/m&sup2;
+                    </option>
+                    <option value="hundreds_milion_per_m2">
+                      Trăm triệu đồng/m&sup2;
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            {/* ----------------- Thông tin cơ sở hạ tầng ------------------ */}
+            <div className={cx("info_option")}>
+              <HintTooltip
+                id="main-info-tooltip"
+                className={cx("address_tooltip")}
+                message={messageTooltip.main_info}
+              />
+              <div className={cx("option_title")}>Cơ sở hạ tầng</div>
+              <div className={cx("propperty_add", "row")}>
+                <div className={cx("wrapper_btn_property")}>
+                  <button
+                    onClick={handleClickShowPopup}
+                    className={cx("button_add_property")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faPlus}
+                      color="#333"
+                      fontSize="20px"
+                    />
+                    Thêm mới
+                  </button>
+                </div>
+                {/* --------- Render hiển thị sau khi chọn xong ------ */}
+                {submitProp.map((prop) => {
+                  return (
+                    <div className={cx("item_property")}>
+                      <span className={cx("item_num_ren")}>
+                        {prop.quantity}
+                      </span>
+                      {`${prop.name}`}
+                    </div>
+                  );
+                })}
+
+                {openPopupProp &&
+                  ReactDOM.createPortal(
+                    // ---------------- POPUP Content --------------------------------------
+                    <div className={cx("wrapper_popup")}>
+                      <div className={cx("popup_property", "row")}>
+                        <div
+                          className={cx("close_popup", "col")}
+                          onClick={() => setOpenPopupProp(false)}
+                        >
+                          <FontAwesomeIcon
+                            icon={faXmark}
+                            color="#333"
+                            fontSize="20px"
+                          />
+                        </div>
+                        <div className={cx("title_popup")}>
+                          Chọn cơ sở vật chất
+                        </div>
+                        {/* Toàn bộ property trong DB */}
+                        {properties.map((prop) => (
+                          <div
+                            key={prop._id}
+                            className={cx(
+                              "property_item",
+                              chooseProp.find((item) => item.id === prop._id) &&
+                                "chose"
+                            )}
+                            onClick={() => handleClickItem(prop)}
+                          >
+                            {prop.name}
+                          </div>
+                        ))}
+                        <div className={cx("title_popup")}>
+                          Danh sách đã chọn
+                        </div>
+                        <div className={cx("list_choosing", "row")}>
+                          {/* List đã chọn */}
+                          {chooseProp.map((prop) => {
+                            return (
+                              <div className={cx("item_choosing")}>
+                                <div className={cx("item_name")}>
+                                  {prop.name}
+                                  <div className={cx("delete_item")}>
+                                    <FontAwesomeIcon
+                                      icon={faXmark}
+                                      fontSize="10px"
+                                      color="#333"
+                                      onClick={() => handleDeleteProp(prop)}
+                                    />
+                                  </div>
+                                </div>
+                                <span className={cx("item_quantity")}>
+                                  Số lượng:
+                                </span>
+                                <input
+                                  className={cx("item_num")}
+                                  type="number"
+                                  min={1}
+                                  value={prop.quantity}
+                                  onChange={(e) =>
+                                    handleChaneNumProperty(
+                                      prop.id,
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {/* Xóa tất cả đã chọn */}
+                        <button
+                          className={cx("property_delete_all")}
+                          onClick={() => {
+                            setChooseProp([]);
+                          }}
+                        >
+                          {" "}
+                          Xóa tất cả{" "}
+                        </button>
+                        {/* Xác nhận chọn list */}
+                        <button
+                          className={cx("property_ok")}
+                          onClick={() => {
+                            setOpenPopupProp(false);
+                            setSubmitProp(chooseProp);
+                          }}
+                        >
+                          {" "}
+                          OK{" "}
+                        </button>
+                      </div>
+                    </div>,
+                    document.body
+                  )}
+              </div>
+            </div>
+            {/* ----------------- Thông tin cơ sở tiện ích ------------------ */}
+            <div className={cx("info_option")}>
+              <HintTooltip
+                id="property-info-tooltip"
+                className={cx("address_tooltip")}
+                message={messageTooltip.property}
+              />
+              <div className={cx("option_title")}>Cơ sở tiện ích</div>
+              <div className={cx("propperty_add", "row")}>
+                <div className={cx("wrapper_btn_property")}>
+                  <button
+                    onClick={() => {
+                      setOpenPopupFacility(true);
+                    }}
+                    className={cx("button_add_property")}
+                  >
+                    <FontAwesomeIcon
+                      icon={faPlus}
+                      color="#333"
+                      fontSize="20px"
+                    />
+                    Thêm mới
+                  </button>
+                </div>
+                {/* --------- Render hiển thị sau khi chọn xong ------ */}
+                {submitFaci.map((faci) => {
+                  return (
+                    <div className={cx("item_property")}>{`${faci.name}`}</div>
+                  );
+                })}
+
+                {openPopupFacility &&
+                  ReactDOM.createPortal(
+                    // ---------------- POPUP Content --------------------------------------
+                    <div className={cx("wrapper_popup")}>
+                      <div className={cx("popup_property", "row")}>
+                        <div
+                          className={cx("close_popup", "col")}
+                          onClick={() => setOpenPopupFacility(false)}
+                        >
+                          <FontAwesomeIcon
+                            icon={faXmark}
+                            color="#333"
+                            fontSize="20px"
+                          />
+                        </div>
+                        <div className={cx("title_popup")}>
+                          Chọn cơ sở vật chất
+                        </div>
+                        {/* Toàn bộ facility trong DB */}
+                        {facilities.map((faci) => (
+                          <div
+                            key={faci._id}
+                            className={cx(
+                              "property_item",
+                              chooseFaci.find(
+                                (item) => item.name === faci.name
+                              ) && "chose_faci"
+                            )}
+                            onClick={() => handleClickItemFacility(faci)}
+                          >
+                            {faci.name}
+                          </div>
+                        ))}
+                        <div className={cx("title_popup")}>
+                          Danh sách đã chọn
+                        </div>
+                        <div className={cx("list_choosing_faci", "row")}>
+                          {/* List đã chọn */}
+                          {chooseFaci.map((faci) => {
+                            return (
+                              <div className={cx("item_choosing_faci")}>
+                                <div className={cx("item_name_faci")}>
+                                  {faci.name}
+                                  <div className={cx("delete_item")}>
+                                    <FontAwesomeIcon
+                                      icon={faXmark}
+                                      fontSize="10px"
+                                      color="#333"
+                                      onClick={() => handleDeleteFaci(faci)}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                        {/* Xóa tất cả đã chọn */}
+                        <button
+                          className={cx("property_delete_all")}
+                          onClick={() => {
+                            setChooseFaci([]);
+                          }}
+                        >
+                          {" "}
+                          Xóa tất cả{" "}
+                        </button>
+                        {/* Xác nhận chọn list */}
+                        <button
+                          className={cx("property_ok")}
+                          onClick={() => {
+                            setOpenPopupFacility(false);
+                            handleSubmitFacilit(chooseProp);
+                          }}
+                        >
+                          {" "}
+                          OK{" "}
+                        </button>
+                      </div>
+                    </div>,
+                    document.body
+                  )}
+              </div>
+            </div>
+            {/* ----------------- Thông tin Liên hệ ------------------ */}
+            <div className={cx("info_option")}>
+              <div className={cx("option_title")}>Thông tin liên hệ</div>
+              <div className={cx("option_sub_title")}>Tên liên hệ</div>
+              <div className={cx("contact_info")}>{nameContact}</div>
+              <div className={cx("option_sub_title")}>Email</div>
+              <div className={cx("contact_info")}>{emailContact}</div>
+              <div className={cx("option_sub_title")}>Số điện thoại</div>
+              <div className={cx("contact_info")}>{phoneContact}</div>
+            </div>
+            {/* ----------------- Thông tin Mô tả ------------------ */}
+            <div className={cx("info_option")}>
+              <HintTooltip
+                id="description-tooltip"
+                className={cx("address_tooltip")}
+                message={messageTooltip.description}
+              />
+              <div className={cx("option_title")}>Tiêu đề & mô tả</div>
+              <div className={cx("option_sub_title")}>Tiêu đề</div>
+              <input
+                className={cx("input_tit")}
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+              <div className={cx("option_sub_title")}>Mô tả</div>
+              <textarea
+                className={cx("input_desc")}
+                id="message"
+                name="message"
+                rows="5"
+                cols="30"
+                placeholder="Nhập văn bản tại đây..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              ></textarea>
+            </div>
+            <Button
+              className={cx("submit_step1")}
+              width="100px"
+              borderRadius="7px"
+              background="#B2935D"
+              color="#fff"
+              onClick={() => handleSubmitStep1()}
             >
-              <option value="">-- Chọn loại hình bất động sản --</option>
-              {categories.map((ele) => (
-                <option key={ele._id} value={ele.category}>
-                  {ele.category}
-                </option>
-              ))}
-            </select>
-            <div className={cx("wrapper_sub_option")}>
-              <div className={cx("sub_info_option")}>
-                <div className={cx("option_sub_title")}>Diện tích</div>
-                <input
-                  type="number"
-                  name="acreage"
-                  value={acreage}
-                  placeholder="Ex: 95.5"
-                  onChange={(e) => {
-                    setAcreage(e.target.value);
-                  }}
-                />
-                <span className={cx("m2")}>m&sup2;</span>
-              </div>
-              <div className={cx("sub_info_option")}>
-                <div className={cx("option_sub_title")}>Mức giá</div>
-                <input
-                  type="number"
-                  name="price"
-                  value={price}
-                  placeholder="Ex: 2.5"
-                  onChange={(e) => {
-                    setPrice(e.target.value);
-                  }}
-                />
-              </div>
-              <div className={cx("sub_info_option")}>
-                <div className={cx("option_sub_title")}>Đơn vị</div>
-                <select name="unitPrice">
-                  <option value="milion">Triệu đồng</option>
-                  <option value="tens_milion">Chục triệu đồng</option>
-                  <option value="hundreds_milion">Trăm Triệu đồng</option>
-                  <option value="bilion">Tỷ đồng</option>
-                  <option value="milion_per_m2">Triệu đồng/m&sup2;</option>
-                  <option value="tens_milion_per_m2">
-                    Chục triệu đồng/m&sup2;
-                  </option>
-                  <option value="hundreds_milion_per_m2">
-                    Trăm triệu đồng/m&sup2;
-                  </option>
-                </select>
-              </div>
-            </div>
+              Tiếp theo
+            </Button>
           </div>
-          {/* ----------------- Thông tin cơ sở hạ tầng ------------------ */}
-          <div className={cx("info_option")}>
-            <div className={cx("option_title")}>Cơ sở hạ tầng</div>
-            <div className={cx("propperty_add", "row")}>
-              <div className={cx("wrapper_btn_property")}>
-                <button
-                  onClick={handleClickShowPopup}
-                  className={cx("button_add_property")}
-                >
-                  <FontAwesomeIcon icon={faPlus} color="#333" fontSize="20px" />
-                  Thêm mới
-                </button>
-              </div>
-              {/* --------- Render hiển thị sau khi chọn xong ------ */}
-              {submitProp.map((prop) => {
-                return (
-                  <div className={cx("item_property")}>
-                    <span className={cx("item_num_ren")}>{prop.quantity}</span>
-                    {`${prop.name}`}
-                  </div>
-                );
-              })}
+        )}
+        {step1 && step2 && !step3 && (
+          <div className={cx("box_info")}>
+            {/* ----------------- Nhu cầu: Mua/ Bán ------------------ */}
+            <div className={cx("info_option")}>
+              <div className={cx("option_title")}>Hình ảnh</div>
+              <HintTooltip
+                id="image-tooltip"
+                className={cx("image_tooltip")}
+                message={messageTooltip.image}
+              />
 
-              {openPopupProp &&
-                ReactDOM.createPortal(
-                  // ---------------- POPUP Content --------------------------------------
-                  <div className={cx("wrapper_popup")}>
-                    <div className={cx("popup_property", "row")}>
-                      <div
-                        className={cx("close_popup", "col")}
-                        onClick={() => setOpenPopupProp(false)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faXmark}
-                          color="#333"
-                          fontSize="20px"
-                        />
-                      </div>
-                      <div className={cx("title_popup")}>
-                        Chọn cơ sở vật chất
-                      </div>
-                      {/* Toàn bộ property trong DB */}
-                      {properties.map((prop) => (
-                        <div
-                          key={prop._id}
-                          className={cx(
-                            "property_item",
-                            chooseProp.find((item) => item.id === prop._id) &&
-                              "chose"
-                          )}
-                          onClick={() => handleClickItem(prop)}
-                        >
-                          {prop.name}
-                        </div>
-                      ))}
-                      <div className={cx("title_popup")}>Danh sách đã chọn</div>
-                      <div className={cx("list_choosing", "row")}>
-                        {/* List đã chọn */}
-                        {chooseProp.map((prop) => {
-                          return (
-                            <div className={cx("item_choosing")}>
-                              <div className={cx("item_name")}>
-                                {prop.name}
-                                <div className={cx("delete_item")}>
-                                  <FontAwesomeIcon
-                                    icon={faXmark}
-                                    fontSize="10px"
-                                    color="#333"
-                                    onClick={() => handleDeleteProp(prop)}
-                                  />
-                                </div>
-                              </div>
-                              <span className={cx("item_quantity")}>
-                                Số lượng:
-                              </span>
-                              <input
-                                className={cx("item_num")}
-                                type="number"
-                                min={1}
-                                value={prop.quantity}
-                                onChange={(e) =>
-                                  handleChaneNumProperty(
-                                    prop.id,
-                                    e.target.value
-                                  )
-                                }
-                              />
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {/* Xóa tất cả đã chọn */}
-                      <button
-                        className={cx("property_delete_all")}
-                        onClick={() => {
-                          setChooseProp([]);
-                        }}
-                      >
-                        {" "}
-                        Xóa tất cả{" "}
-                      </button>
-                      {/* Xác nhận chọn list */}
-                      <button
-                        className={cx("property_ok")}
-                        onClick={() => {
-                          setOpenPopupProp(false);
-                          setSubmitProp(chooseProp);
-                        }}
-                      >
-                        {" "}
-                        OK{" "}
-                      </button>
+              {/* Input multi file */}
+              <div className={cx("wrapper_list_image")}>
+                <label className={cx("list_images")} htmlFor="images">
+                  Chọn ảnh
+                </label>
+                <input
+                  type="file"
+                  id="images"
+                  name="images"
+                  accept="image/*"
+                  onChange={(e) => handleUploadImages(e)}
+                  style={{ display: "none" }}
+                  multiple
+                />
+                <div className={cx("preview_images", "row")}>
+                  {images.map((file, index) => (
+                    <div key={index} className={cx("preview_item", "")}>
+                      <FontAwesomeIcon
+                        icon={faXmark}
+                        fontSize="15px"
+                        className="ignore_img"
+                        onClick={() => handleIgnoreImage(index)}
+                      />
+                      <img
+                        className={cx("preview_img")}
+                        src={URL.createObjectURL(file)}
+                        alt={`Preview-${index}`}
+                      />
                     </div>
-                  </div>,
-                  document.body
-                )}
-            </div>
-          </div>
-          {/* ----------------- Thông tin cơ sở tiện ích ------------------ */}
-          <div className={cx("info_option")}>
-            <div className={cx("option_title")}>Cơ sở tiện ích</div>
-            <div className={cx("propperty_add", "row")}>
-              <div className={cx("wrapper_btn_property")}>
-                <button
-                  onClick={() => {
-                    setOpenPopupFacility(true);
-                  }}
-                  className={cx("button_add_property")}
-                >
-                  <FontAwesomeIcon icon={faPlus} color="#333" fontSize="20px" />
-                  Thêm mới
-                </button>
+                  ))}
+                </div>
               </div>
-              {/* --------- Render hiển thị sau khi chọn xong ------ */}
-              {submitFaci.map((faci) => {
-                return (
-                  <div className={cx("item_property")}>{`${faci.name}`}</div>
-                );
-              })}
-
-              {openPopupFacility &&
-                ReactDOM.createPortal(
-                  // ---------------- POPUP Content --------------------------------------
-                  <div className={cx("wrapper_popup")}>
-                    <div className={cx("popup_property", "row")}>
-                      <div
-                        className={cx("close_popup", "col")}
-                        onClick={() => setOpenPopupFacility(false)}
-                      >
-                        <FontAwesomeIcon
-                          icon={faXmark}
-                          color="#333"
-                          fontSize="20px"
-                        />
-                      </div>
-                      <div className={cx("title_popup")}>
-                        Chọn cơ sở vật chất
-                      </div>
-                      {/* Toàn bộ facility trong DB */}
-                      {facilities.map((faci) => (
-                        <div
-                          key={faci._id}
-                          className={cx(
-                            "property_item",
-                            chooseFaci.find(
-                              (item) => item.name === faci.name
-                            ) && "chose_faci"
-                          )}
-                          onClick={() => handleClickItemFacility(faci)}
-                        >
-                          {faci.name}
-                        </div>
-                      ))}
-                      <div className={cx("title_popup")}>Danh sách đã chọn</div>
-                      <div className={cx("list_choosing_faci", "row")}>
-                        {/* List đã chọn */}
-                        {chooseFaci.map((faci) => {
-                          return (
-                            <div className={cx("item_choosing_faci")}>
-                              <div className={cx("item_name_faci")}>
-                                {faci.name}
-                                <div className={cx("delete_item")}>
-                                  <FontAwesomeIcon
-                                    icon={faXmark}
-                                    fontSize="10px"
-                                    color="#333"
-                                    onClick={() => handleDeleteFaci(faci)}
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                      {/* Xóa tất cả đã chọn */}
-                      <button
-                        className={cx("property_delete_all")}
-                        onClick={() => {
-                          setChooseFaci([]);
-                        }}
-                      >
-                        {" "}
-                        Xóa tất cả{" "}
-                      </button>
-                      {/* Xác nhận chọn list */}
-                      <button
-                        className={cx("property_ok")}
-                        onClick={() => {
-                          setOpenPopupFacility(false);
-                          handleSubmitFacilit(chooseProp);
-                        }}
-                      >
-                        {" "}
-                        OK{" "}
-                      </button>
-                    </div>
-                  </div>,
-                  document.body
-                )}
             </div>
+            <div className={cx("info_option")}>
+              <div className={cx("option_title")}>Video</div>
+              <input
+                value={videoUrl}
+                type="text"
+                placeholder="url video"
+                onChange={(e) => setVideoUrl(e.target.value)}
+              />
+            </div>
+            <Button
+              className={cx("submit_step1")}
+              width="100px"
+              borderRadius="7px"
+              background="#B2935D"
+              color="#fff"
+              onClick={() => handleSubmitStep2()}
+            >
+              Tiếp theo
+            </Button>
           </div>
-          {/* ----------------- Thông tin Liên hệ ------------------ */}
-          <div className={cx("info_option")}>
-            <div className={cx("option_title")}>Thông tin liên hệ</div>
-            <div className={cx("option_sub_title")}>Tên liên hệ</div>
-            <div className={cx("contact_info")}>{nameContact}</div>
-            <div className={cx("option_sub_title")}>Email</div>
-            <div className={cx("contact_info")}>{emailContact}</div>
-            <div className={cx("option_sub_title")}>Số điện thoại</div>
-            <div className={cx("contact_info")}>{phoneContact}</div>
-          </div>
-          {/* ----------------- Thông tin Mô tả ------------------ */}
-          <div className={cx("info_option")}>
-            <div className={cx("option_title")}>Tiêu đề & mô tả</div>
-            <div className={cx("option_sub_title")}>Tiêu đề</div>
-            <input
-              className={cx("input_tit")}
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-            <div className={cx("option_sub_title")}>Mô tả</div>
-            <textarea
-              className={cx("input_desc")}
-              id="message"
-              name="message"
-              rows="5"
-              cols="30"
-              placeholder="Nhập văn bản tại đây..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            ></textarea>
-          </div>
-          <Button
-            className={cx("submit_step1")}
-            width="100px"
-            height="100px"
-            borderRadius="7px"
-            background="#B2935D"
-            color="#fff"
-            onClick={() => handleSubmitStep1()}
-          >
-            Tiếp theo
-          </Button>
-          /
-        </div>
+        )}
       </div>
     </div>
   );

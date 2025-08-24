@@ -13,6 +13,7 @@ const HintTooltip = ({
   message,
   widthIcon = 80,
   heightIcon = 80,
+  className,
   classNameLottie,
   classNameTooltip,
   speed = 2,
@@ -27,7 +28,7 @@ const HintTooltip = ({
   }, [speed]);
 
   return (
-    <div className={cx("hint_wrapper")}>
+    <div className={className}>
       <div
         data-tooltip-id={id}
         data-tooltip-content={message}
@@ -57,6 +58,8 @@ const HintTooltip = ({
           borderRadius: "6px",
           padding: "10px 15px",
           zIndex: 9999,
+          maxWidth: "400px", // 👈 Giới hạn độ rộng
+          whiteSpace: "normal",
           ...tooltipStyle,
         }}
       />

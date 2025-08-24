@@ -99,6 +99,7 @@
   border: 1px solid #fff;
   border-radius: 15px;
   padding: 20px 25px;
+  position: relative;
 }
 .option_title {
   font-size: 22px;
@@ -175,13 +176,21 @@
   gap: 20px;
   justify-content: space-between;
 }
-
+.needs_tooltip {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: fit-content;
+}
 //-------------------------------- Part ADDRESS -------------------------
 
 .address_part {
   display: flex;
   gap: 10px;
   justify-content: space-between;
+}
+.address_option {
+  position: relative;
 }
 
 .address_full {
@@ -204,7 +213,12 @@
   cursor: pointer;
   font-size: 15px;
 }
-
+.address_tooltip {
+  width: fit-content;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+}
 //-------------------------------- Part Thông tin chính -------------------------
 .option_sub_title {
   font-size: 16px;
@@ -530,4 +544,39 @@
   border: 1px solid #9b9b9b;
   color: #fff;
   font-weight: 600;
+}
+
+// ------------------- STEP 2 --------------------
+
+// ---------- Image --------------
+.wrapper_list_image {
+  width: 100%;
+  min-height: 300px;
+  height: fit-content;
+  background-color: #fff;
+  padding: 20px;
+}
+.image_tooltip {
+  width: fit-content;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+}
+.list_images {
+  width: 300px;
+  background-color: #fff;
+}
+.preview_images {
+  display: flex;
+  gap: 15px;
+}
+.preview_item {
+  width: 200px;
+  height: 200px;
+}
+.preview_img {
+  object-fit: cover;
+  object-position: center;
+  height: 200px;
+  width: 200px;
 }
