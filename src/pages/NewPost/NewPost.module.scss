@@ -555,6 +555,9 @@
   height: fit-content;
   background-color: #fff;
   padding: 20px;
+  border: 2px dashed #9b9b9b;
+  border-radius: 20px;
+  position: relative;
 }
 .image_tooltip {
   width: fit-content;
@@ -563,20 +566,134 @@
   right: -10px;
 }
 .list_images {
-  width: 300px;
+  width: 200px;
   background-color: #fff;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 .preview_images {
   display: flex;
-  gap: 15px;
+  column-gap: 15px;
+  row-gap: 10px;
+  margin: 0 !important;
 }
 .preview_item {
-  width: 200px;
-  height: 200px;
+  width: 22% !important;
+  height: 110px;
+  position: relative;
+  padding: 10px 5px;
+  border-radius: 7px;
+  box-shadow: 1px 1px 2px #9b9b9b;
+  transition: 0.2s ease-in;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 1px 1px 5px #333;
+    transition: 0.2s ease-in-out;
+  }
 }
 .preview_img {
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
-  height: 200px;
-  width: 200px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+.upload_icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+  transition: 0.2s ease-in;
+  display: none;
+  &:hover {
+    transition: 0.2s ease-in-out;
+    transform: scale(1.05);
+  }
+  &.activate {
+    display: block;
+  }
+}
+.ignore_img {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    transition: 0.2s ease-in-out;
+    transform: scale(1.2);
+  }
+}
+
+.addmore_image {
+  display: none;
+
+  &.activate {
+    display: block;
+    background: #115ca8;
+    width: fit-content;
+    font-size: 13px;
+    color: #fff;
+    padding: 3px 15px;
+    border-radius: 3px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+}
+.script_upload {
+  position: absolute;
+  top: 70%;
+  text-align: center;
+  width: 100%;
+  left: 0;
+  display: none;
+  &.activate {
+    display: block;
+  }
+}
+.title_upload {
+  font-size: 20px;
+  margin-bottom: 0;
+}
+.sub_title_upload {
+  font-size: 13px;
+}
+
+// video
+
+.video_url {
+  width: 100%;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 7px;
+  margin-bottom: 10px;
+  
+}
+
+.iframe_video {
+  width: 100%;
+  display: none;
+
+  &.activate {
+    display: block;
+  }
+}
+
+.btn_preview_video {
+  background: #115ca8;
+  width: fit-content;
+  font-size: 13px;
+  color: #fff;
+  padding: 3px 15px;
+  border-radius: 3px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  margin-left: auto;
+}
+

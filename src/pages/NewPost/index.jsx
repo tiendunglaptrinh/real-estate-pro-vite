@@ -8,20 +8,13 @@ import { faXmark, faPlus } from "@fortawesome/free-solid-svg-icons";
 import L from "leaflet";
 
 // ----------- LOCAL -----------------
-import {
-  Button,
-  TransitionPage,
-  Header,
-  Spinner,
-  MarkerAddress,
-  Error,
-  HintTooltip,
-} from "@components/component";
-import { fetchApi } from "@utils/utils";
+import { Button, TransitionPage, Header, Spinner, MarkerAddress, Error, HintTooltip, Success, } from "@components/component";
+import { fetchApi, getEmbedUrl } from "@utils/utils";
 import rent from "@images/rent.png";
 import sell from "@images/sell.png";
 import sell_white from "@images/sell_white.png";
 import rent_white from "@images/rent_white.png";
+import upload from "@images/upload.png";
 import style from "./NewPost.module.scss";
 
 const cx = classNames.bind(style);
@@ -29,9 +22,10 @@ const cx = classNames.bind(style);
 const ContentNewPost = () => {
   // ------------------- General logic --------------------
   const [step1, setStep1] = useState(true);
-  const [step2, setStep2] = useState(false);
-  const [step3, setStep3] = useState(false);
+  const [step2, setStep2] = useState(true);
+  const [step3, setStep3] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState(null);
   const [showPopupErr, setShowPopupErr] = useState(false);
 
@@ -47,7 +41,9 @@ const ContentNewPost = () => {
     description:
       "Thêm các mô tả cho bài đăng bất động sản của bạn một cách rõ ràng, chi tiết để bài đăng dễ tiếp cận với người dùng.",
     image:
-      "Thêm các hình ảnh về các bất động sản của bạn, ít nhất 3 hình ảnh. Về video, bạn có thể thêm đường dẫn video hoặc không thêm tùy ý.",
+      "Thêm các hình ảnh về các bất động sản của bạn, ít nhất 3 hình ảnh và nhiều nhất là 9 hình ảnh.",
+    video:
+      "Đường dẫn của bạn phải được đảm bảo an toàn và không bị chặn. Bạn nên check đường dẫn video trước khi hoàn thành bước 2.",
   };
 
   const errrorMessage = {
@@ -60,6 +56,7 @@ const ContentNewPost = () => {
     unit_price: "Vui lòng nhập đơn vị giá cho mức giá của bất động sản !!!",
     title: "Vui lòng nhập tiêu đề cho bài đăng bất động sản của bạn !!!",
     description: "Vui lòng nhập thông tin mô tả về bất động sản !!!",
+    image: "Số lượng hình ảnh vượt quá giới hạn cho phép (3-9)",
   };
 
   // ---------------------------- Logic Step 1 ----------------------------------
@@ -376,23 +373,6 @@ const ContentNewPost = () => {
       return;
     }
 
-    // console.log("needs: ", needs);
-    // console.log("address: ", address);
-    // console.log("category: ", categoryName);
-    // console.log("area: ", acreage);
-    // console.log("price: ", price);
-    // console.log("unit price: ", unitPrice);
-    // console.log("property: ", submitProp);
-    // console.log("facilities: ", submitFaci);
-    // console.log("fullname: ", nameContact);
-    // console.log("emai: ", emailContact);
-    // console.log("phone: ", phoneContact);
-    // console.log("id: ", id);
-    // console.log("title: ", title);
-    // console.log("descriptions: ", description);
-    // console.log("latitude: ", latlong[0]);
-    // console.log("longitude: ", latlong[1]);
-
     const body = {
       needs: needs,
       address: address.wardFullName,
@@ -410,8 +390,6 @@ const ContentNewPost = () => {
       longitude: latlong[1],
     };
 
-    console.log(">>> check body: ", body);
-
     const url = "/post/create/step1";
     const response_data = await fetchApi(url, {
       method: "post",
@@ -421,7 +399,11 @@ const ContentNewPost = () => {
 
     if (response_data.success) {
       setLoading(false);
-      setStep2(true);
+      setShowSuccess(true);
+      setTimeout(() => {
+        setShowSuccess(false);
+        setStep2(true);
+      }, 2000);
     }
   };
 
@@ -430,6 +412,8 @@ const ContentNewPost = () => {
   // Options: Image & Video
   const [images, setImages] = useState([]);
   const [videoUrl, setVideoUrl] = useState("");
+  const [showUpload, setShowUpload] = useState(true);
+  const [showIframe, setShowIframe] = useState(false);
 
   const handleUploadImages = (e) => {
     const files = Array.from(e.target.files);
@@ -445,46 +429,121 @@ const ContentNewPost = () => {
               prevFile.lastModified === file.lastModified
           )
       );
+      setShowUpload(false);
       return [...prev, ...newFiles];
     });
   };
 
   const handleIgnoreImage = (index) => {
-    // Xóa ảnh theo index
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    setImages((prev) => {
+      const newImages = prev.filter((_, i) => i !== index);
+      if (newImages.length === 0) {
+        setTimeout(() => setShowUpload(true), 200);
+      }
+      return newImages;
+    });
+  };
+
+  const handleClickCheckURL = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setShowIframe(true);
+    }, 1000);
   };
 
   const handleSubmitStep2 = async () => {
     setLoading(true);
 
-    if (!images) {
+    if (images.length < 3 || images.length > 9) {
       setError(errrorMessage.image);
       setLoading(false);
       setShowPopupErr(true);
       return;
     }
 
-    const body = {
-      images: images,
-      video_url: videoUrl
-    }
+    // Hiện giờ images chính là mảng các file tạo bằng createObjectURL
+    const url_upload_preset = `https://api.cloudinary.com/v1_1/${
+      import.meta.env.VITE_CLOUDINARY_NAME
+    }/image/upload`;
 
-    const url = "/create/step2";
-    const response_data = await fetchApi(url,{
-      method: "post",
-      body,
-      skipAuth: false
-    })
+    try {
+      const uploadedUrls = await Promise.all(
+        images.map(async (file) => {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append(
+            "upload_preset",
+            import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET_NAME
+          );
 
-    if (response_data.success) {
-      console.log(">>>[SUCCESSFULL]: check response data: ", response_data);
+          const response = await fetch(url_upload_preset, {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+          return data.secure_url;
+        })
+      );
+
+      const response_data = await fetchApi("/post/create/step2", {
+        method: "post",
+        skipAuth: false,
+        body: JSON.stringify({ images, videoUrl }),
+      });
+
+      if (response_data.success) {
+        setLoading(false);
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+          setStep3(true);
+        }, 2000);
+      }
+    } catch (err) {
+      console.error("Upload error:", err);
+    } finally {
       setLoading(false);
-      setStep3(true);
     }
   };
+
+  // ---------------------------- Logic Step 3 ----------------------------------
+  const [showSubOption, setShowSubOption] = useState(false);
+  const [idChooseSubPackage, setIdChoosePackage] = useState("");
+  const [packages, setPackages] = useState([]);
+  const [subPackages, setSubPackages] = useState([]);
+  const [packagePricings, setPackagePricings] = useState([]);
+
+  useEffect(() => {
+    const getPackage = async () => {
+      const url = "/package/all";
+      const response_data = await fetchApi(url, { method: "get", skipAuth: true })
+      if (response_data.success) { setPackages(response_data.package_list); console.log("data get packages: ", response_data.package_list); }
+    }
+    getPackage();
+  }, [step3])
+
+  useEffect(() => {
+    const getPackage = async () => {
+      const url = "/package/get-package-pricing";
+      const response_data = await fetchApi(url, { method: "get", skipAuth: true })
+      if (response_data.success) { setPackagePricings(response_data.package_list); console.log("data package pricing get: ", response_data.package_list); }
+    }
+    getPackage();
+  }, [step3])
+
+  const handleClickOptionPackage = (id) => {
+    console.log("click on: ", id);
+    setShowSubOption(true);
+    setIdChoosePackage(id);
+    setSubPackages(packagePricings.filter((item) => item.package_id === id));
+  }
+  
   return (
     <div className={cx("wrapper_new_post")}>
       {loading && <Spinner />}
+      {showSuccess && <Success />}
       {showPopupErr && (
         <Error
           width={100}
@@ -497,12 +556,16 @@ const ContentNewPost = () => {
         <div className={cx("new_post_title")}>Tạo tin đăng</div>
         <div className={cx("step_new_post")}>
           <div className={cx("step")}>
-            <div className={cx("step_num", { isStep1: step1 })}>1</div>
+            <div className={cx("step_num", { isStep1: step1 })}>
+              {!step2 ? "1" : "✓"}
+            </div>
             <div className={cx("line_step", { isStep1: step1 })}></div>
           </div>
           <div className={cx("step")}>
             <div className={cx("line_step", { isStep2: step2 })}></div>
-            <div className={cx("step_num", { isStep2: step2 })}>2</div>
+            <div className={cx("step_num", { isStep2: step2 })}>
+              {!step3 ? "1" : "✓"}
+            </div>
             <div className={cx("line_step", { isStep2: step2 })}></div>
           </div>
           <div className={cx("step")}>
@@ -1001,7 +1064,7 @@ const ContentNewPost = () => {
         )}
         {step1 && step2 && !step3 && (
           <div className={cx("box_info")}>
-            {/* ----------------- Nhu cầu: Mua/ Bán ------------------ */}
+            {/* ----------------- Hình ảnh: Bất động sản ------------------ */}
             <div className={cx("info_option")}>
               <div className={cx("option_title")}>Hình ảnh</div>
               <HintTooltip
@@ -1012,9 +1075,27 @@ const ContentNewPost = () => {
 
               {/* Input multi file */}
               <div className={cx("wrapper_list_image")}>
-                <label className={cx("list_images")} htmlFor="images">
-                  Chọn ảnh
+                <label
+                  className={cx("addmore_image", { activate: !showUpload })}
+                  htmlFor="images"
+                >
+                  Chọn thêm ảnh
                 </label>
+                <label className={cx("list_images")} htmlFor="images">
+                  <img
+                    className={cx("upload_icon", { activate: showUpload })}
+                    src={upload}
+                    alt="Upload"
+                  />
+                </label>
+                <div className={cx("script_upload", { activate: showUpload })}>
+                  <p className={cx("title_upload")}>
+                    Upload các hình ảnh về bất động sản
+                  </p>
+                  <p className={cx("sub_title_upload")}>
+                    Số lượng: 3-9 hình ảnh
+                  </p>
+                </div>
                 <input
                   type="file"
                   id="images"
@@ -1026,11 +1107,11 @@ const ContentNewPost = () => {
                 />
                 <div className={cx("preview_images", "row")}>
                   {images.map((file, index) => (
-                    <div key={index} className={cx("preview_item", "")}>
+                    <div key={index} className={cx("preview_item", "col-3")}>
                       <FontAwesomeIcon
                         icon={faXmark}
-                        fontSize="15px"
-                        className="ignore_img"
+                        fontSize="12px"
+                        className={cx("ignore_img")}
                         onClick={() => handleIgnoreImage(index)}
                       />
                       <img
@@ -1043,14 +1124,34 @@ const ContentNewPost = () => {
                 </div>
               </div>
             </div>
+            {/* ---------------- VIDEO bất động sản ----------- */}
             <div className={cx("info_option")}>
               <div className={cx("option_title")}>Video</div>
               <input
                 value={videoUrl}
                 type="text"
                 placeholder="url video"
-                onChange={(e) => setVideoUrl(e.target.value)}
+                className={cx("video_url")}
+                onChange={(e) => {
+                  setVideoUrl(e.target.value);
+                  setShowIframe(false);
+                }}
               />
+              <button
+                className={cx("btn_preview_video")}
+                onClick={handleClickCheckURL}
+              >
+                Bản xem trước
+              </button>
+              <div className={cx("iframe_video", { activate: showIframe })}>
+                <iframe
+                  width="100%"
+                  height="300"
+                  src={getEmbedUrl(videoUrl) || null}
+                  frameBorder="0"
+                  allowFullScreen
+                ></iframe>
+              </div>
             </div>
             <Button
               className={cx("submit_step1")}
@@ -1062,6 +1163,28 @@ const ContentNewPost = () => {
             >
               Tiếp theo
             </Button>
+          </div>
+        )}
+        {step1 && step2 && step3 && (
+          <div className={cx("box_info")}>
+            {/* ----------------- Gói tin đăng ------------------ */}
+            <div className={cx("info_option")}>
+              <div className={cx("option_title")}>Chọn gói tin đăng</div>
+                <div className={cx("all_package")}>
+                  {packages.map((pkg) => (
+                  <div key={pkg._id} onClick={(() => handleClickOptionPackage(pkg._id))}>
+                    {pkg.name}
+                  </div>
+                ))}
+                </div>
+                <div className={cx("all_sub_packages")}>
+                  {subPackages.map((subPkg) => (
+                  <div key={subPkg._id}>
+                    {subPkg.package_id}
+                  </div>
+                ))}
+                </div>
+            </div>
           </div>
         )}
       </div>
