@@ -11,6 +11,11 @@
     --accent3: #EFBB35;
     --accent4: #115ca8;
 
+    // group constract
+    --bg-accent1: #55d28f;
+    --bg-accent1: #e0ab43;
+    --bg-accent1: #d73b4f;
+
     // bg-button
     --bgbutton1:#c7e5ff;
     --bgbutton2: #ffe280;
@@ -38,6 +43,9 @@
 
     // background color:
     --background1: rgba(0,0,0,0.6);
+
+    // border;
+    --bor-card: 20px;
 }
 
 * {
@@ -138,8 +146,14 @@ body {
     }
 }
 
+p {
+    margin: 0;
+}
+.userselectnone{
+    user-select: none !important;
+}
 //---------------- FIX BOOSTRAP -----------------
 .dropdown-menu{
     padding: 0 !important;
     margin: 0 !important;
-}
+} 

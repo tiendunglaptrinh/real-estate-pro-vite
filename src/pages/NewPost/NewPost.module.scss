@@ -10,6 +10,7 @@
   background-position: 0 -200px;
   background-size: cover;
   background-repeat: no-repeat;
+  position: relative;
 }
 .right_content {
   flex: 1;
@@ -78,6 +79,41 @@
   margin-right: 140px;
 }
 
+.return_homepage{
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  left: 50px;
+  bottom: 50px;
+  background-color: #fff;
+  border-radius: 50%;
+  animation: scaleHome 0.5s ease-in-out infinite alternate;
+  cursor: pointer;
+  transition: 0.2s;
+  &:hover{
+    transform: scale(1.1);
+    animation: none;
+    transition: 0.2s;
+  }
+
+  &:active{
+    border: 1px solid #fff;
+  }
+  user-select: none;
+}
+
+@keyframes scaleHome {
+  0% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
 // --------------------------------- INFO CHUNG ---------------------------------
 .box_info {
   position: absolute;
@@ -673,7 +709,6 @@
   font-size: 18px;
   border-radius: 7px;
   margin-bottom: 10px;
-  
 }
 
 .iframe_video {
@@ -697,3 +732,291 @@
   margin-left: auto;
 }
 
+// ---- Package ---
+.all_package {
+  display: flex;
+  justify-content: space-between;
+}
+.package_item {
+  position: relative;
+  width: 31%;
+  aspect-ratio: 3/4;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 10px;
+  padding-top: 5px;
+  cursor: pointer;
+  box-shadow: 0 1px 5px #636363;
+  background-color: #fff;
+  transition: 0.2s ease-in;
+
+  &:hover {
+    box-shadow: 0 1px 10px #3f3f3f;
+  }
+
+  &.active {
+    transition: 0.2s ease-in-out;
+    transform: scale(1.05);
+    z-index: 10;
+    box-shadow: 0px 1px 20px #ffc91b;
+    // background-image: radial-gradient(
+    //   circle 232px at 10% 20%,
+    //   rgba(173, 216, 230, 0.85) 0%,
+    //   /* Xanh da trời pastel */ rgba(135, 206, 235, 0.85) 90%
+    //     /* Xanh sky blue đậm hơn */
+    // );
+    background-color: #1a4e82;
+    color: #fff !important;
+  }
+}
+.package_header {
+}
+.package_title {
+  font-size: 30px;
+  font-weight: 500;
+  margin-bottom: 0;
+}
+.package_desc {
+  font-size: 13px;
+  height: 45px;
+  font-weight: 600;
+  color: #4f4f4f;
+
+  &.active {
+    color: #fff;
+  }
+}
+.btn_package_detail {
+  width: 100%;
+  padding: 10px;
+  border-radius: 999999px;
+  font-size: 15px;
+  margin-bottom: 10px;
+  background: #1ea6d9;
+  color: #fff;
+  font-weight: 600;
+  transition: 0.2s;
+
+  &:hover {
+    // background-color: #fff;
+    box-shadow: 0px 1px 10px #636363;
+  }
+}
+.subscript_item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.subscript_content {
+  font-size: 13px;
+  margin: 0;
+}
+
+.decorate_package {
+  width: 74%;
+  height: 12px;
+  background: #9b9b9b;
+  position: absolute;
+  left: 50%;
+  border-radius: 10px;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+
+  &.active {
+    background-color: #bed4dd;
+    border: 1px solid #636363;
+  }
+}
+
+// Subpackage
+.all_sub_packages {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: space-between;
+}
+.subpack_option {
+  margin-top: 40px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 25px;
+  display: none;
+
+  &.active {
+    display: block !important;
+  }
+}
+.subpack_item {
+  width: 23%;
+  position: relative;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(90deg, #a5d8ff 0%, #f1f8e9 50%, #fff9c4 90%);
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    box-shadow: 0px 1px 10px #767676;
+  }
+
+  &.active {
+    transition: 0.2s;
+    box-shadow: 0px 1px 5px #767676;
+    transform: scale(1.1);
+    background: linear-gradient(
+      90deg,
+      #fff3e0 0%,
+      /* cam kem */ #ffccbc 50%,
+      /* cam sữa */ #ffe082 100% /* vàng pastel */
+    );
+  }
+}
+.subpack_item_wrap {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  padding-right: 10px;
+  cursor: pointer;
+}
+.subpack_duration {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  transform: translateY(-50%);
+  font-size: 13px;
+  margin: 0;
+  background-color: #1ea6d9;
+  padding: 0px 20px;
+  border-radius: 5px;
+  color: #fff;
+}
+.subpack_price {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 500;
+  margin-left: 10px;
+}
+
+// cost
+.schedule_wrap {
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+.line_break {
+  width: 100%;
+  box-shadow: 0px 1px 5px #1ea6d9;
+  height: 3px;
+  border-radius: 10px;
+}
+.totalcost_item {
+  display: flex;
+  justify-content: space-between;
+
+  &.loworder {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  &.highorder {
+    padding: 10px;
+    background-color: #2d8aad;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+}
+.total_cost_container {
+  display: flex;
+  gap: 50px;
+  align-items: end;
+  margin-top: -10px;
+}
+.totalcost_wrap {
+  width: 50%;
+  display: flex;
+  gap: 7px;
+  padding: 0 50px 0 0;
+  // background-color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  flex-direction: column;
+}
+.precost_money {
+  font-size: 15px;
+}
+
+.precost_title {
+  font-size: 15px;
+  font-weight: 500;
+}
+.totalcost_payment {
+  position: relative;
+  flex: 1;
+  padding: 10px;
+}
+
+.btn_payment {
+  position: relative;
+  width: 100%;
+  background: var(--accent1);
+  font-size: 17px;
+  padding: 10px;
+  border-radius: 7px;
+  color: #fff;
+  font-weight: 500;
+  transition: 0.2s;
+
+  &:hover{
+    transition: 0.2s;
+    box-shadow: 0 1px 5px #7e7e7e;
+  }
+  &:active{
+    border: 1px solid #fff;
+    box-sizing: border-box;
+  }
+}
+.arrow_icon {
+  position: absolute;
+  top: 50%;
+  right: 15px; 
+  transform: translateY(-50%);
+  animation: moveArrow 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes moveArrow {
+  0% {
+    right: 15px;
+  }
+  100% {
+    right: 5px;
+  }
+}
+
+// ------------- PAYMENT PROCESS --------------
+.payment_process_wrapper {
+    width: 100vw;
+    height: 100vh;
+    background: #ebebeb;
+    position: relative;
+}
+.payment_process{
+  width: 800px;
+  height: 600px;
+  background-color: #fff;
+  box-shadow: 0 1 5px #333;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

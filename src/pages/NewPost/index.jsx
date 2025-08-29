@@ -4,12 +4,20 @@ import { useNavigate } from "react-router-dom";
 import ReactDOM from "react-dom";
 import classNames from "classnames/bind";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faXmark, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faXmark,
+  faPlus,
+  faCheck,
+  faCoins,
+  faK,
+  faArrowRight,
+  faHouse
+} from "@fortawesome/free-solid-svg-icons";
 import L from "leaflet";
 
 // ----------- LOCAL -----------------
-import { Button, TransitionPage, Header, Spinner, MarkerAddress, Error, HintTooltip, Success, } from "@components/component";
-import { fetchApi, getEmbedUrl } from "@utils/utils";
+import { Button, TransitionPage, Header, Spinner, MarkerAddress, Error, HintTooltip, Success, CustomDatePicker, } from "@components/component";
+import { fetchApi, getEmbedUrl, scrollToField } from "@utils/utils";
 import rent from "@images/rent.png";
 import sell from "@images/sell.png";
 import sell_white from "@images/sell_white.png";
@@ -27,6 +35,7 @@ const ContentNewPost = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const [idScroll, setIdScroll] = useState("");
   const [showPopupErr, setShowPopupErr] = useState(false);
 
   // Message tooltip
@@ -44,6 +53,10 @@ const ContentNewPost = () => {
       "Thêm các hình ảnh về các bất động sản của bạn, ít nhất 3 hình ảnh và nhiều nhất là 9 hình ảnh.",
     video:
       "Đường dẫn của bạn phải được đảm bảo an toàn và không bị chặn. Bạn nên check đường dẫn video trước khi hoàn thành bước 2.",
+    package:
+      "Tùy chọn các gói đăng bạn mong muốn. Click xem chi tiết để kiểm tra kỹ các quyền lợi của gói đăng.",
+    schedule:
+      "Chỉ khả dụng cho gói Premium và Standard. Tin đăng chỉ được đặt lịch dưới 2 tuần tại thời điểm đăng tin.",
   };
 
   const errrorMessage = {
@@ -56,7 +69,8 @@ const ContentNewPost = () => {
     unit_price: "Vui lòng nhập đơn vị giá cho mức giá của bất động sản !!!",
     title: "Vui lòng nhập tiêu đề cho bài đăng bất động sản của bạn !!!",
     description: "Vui lòng nhập thông tin mô tả về bất động sản !!!",
-    image: "Số lượng hình ảnh vượt quá giới hạn cho phép (3-9)",
+    image: "Số lượng hình ảnh vượt quá giới hạn cho phép (3-9) !!!",
+    schedule: "Ngày đăng tin được đặt vượt quá 14 ngày !!!",
   };
 
   // ---------------------------- Logic Step 1 ----------------------------------
@@ -161,7 +175,6 @@ const ContentNewPost = () => {
 
   // Options: main info
   const [categories, setCategories] = useState([]);
-  const [categoryName, setCategoryName] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [acreage, setAcreage] = useState("");
   const [price, setPrice] = useState("");
@@ -195,6 +208,7 @@ const ContentNewPost = () => {
   const [firstFocus, setFirstFocus] = useState(false);
   const [openPopupProp, setOpenPopupProp] = useState(false);
 
+  // get data property
   useEffect(() => {
     if (!firstFocus) return;
     const getPropertyComponent = async () => {
@@ -309,18 +323,20 @@ const ContentNewPost = () => {
     };
 
     getCurrentInfo();
-  }, []);
+  }, [id, navigate]);
 
   // Options: Info post
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
+  // post to server step 1
   const handleSubmitStep1 = async () => {
     setLoading(true);
 
     if (!needs) {
       setError(errrorMessage.needs);
       setLoading(false);
+      setIdScroll("id_needs");
       setShowPopupErr(true);
       return;
     }
@@ -328,6 +344,7 @@ const ContentNewPost = () => {
     if (!address.wardName || !address.provinceName) {
       setError(errrorMessage.address);
       setLoading(false);
+      setIdScroll("id_adress")
       setShowPopupErr(true);
       return;
     }
@@ -335,6 +352,7 @@ const ContentNewPost = () => {
     if (!acreage) {
       setError(errrorMessage.area);
       setLoading(false);
+      setIdScroll("id_area")
       setShowPopupErr(true);
       return;
     }
@@ -342,19 +360,22 @@ const ContentNewPost = () => {
     if (!price) {
       setError(errrorMessage.price);
       setLoading(false);
+      setIdScroll("id_price");
       setShowPopupErr(true);
       return;
     }
     if (!unitPrice) {
       setError(errrorMessage.unit_price);
       setLoading(false);
+      setIdScroll("id_unit")
       setShowPopupErr(true);
       return;
     }
 
-    if (!categoryId) {
+    if (!categoryId || categoryId == "") {
       setError(errrorMessage.category);
       setLoading(false);
+      setIdScroll("id_category")
       setShowPopupErr(true);
       return;
     }
@@ -362,6 +383,7 @@ const ContentNewPost = () => {
     if (!title) {
       setError(errrorMessage.title);
       setLoading(false);
+      setIdScroll("id_title");
       setShowPopupErr(true);
       return;
     }
@@ -369,10 +391,12 @@ const ContentNewPost = () => {
     if (!description) {
       setError(errrorMessage.description);
       setLoading(false);
+      setIdScroll("id_description")
       setShowPopupErr(true);
       return;
     }
 
+    // body send step 1
     const body = {
       needs: needs,
       address: address.wardFullName,
@@ -389,6 +413,8 @@ const ContentNewPost = () => {
       latitude: latlong[0],
       longitude: latlong[1],
     };
+
+    console.log(body);
 
     const url = "/post/create/step1";
     const response_data = await fetchApi(url, {
@@ -415,6 +441,7 @@ const ContentNewPost = () => {
   const [showUpload, setShowUpload] = useState(true);
   const [showIframe, setShowIframe] = useState(false);
 
+  // Xử lý ảnh
   const handleUploadImages = (e) => {
     const files = Array.from(e.target.files);
 
@@ -434,6 +461,7 @@ const ContentNewPost = () => {
     });
   };
 
+  // Loại bỏ ảnh
   const handleIgnoreImage = (index) => {
     setImages((prev) => {
       const newImages = prev.filter((_, i) => i !== index);
@@ -444,6 +472,7 @@ const ContentNewPost = () => {
     });
   };
 
+  // Check video
   const handleClickCheckURL = () => {
     setLoading(true);
     setTimeout(() => {
@@ -452,12 +481,14 @@ const ContentNewPost = () => {
     }, 1000);
   };
 
+  // body send step 2
   const handleSubmitStep2 = async () => {
     setLoading(true);
 
     if (images.length < 3 || images.length > 9) {
       setError(errrorMessage.image);
       setLoading(false);
+      setIdScroll("id_images")
       setShowPopupErr(true);
       return;
     }
@@ -486,11 +517,12 @@ const ContentNewPost = () => {
           return data.secure_url;
         })
       );
-
+      console.log("images: ", uploadedUrls);
+      console.log("video: ", videoUrl);
       const response_data = await fetchApi("/post/create/step2", {
         method: "post",
         skipAuth: false,
-        body: JSON.stringify({ images, videoUrl }),
+        body: JSON.stringify({ images: uploadedUrls, video: getEmbedUrl(videoUrl) }),
       });
 
       if (response_data.success) {
@@ -510,38 +542,161 @@ const ContentNewPost = () => {
 
   // ---------------------------- Logic Step 3 ----------------------------------
   const [showSubOption, setShowSubOption] = useState(false);
-  const [idChooseSubPackage, setIdChoosePackage] = useState("");
+  const [idChoosePackage, setIdChoosePackage] = useState("");
   const [packages, setPackages] = useState([]);
+  const [isSchedule, setIsSchedule] = useState(false);
+
+  const [idChooseSubPackage, setIdChooseSubPackage] = useState("");
   const [subPackages, setSubPackages] = useState([]);
   const [packagePricings, setPackagePricings] = useState([]);
 
+  const [totalCost, setTotalCost] = useState(null);
+  const [discount, setDiscount] = useState(null);
+  const [showCost, setShowCost] = useState(false);
+
+  const [showPaymentProcess, setShowPaymentProcess] = useState(false);
+
+  // get data package
   useEffect(() => {
     const getPackage = async () => {
       const url = "/package/all";
-      const response_data = await fetchApi(url, { method: "get", skipAuth: true })
-      if (response_data.success) { setPackages(response_data.package_list); console.log("data get packages: ", response_data.package_list); }
-    }
+      const response_data = await fetchApi(url, {
+        method: "get",
+        skipAuth: true,
+      });
+      if (response_data.success) {
+        setPackages(response_data.package_list);
+        console.log("data get packages: ", response_data.package_list);
+      }
+    };
     getPackage();
-  }, [step3])
+  }, [step3]);
 
+  // get data subpackage
   useEffect(() => {
     const getPackage = async () => {
       const url = "/package/get-package-pricing";
-      const response_data = await fetchApi(url, { method: "get", skipAuth: true })
-      if (response_data.success) { setPackagePricings(response_data.package_list); console.log("data package pricing get: ", response_data.package_list); }
-    }
+      const response_data = await fetchApi(url, {
+        method: "get",
+        skipAuth: true,
+      });
+      if (response_data.success) {
+        setPackagePricings(response_data.package_list);
+        console.log("data package pricing get: ", response_data.package_list);
+      }
+    };
     getPackage();
-  }, [step3])
+  }, [step3]);
 
-  const handleClickOptionPackage = (id) => {
-    console.log("click on: ", id);
+  // Click gói to
+  const handleClickOptionPackage = (id, priority) => {
+    // reset
     setShowSubOption(true);
     setIdChoosePackage(id);
-    setSubPackages(packagePricings.filter((item) => item.package_id === id));
+    setIdChooseSubPackage("");
+    setShowCost(false);
+
+    if (priority > 1) {
+      setIsSchedule(true);
+    } else {
+      setIsSchedule(false);
+    }
+
+    const filtered = packagePricings.filter(
+      (item) => item.package_id.toString() === id.toString()
+    );
+
+    console.log("list id package: ", filtered.length);
+    setSubPackages(filtered);
+  };
+
+  const formDuration = (duration) => {
+    if (duration == 7) {
+      return "7 ngày";
+    }
+    if (duration == 10) {
+      return "10 ngày";
+    }
+    if (duration == 30) {
+      return "30 ngày";
+    }
+    if (duration == 90) {
+      return "90 ngày";
+    }
+  };
+  const formatPrice = (price) => {
+    let milion = 0;
+    if (price >= 1000000) {
+      milion = Math.floor(price / 1000000);
+      price %= 1000000;
+    }
+    if (price >= 1000) {
+      price /= 1000;
+    }
+
+    return milion ? `${milion},${price}` : `${price}`;
+  };
+
+  // Click subpack của mỗi gói to
+  const handleClickSubPack = (id) => {
+    if (idChooseSubPackage === id) return;
+    setShowCost(false);
+    setLoading(true);
+
+    setTimeout(() => {
+      setLoading(false);
+      setShowCost(true);
+      setIdChooseSubPackage(id);
+      const subpack = packagePricings.filter((item) => item._id === id)[0];
+      setTotalCost(subpack.price);
+      setDiscount(subpack.discount);
+    }, 300);
+  };
+
+  const calculateTotalMoney = (money, discount) => {
+    return money - Math.floor((money * discount) / 100);
+  };
+
+  const handleShowPaymentProcess = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setShowPaymentProcess(true);
+    }, 1000);
+    setShowPaymentProcess(true);
   }
-  
+
+  const handlePayment = () => {
+    console.log("id package choose: ", idChoosePackage);
+    console.log("id sub package choose: ", idChooseSubPackage);
+    const endDay = new Date();
+    const duration = packagePricings.filter((item) => item._id === idChooseSubPackage)[0].duration_days;
+    if (datePicker){
+      console.log("date post: ", datePicker);
+      endDay.setDate(datePicker.getDate() + duration);
+    }
+    else {
+      const datePicker = new Date();
+      console.log("date post: ", datePicker);
+      endDay.setDate(datePicker.getDate() + duration);
+    }
+
+    console.log("duration day: ", duration);
+    console.log("duration day: ", endDay);
+
+
+
+    return;
+  }
+  // Date Picker
+  const [datePicker, setDatePicker] = useState(null);
+  const today = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(today.getDate() + 14);
+
   return (
-    <div className={cx("wrapper_new_post")}>
+    <>
+    {!showPaymentProcess && (<div className={cx("wrapper_new_post")}>
       {loading && <Spinner />}
       {showSuccess && <Success />}
       {showPopupErr && (
@@ -549,7 +704,7 @@ const ContentNewPost = () => {
           width={100}
           height={100}
           message={error}
-          onClick={() => setShowPopupErr(false)}
+          onClick={() => {setShowPopupErr(false); console.log("scroll to: ", idScroll); scrollToField(idScroll); }}
         />
       )}
       <div className={cx("left_content")}>
@@ -578,12 +733,15 @@ const ContentNewPost = () => {
           <div className={cx("info_step_item")}>Hình ảnh</div>
           <div className={cx("info_step_item")}>Thanh toán</div>
         </div>
+        <div className={cx("return_homepage")} onClick={() => navigate("/")}>
+          <FontAwesomeIcon icon={faHouse} fontSize="30px" color="#2ecc71" />
+        </div>
       </div>
-      <div className={cx("right_content")}>
+      <div className={cx("right_content", "userselectnone")}>
         {step1 && !step2 && (
           <div className={cx("box_info")}>
             {/* ----------------- Nhu cầu: Mua/ Bán ------------------ */}
-            <div className={cx("info_option")}>
+            <div id="id_needs" className={cx("info_option")}>
               <div className={cx("option_title")}>Nhu cầu</div>
               <HintTooltip
                 id="needs-tooltip"
@@ -612,7 +770,7 @@ const ContentNewPost = () => {
               </div>
             </div>
             {/* ----------------- Địa chỉ ------------------ */}
-            <div className={cx("info_option", "address_option")}>
+            <div id="id_adress" className={cx("info_option", "address_option")}>
               <div className={cx("option_title")}>Địa chỉ</div>
               <HintTooltip
                 id="address-tooltip"
@@ -708,6 +866,7 @@ const ContentNewPost = () => {
               <div className={cx("option_title")}>Thông tin chính</div>
               <div className={cx("option_sub_title")}>Loại bất động sản</div>
               <select
+                id="id_category"
                 className={cx("select_option")}
                 name="category"
                 value={categoryId}
@@ -724,6 +883,7 @@ const ContentNewPost = () => {
                 <div className={cx("sub_info_option")}>
                   <div className={cx("option_sub_title")}>Diện tích</div>
                   <input
+                    id="id_area"
                     type="number"
                     name="acreage"
                     value={acreage}
@@ -737,6 +897,7 @@ const ContentNewPost = () => {
                 <div className={cx("sub_info_option")}>
                   <div className={cx("option_sub_title")}>Mức giá</div>
                   <input
+                    id="id_price"
                     type="number"
                     name="price"
                     value={price}
@@ -749,6 +910,7 @@ const ContentNewPost = () => {
                 <div className={cx("sub_info_option")}>
                   <div className={cx("option_sub_title")}>Đơn vị</div>
                   <select
+                    id="id_unit"
                     name="unitPrice"
                     value={unitPrice}
                     onChange={(e) => setUnitPrice(e.target.value)}
@@ -791,9 +953,9 @@ const ContentNewPost = () => {
                   </button>
                 </div>
                 {/* --------- Render hiển thị sau khi chọn xong ------ */}
-                {submitProp.map((prop) => {
+                {submitProp.map((prop, index) => {
                   return (
-                    <div className={cx("item_property")}>
+                    <div key={index} className={cx("item_property")}>
                       <span className={cx("item_num_ren")}>
                         {prop.quantity}
                       </span>
@@ -821,9 +983,9 @@ const ContentNewPost = () => {
                           Chọn cơ sở vật chất
                         </div>
                         {/* Toàn bộ property trong DB */}
-                        {properties.map((prop) => (
+                        {properties.map((prop, index) => (
                           <div
-                            key={prop._id}
+                            key={index}
                             className={cx(
                               "property_item",
                               chooseProp.find((item) => item.id === prop._id) &&
@@ -841,7 +1003,7 @@ const ContentNewPost = () => {
                           {/* List đã chọn */}
                           {chooseProp.map((prop) => {
                             return (
-                              <div className={cx("item_choosing")}>
+                              <div key={prop._id} className={cx("item_choosing")}>
                                 <div className={cx("item_name")}>
                                   {prop.name}
                                   <div className={cx("delete_item")}>
@@ -926,7 +1088,7 @@ const ContentNewPost = () => {
                 {/* --------- Render hiển thị sau khi chọn xong ------ */}
                 {submitFaci.map((faci) => {
                   return (
-                    <div className={cx("item_property")}>{`${faci.name}`}</div>
+                    <div key={faci._id} className={cx("item_property")}>{`${faci.name}`}</div>
                   );
                 })}
 
@@ -970,7 +1132,7 @@ const ContentNewPost = () => {
                           {/* List đã chọn */}
                           {chooseFaci.map((faci) => {
                             return (
-                              <div className={cx("item_choosing_faci")}>
+                              <div key={faci._id} className={cx("item_choosing_faci")}>
                                 <div className={cx("item_name_faci")}>
                                   {faci.name}
                                   <div className={cx("delete_item")}>
@@ -1033,6 +1195,7 @@ const ContentNewPost = () => {
               <div className={cx("option_title")}>Tiêu đề & mô tả</div>
               <div className={cx("option_sub_title")}>Tiêu đề</div>
               <input
+                id="id_title"
                 className={cx("input_tit")}
                 type="text"
                 value={title}
@@ -1040,6 +1203,7 @@ const ContentNewPost = () => {
               />
               <div className={cx("option_sub_title")}>Mô tả</div>
               <textarea
+                id="id_description"
                 className={cx("input_desc")}
                 id="message"
                 name="message"
@@ -1169,26 +1333,187 @@ const ContentNewPost = () => {
           <div className={cx("box_info")}>
             {/* ----------------- Gói tin đăng ------------------ */}
             <div className={cx("info_option")}>
+              <HintTooltip
+                id="pack-tooltip"
+                className={cx("needs_tooltip")}
+                message={messageTooltip.package}
+              />
               <div className={cx("option_title")}>Chọn gói tin đăng</div>
-                <div className={cx("all_package")}>
-                  {packages.map((pkg) => (
-                  <div key={pkg._id} onClick={(() => handleClickOptionPackage(pkg._id))}>
-                    {pkg.name}
+              <div className={cx("all_package")}>
+                {packages.map((pkg) => (
+                  <div
+                    key={pkg._id}
+                    className={cx("package_item", {
+                      active: pkg._id === idChoosePackage,
+                    })}
+                    onClick={() =>
+                      handleClickOptionPackage(pkg._id, pkg.priority_level)
+                    }
+                  >
+                    <div className={cx("package_header")}>
+                      <p className={cx("package_title")}>{pkg.name}</p>
+                      <p
+                        className={cx("package_desc", {
+                          active: pkg._id === idChoosePackage,
+                        })}
+                      >
+                        {pkg.description}
+                      </p>
+                      <button className={cx("btn_package_detail")}>
+                        Xem chi tiết
+                      </button>
+                    </div>
+                    {pkg.subscripts.map((script, index) => (
+                      <div key={index} className={cx("subscript_item")}>
+                        <FontAwesomeIcon
+                          icon={faCheck}
+                          fontSize="16px"
+                          color="#4caf50"
+                        />
+                        <p className={cx("subscript_content")} key={index}>
+                          {" "}
+                          {script}{" "}
+                        </p>
+                      </div>
+                    ))}
+                    <div
+                      className={cx("decorate_package", {
+                        active: pkg._id === idChoosePackage,
+                      })}
+                    ></div>
                   </div>
                 ))}
-                </div>
-                <div className={cx("all_sub_packages")}>
-                  {subPackages.map((subPkg) => (
-                  <div key={subPkg._id}>
-                    {subPkg.package_id}
+              </div>
+              <div
+                className={cx("subpack_option", {
+                  active: idChoosePackage != "",
+                })}
+              >
+                Tùy chọn đăng tin
+              </div>
+              <div className={cx("all_sub_packages")}>
+                {subPackages.map((subPkg) => (
+                  <div
+                    key={subPkg._id}
+                    className={cx("subpack_item", {
+                      active: idChooseSubPackage === subPkg._id,
+                    })}
+                    onClick={() => handleClickSubPack(subPkg._id)}
+                  >
+                    <p className={cx("subpack_duration")}>
+                      {formDuration(subPkg.duration_days)}
+                    </p>
+                    {/* <p className={cx("")}>chỉ</p> */}
+                    <div className={cx("subpack_item_wrap")}>
+                      <FontAwesomeIcon
+                        icon={faCoins}
+                        color="#EFBB35"
+                        fontSize="18px"
+                      />
+                      <p className={cx("subpack_price")}>
+                        {formatPrice(subPkg.price)}
+                      </p>
+                      <FontAwesomeIcon
+                        icon={faK}
+                        color="#115ca8"
+                        fontWeight="700"
+                        fontSize="10px"
+                      />
+                    </div>
                   </div>
                 ))}
-                </div>
+              </div>
             </div>
+            {/* ----------------- Date picker ------------------ */}
+            <div
+              className={cx("info_option", "schedule_wrap", {
+                active: isSchedule,
+              })}
+            >
+              <HintTooltip
+                id="schedule-tooltip"
+                className={cx("needs_tooltip")}
+                message={messageTooltip.schedule}
+              />
+              <div className={cx("option_title")}>Đặt lịch đăng tin</div>
+              <div className={cx("schedule_post")}>
+                <CustomDatePicker
+                  selectedDate={datePicker}
+                  minDate={today}
+                  maxDate={maxDate}
+                  onChange={(d) => setDatePicker(d)}
+                  placeholder="Chọn ngày đăng"
+                />
+                {datePicker && (
+                  <p>Ngày bạn chọn: {datePicker.toLocaleDateString()}</p>
+                )}
+              </div>
+            </div>
+
+            {showCost && (
+              <>
+                {/* <div className={cx("line_break")}></div> */}
+                <div className={cx("total_cost_container")}>
+                  <div className={cx("totalcost_wrap")}>
+                    <div className={cx("totalcost_item", "loworder")}>
+                      <div className={cx("precost_title")}>Tạm tính</div>
+                      <div className={cx("precost_money")}>{totalCost}</div>
+                    </div>
+                    <div className={cx("totalcost_item", "loworder")}>
+                      <div className={cx("precost_title")}>Giảm giá</div>
+                      <div className={cx("precost_money")}>{discount} %</div>
+                    </div>
+                    <div className={cx("totalcost_item", "highorder")}>
+                      <div className={cx("precost_title")}>Tổng tính</div>
+                      <div className={cx("precost_money")}>
+                        {calculateTotalMoney(totalCost, discount)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className={cx("totalcost_payment")}>
+                    <button className={cx("btn_payment")} onClick={handleShowPaymentProcess}>
+                      Thanh toán ngay
+                      <FontAwesomeIcon
+                        icon={faArrowRight}
+                        fontSize="19px"
+                        className={cx("arrow_icon")}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
-    </div>
+    </div>)}
+    {showPaymentProcess && (
+      <div className={cx("payment_process_wrapper")}>
+        <div className={cx("payment_process")}>
+          <div className={cx("payment_left")}>
+            <div className={cx("payment_item_wrap")}>
+              <div className={cx("payment_title")}>Thông tin bài đăng</div>
+              <label htmlFor="">Chủ sở hữu</label>
+              <input type="text" placeholder="Tạ Nguyễn Tiến Dũng" readOnly/>
+              <label htmlFor="">Email</label>
+              <input type="text" placeholder="Tạ Nguyễn Tiến Dũng" readOnly/>
+              <label htmlFor="">Số điện thoại</label>
+              <input type="text" placeholder="Tạ Nguyễn Tiến Dũng" readOnly/>
+              <label htmlFor="">Tên bài đăng</label>
+              <input type="text" placeholder="Bán nhà đất" readOnly/>
+              <label htmlFor="">Thông tin cơ bản</label>
+              <input type="text" placeholder="Địa chỉ" readOnly/>
+              <input type="text" placeholder="Diện tích" readOnly/>
+              <input type="text" placeholder="Giá cả" readOnly/>
+              <input type="text" placeholder="Cơ sở vật chất" readOnly/>
+              <input type="text" placeholder="Cơ sở tiện ích" readOnly/>
+            </div>
+          </div>
+          <div className={cx("payment_right")}></div>
+        </div>
+      </div>
+    )}
+    </>
   );
 };
 

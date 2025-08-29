@@ -10,6 +10,7 @@ import TransitionPage from "./TransitionPage";
 import MarkerAddress from "./MarkerAddress";
 import Error from "./Error";
 import HintTooltip from "./HintTooltip";
+import CustomDatePicker from "./DatePicker";
 
 export {
   Header,
@@ -23,5 +24,6 @@ export {
   TransitionPage,
   MarkerAddress,
   Error,
-  HintTooltip
+  HintTooltip,
+  CustomDatePicker
 };
