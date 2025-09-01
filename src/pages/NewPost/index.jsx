@@ -11,12 +11,17 @@ import {
   faCoins,
   faK,
   faArrowRight,
-  faHouse
+  faHouse,
+  faCreditCard,
+  faWallet,
 } from "@fortawesome/free-solid-svg-icons";
+
+import { faPaypal } from '@fortawesome/free-brands-svg-icons';
 import L from "leaflet";
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 
 // ----------- LOCAL -----------------
-import { Button, TransitionPage, Header, Spinner, MarkerAddress, Error, HintTooltip, Success, CustomDatePicker, } from "@components/component";
+import { Button, TransitionPage, Header, Spinner, MarkerAddress, Error, HintTooltip, Success, CustomDatePicker, PropertySlider, PaymentPaypal, SpinnerComponent} from "@components/component";
 import { fetchApi, getEmbedUrl, scrollToField } from "@utils/utils";
 import rent from "@images/rent.png";
 import sell from "@images/sell.png";
@@ -208,7 +213,7 @@ const ContentNewPost = () => {
   const [firstFocus, setFirstFocus] = useState(false);
   const [openPopupProp, setOpenPopupProp] = useState(false);
 
-  // get data property
+  // get data property -> properties
   useEffect(() => {
     if (!firstFocus) return;
     const getPropertyComponent = async () => {
@@ -218,13 +223,15 @@ const ContentNewPost = () => {
         skipAuth: true,
       });
       console.log(
-        ">>> get all property componet: ",
+        ">>> get all property component: ",
         response_data.all_properties
       );
       setProperties(response_data.all_properties);
     };
     getPropertyComponent();
   }, [firstFocus]);
+
+  // bật popup -> lấy cái submit
   const handleClickShowPopup = () => {
     setOpenPopupProp(true);
     setFirstFocus(true);
@@ -397,6 +404,12 @@ const ContentNewPost = () => {
     }
 
     // body send step 1
+    const property_components = submitProp.map(item => ({
+      component_id: item.id,
+      quantity: item.quantity,
+    }));
+
+
     const body = {
       needs: needs,
       address: address.wardFullName,
@@ -406,7 +419,7 @@ const ContentNewPost = () => {
       acreage,
       price,
       unit_price: unitPrice,
-      property_components: submitProp.map((item) => item.id),
+      property_components,
       facilities: submitFaci.map((item) => item.id),
       title,
       description,
@@ -553,8 +566,9 @@ const ContentNewPost = () => {
   const [totalCost, setTotalCost] = useState(null);
   const [discount, setDiscount] = useState(null);
   const [showCost, setShowCost] = useState(false);
+  const [orderId, setOrderId] = useState(null);
 
-  const [showPaymentProcess, setShowPaymentProcess] = useState(false);
+  const [showPaymentProcess, setShowPaymentProcess] = useState(true);
 
   // get data package
   useEffect(() => {
@@ -657,20 +671,125 @@ const ContentNewPost = () => {
     return money - Math.floor((money * discount) / 100);
   };
 
-  const handleShowPaymentProcess = () => {
-    setLoading(true);
-    setTimeout(() => {
+  const handleShowPaymentProcess = async () => {
+  setLoading(true);
+
+  try {
+    // Tính ngày kết thúc
+    const datePicker = new Date();
+    const selectedPackage = packagePricings.find(
+      (item) => item._id === idChooseSubPackage
+    );
+    const duration = selectedPackage?.duration_days || 0;
+
+    const endDay = new Date(datePicker);
+    endDay.setDate(datePicker.getDate() + duration);
+
+    // Chuẩn bị body gửi cho backend
+    const body = {
+      current_package: idChoosePackage,
+      time_expire: endDay,
+      status: "draft",
+    };
+
+    // Gọi API tạo post draft
+    const response_data = await fetchApi("/post/create/step3", {
+      body,
+      method: "post",
+      skipAuth: false,
+    });
+
+    if (response_data.success) {
+      // Cho FE một chút hiệu ứng loading trước khi hiện popup
+      setTimeout(() => {
+        setLoading(false);
+        setShowPaymentProcess(true);
+      }, 1000);
+    } else {
+      // Lấy message từ backend
       setLoading(false);
-      setShowPaymentProcess(true);
-    }, 1000);
-    setShowPaymentProcess(true);
+      setError(response_data.message || "Có lỗi xảy ra");
+      setShowPopupErr(true);
+    }
+  } catch (err) {
+    // Nếu xảy ra lỗi network hoặc unexpected
+    setLoading(false);
+    setError(err.message);
+    setShowPopupErr(true);
+  }
+};
+
+
+  // Date Picker
+  const [datePicker, setDatePicker] = useState(null);
+  const today = new Date();
+  const maxDate = new Date();
+  maxDate.setDate(today.getDate() + 14);
+
+  // -------------- Payment Process -------------
+  const [methodPayment, setMethodPayment] = useState(null);
+  const [validMoney, setValidMoney] = useState(false);
+  const [walletMoney, setWalletMoney] = useState(0);
+  const [amountPayment, setAmountPayment] = useState(0);
+
+  // Lấy số dư ví
+  useEffect(() => {
+    const url = "/account/wallet";
+    const getMoneyWallet = async () => {
+      const response_data = await fetchApi(url,{
+        method: "get",
+        skipAuth: false,
+      })
+
+      if (response_data.success) {
+        console.log(">>> check money account: ", response_data.money);
+        setWalletMoney(response_data.money);
+      }
+    }
+
+    getMoneyWallet();
+  }, [showPaymentProcess]);
+
+  // tính tổng tiền
+  useEffect(() => {
+    if (walletMoney < calculateTotalMoney(totalCost, discount)){
+      setValidMoney(false);
+      return;
+    }
+    else {
+      setValidMoney(true);
+      return;
+    }
+  },[totalCost, discount, walletMoney]);
+
+  // Click trả paypal
+  const handleClickPaymentPaypal = async () =>{
+    // query 1 lần, không load lại khi click lại
+    setMethodPayment("paypal")
+    if (amountPayment) return; 
+
+    const response_data = await fetchApi(`/payment/create-order/${amountPayment}`,{
+      method: "post",
+      skipAuth: false
+    });
+    if (response_data.success) {
+      setOrderId(response_data.orderID);
+      return;
+    }
+    else {
+      setError("Hiện tại không hữu dụng");
+      setShowPopupErr(true);
+      return;
+    }
   }
 
-  const handlePayment = () => {
+  // Click thanh toán tiền - cho phương thức tính tiền bằng số dư ví
+  const handlClickFinishPayment = () => {
     console.log("id package choose: ", idChoosePackage);
     console.log("id sub package choose: ", idChooseSubPackage);
     const endDay = new Date();
     const duration = packagePricings.filter((item) => item._id === idChooseSubPackage)[0].duration_days;
+    
     if (datePicker){
       console.log("date post: ", datePicker);
       endDay.setDate(datePicker.getDate() + duration);
@@ -684,15 +803,8 @@ const ContentNewPost = () => {
     console.log("duration day: ", duration);
     console.log("duration day: ", endDay);
 
-
-
     return;
   }
-  // Date Picker
-  const [datePicker, setDatePicker] = useState(null);
-  const today = new Date();
-  const maxDate = new Date();
-  maxDate.setDate(today.getDate() + 14);
 
   return (
     <>
@@ -1205,7 +1317,6 @@ const ContentNewPost = () => {
               <textarea
                 id="id_description"
                 className={cx("input_desc")}
-                id="message"
                 name="message"
                 rows="5"
                 cols="30"
@@ -1493,23 +1604,88 @@ const ContentNewPost = () => {
           <div className={cx("payment_left")}>
             <div className={cx("payment_item_wrap")}>
               <div className={cx("payment_title")}>Thông tin bài đăng</div>
-              <label htmlFor="">Chủ sở hữu</label>
-              <input type="text" placeholder="Tạ Nguyễn Tiến Dũng" readOnly/>
-              <label htmlFor="">Email</label>
-              <input type="text" placeholder="Tạ Nguyễn Tiến Dũng" readOnly/>
-              <label htmlFor="">Số điện thoại</label>
-              <input type="text" placeholder="Tạ Nguyễn Tiến Dũng" readOnly/>
-              <label htmlFor="">Tên bài đăng</label>
-              <input type="text" placeholder="Bán nhà đất" readOnly/>
-              <label htmlFor="">Thông tin cơ bản</label>
-              <input type="text" placeholder="Địa chỉ" readOnly/>
-              <input type="text" placeholder="Diện tích" readOnly/>
-              <input type="text" placeholder="Giá cả" readOnly/>
-              <input type="text" placeholder="Cơ sở vật chất" readOnly/>
-              <input type="text" placeholder="Cơ sở tiện ích" readOnly/>
+              <PropertySlider
+              className={cx("payment_slider_wrap")}
+                images={[
+                  "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+                  "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+                  "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+                  "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+                ]}
+              />
+
+              <label className={cx("label_payment")} htmlFor="">Chủ sở hữu</label>
+              <input className={cx("input_payment")} type="text" value={nameContact} readOnly/>
+              <label className={cx("label_payment")} htmlFor="">Email</label>
+              <input className={cx("input_payment")} type="text" value={emailContact}  readOnly/>
+              <label className={cx("label_payment")} htmlFor="">Số điện thoại</label>
+              <input className={cx("input_payment")} type="text" value={phoneContact} readOnly/>
+              <label className={cx("label_payment")} htmlFor="">Tên bài đăng</label>
+              <input className={cx("input_payment")} type="text" value={title} readOnly/>
+              {/* <label className={cx("label_payment")} htmlFor="">Thông tin cơ bản</label>
+              <input className={cx("input_payment")} type="text" placeholder="Địa chỉ" readOnly/>
+              <input className={cx("input_payment")} type="text" placeholder="Diện tích" readOnly/>
+              <input className={cx("input_payment")} type="text" placeholder="Giá cả" readOnly/>
+              <input className={cx("input_payment")} type="text" placeholder="Cơ sở vật chất" readOnly/>
+              <input className={cx("input_payment")} type="text" placeholder="Cơ sở tiện ích" readOnly/> */}
             </div>
           </div>
-          <div className={cx("payment_right")}></div>
+          <div className={cx("payment_right")}>
+            <div className={cx("payment_item_wrap")}>
+              <div className={cx("payment_title")}>Hóa đơn thanh toán</div>
+              <div className={cx("bill_payment")}>
+                <div className={cx("bill_item")}>
+                  <div className={cx("bill_title")}>Tạm tính</div>
+                  <div className={cx("bill_money")}>{totalCost}</div>
+                </div>
+                <div className={cx("bill_item")}>
+                  <div className={cx("bill_title")}>Giảm giá</div>
+                  <div className={cx("bill_money")}>{discount} %</div>
+                </div>
+                <div className={cx("bill_item", "total")}>
+                  <div className={cx("bill_title")}>Tổng cộng</div>
+                  <div className={cx("bill_money")}>{calculateTotalMoney(totalCost, discount)}</div>
+                </div>
+              </div>
+            </div>
+            <div className={cx("payment_item_wrap", "userselectnone")}>
+              <div className={cx("payment_title")}>Phương thức thanh toán</div>
+              <div className={cx("payment_method_wrap", "userselectnone")}>
+                <div className={cx("payment_method", {active : methodPayment == "wallet"})} onClick={() => setMethodPayment("wallet")}>
+                  <FontAwesomeIcon icon={faWallet} fontSize="18px" color="#14B8A6" /> 
+                  <div className={cx("payment_name")}>Ví cá nhân</div>
+                </div>
+                <div className={cx("payment_method", {active : methodPayment == "paypal"})} onClick={handleClickPaymentPaypal}>
+                  <FontAwesomeIcon icon={faPaypal} fontSize="18px" color="#F59E0B" /> 
+                  <div className={cx("payment_name")}>Chuyển khoản</div>
+                </div>
+                <div className={cx("payment_method", {active : methodPayment == "credit"})} onClick={() => setMethodPayment("credit")}>
+                  <FontAwesomeIcon icon={faCreditCard} fontSize="18px" color="#EF5350" /> 
+                  <div className={cx("payment_name")}>Thẻ tín dụng</div>
+                </div>
+              </div>
+              <div className={cx("payment_content", {active: methodPayment=="wallet"})}>
+                <div className={cx("content_title")}>Số dư khả dụng</div>
+                <div className={cx("wallet_money")}>{walletMoney}<span style={{marginLeft: "10px"}}>VND</span></div>
+                <div className={cx("analys_money")}>
+                  <span className={cx("analys_title")}>Tình trạng</span>
+                  <span className={cx("analys_status")}>{validMoney ? "Có thể thanh toán" : "Số dư không đủ"}</span>
+                </div>
+                <button class={cx("btn_deposit", {active: !validMoney})}>Nạp tiền ngay</button>
+                <button class={cx("btn_submit_payment", {disabled: !validMoney})} disabled={!validMoney} onClick={handlClickFinishPayment}>Thanh toán ngay</button>
+              </div>
+
+              {/* Div cho cái handle paypal */}
+              <div className={cx("payment_content", { active: methodPayment === "paypal" })}>
+                {orderId && <PaymentPaypal orderId={orderId} />}
+                {!orderId && <SpinnerComponent loading={true} />}
+              </div>
+
+              <div className={cx("payment_content", { active: methodPayment === "credit" })}>
+                <p className={cx("credit_title")}>Hiện tại chưa hỗ trợ phương thức thanh toán này.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )}

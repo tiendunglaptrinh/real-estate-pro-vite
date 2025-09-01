@@ -11,6 +11,9 @@ import MarkerAddress from "./MarkerAddress";
 import Error from "./Error";
 import HintTooltip from "./HintTooltip";
 import CustomDatePicker from "./DatePicker";
+import PropertySlider from "./PropertySlider";
+import PaymentPaypal from "./PaymentPaypal";
+import SpinnerComponent from "./SpinnerComponent";
 
 export {
   Header,
@@ -25,5 +28,8 @@ export {
   MarkerAddress,
   Error,
   HintTooltip,
-  CustomDatePicker
+  CustomDatePicker,
+  PropertySlider,
+  PaymentPaypal,
+  SpinnerComponent,
 };

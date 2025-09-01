@@ -1,31 +1,26 @@
 import client from "@api/axiosInstance.jsx";
-// import {useNavigate} from 'react-router-dom';
 
 const fetchApi = async (
   url,
   { method = "get", body = null, params = null, skipAuth = false } = {}
 ) => {
   try {
-    const config = {
-      url,
-      method,
-      params,
-      skipAuth,
-    };
+    const config = { url, method, params, skipAuth };
 
-    if (body) {
-      config.data = body;
-    }
+    if (body) config.data = body;
+
     const response = await client(config);
 
-    if (response.data && response.data.success === false) {
-      throw new Error(response.data.message || "Unknown error from server");
+    return response.data; // trả nguyên data luôn
+  } catch (err) {
+    // Nếu là lỗi axios (status >=400), lấy message từ response.data nếu có
+    if (err.response && err.response.data) {
+      return err.response.data; // FE sẽ check success/message
     }
 
-    return response.data;
-  } catch (err) {
+    // Lỗi network/unexpected
     throw err;
-  } 
+  }
 };
 
 export default fetchApi;

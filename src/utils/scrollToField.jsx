@@ -5,12 +5,7 @@ const scrollToField = (id) => {
       behavior: "smooth", // Cuộn mượt
       block: "center"     // Giữa màn hình
     });
-    if (el.focus) el.focus(); // Focus vào input nếu có
-    // if (el.tagName === "SELECT") {
-    //   setTimeout(() => {
-    //     el.click();
-    //   }, 300); // Delay tí để cuộn xong mới click
-    // }
+    if (el.focus) el.focus();
   }
 };
 
