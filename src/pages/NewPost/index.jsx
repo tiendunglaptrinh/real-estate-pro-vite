@@ -35,8 +35,8 @@ const cx = classNames.bind(style);
 const ContentNewPost = () => {
   // ------------------- General logic --------------------
   const [step1, setStep1] = useState(true);
-  const [step2, setStep2] = useState(true);
-  const [step3, setStep3] = useState(true);
+  const [step2, setStep2] = useState(false);
+  const [step3, setStep3] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [error, setError] = useState(null);
@@ -154,13 +154,11 @@ const ContentNewPost = () => {
         skipAuth: false,
       });
 
-      console.log(">>> check response data: ", response_data);
       setLatLong([response_data.lat, response_data.lon]);
       setSubmitSuccess(true);
     } catch (err) {
       setError("Không tìm thấy địa chỉ trên bản đồ !!!");
       setShowPopupErr(true);
-      console.log("Error from getLatLong: ", error);
     }
   };
 
@@ -222,10 +220,6 @@ const ContentNewPost = () => {
         method: "get",
         skipAuth: true,
       });
-      console.log(
-        ">>> get all property component: ",
-        response_data.all_properties
-      );
       setProperties(response_data.all_properties);
     };
     getPropertyComponent();
@@ -427,8 +421,6 @@ const ContentNewPost = () => {
       longitude: latlong[1],
     };
 
-    console.log(body);
-
     const url = "/post/create/step1";
     const response_data = await fetchApi(url, {
       method: "post",
@@ -530,8 +522,6 @@ const ContentNewPost = () => {
           return data.secure_url;
         })
       );
-      console.log("images: ", uploadedUrls);
-      console.log("video: ", videoUrl);
       const response_data = await fetchApi("/post/create/step2", {
         method: "post",
         skipAuth: false,
@@ -567,8 +557,9 @@ const ContentNewPost = () => {
   const [discount, setDiscount] = useState(null);
   const [showCost, setShowCost] = useState(false);
   const [orderId, setOrderId] = useState(null);
+  const [postId, setPostId] = useState(null);
 
-  const [showPaymentProcess, setShowPaymentProcess] = useState(true);
+  const [showPaymentProcess, setShowPaymentProcess] = useState(false);
 
   // get data package
   useEffect(() => {
@@ -580,7 +571,6 @@ const ContentNewPost = () => {
       });
       if (response_data.success) {
         setPackages(response_data.package_list);
-        console.log("data get packages: ", response_data.package_list);
       }
     };
     getPackage();
@@ -596,7 +586,6 @@ const ContentNewPost = () => {
       });
       if (response_data.success) {
         setPackagePricings(response_data.package_list);
-        console.log("data package pricing get: ", response_data.package_list);
       }
     };
     getPackage();
@@ -620,7 +609,6 @@ const ContentNewPost = () => {
       (item) => item.package_id.toString() === id.toString()
     );
 
-    console.log("list id package: ", filtered.length);
     setSubPackages(filtered);
   };
 
@@ -664,6 +652,7 @@ const ContentNewPost = () => {
       const subpack = packagePricings.filter((item) => item._id === id)[0];
       setTotalCost(subpack.price);
       setDiscount(subpack.discount);
+      setAmountPayment(calculateTotalMoney(totalCost, discount));
     }, 300);
   };
 
@@ -701,6 +690,7 @@ const ContentNewPost = () => {
 
     if (response_data.success) {
       // Cho FE một chút hiệu ứng loading trước khi hiện popup
+      setPostId(response_data.data);
       setTimeout(() => {
         setLoading(false);
         setShowPaymentProcess(true);
@@ -742,7 +732,6 @@ const ContentNewPost = () => {
       })
 
       if (response_data.success) {
-        console.log(">>> check money account: ", response_data.money);
         setWalletMoney(response_data.money);
       }
     }
@@ -752,6 +741,7 @@ const ContentNewPost = () => {
 
   // tính tổng tiền
   useEffect(() => {
+    setAmountPayment(calculateTotalMoney(totalCost, discount));
     if (walletMoney < calculateTotalMoney(totalCost, discount)){
       setValidMoney(false);
       return;
@@ -766,8 +756,8 @@ const ContentNewPost = () => {
   const handleClickPaymentPaypal = async () =>{
     // query 1 lần, không load lại khi click lại
     setMethodPayment("paypal")
-    if (amountPayment) return; 
-
+    if (amountPayment <= 0) return;
+    setAmountPayment(calculateTotalMoney(totalCost, discount));
     const response_data = await fetchApi(`/payment/create-order/${amountPayment}`,{
       method: "post",
       skipAuth: false
@@ -784,26 +774,36 @@ const ContentNewPost = () => {
   }
 
   // Click thanh toán tiền - cho phương thức tính tiền bằng số dư ví
-  const handlClickFinishPayment = () => {
-    console.log("id package choose: ", idChoosePackage);
-    console.log("id sub package choose: ", idChooseSubPackage);
-    const endDay = new Date();
-    const duration = packagePricings.filter((item) => item._id === idChooseSubPackage)[0].duration_days;
-    
-    if (datePicker){
-      console.log("date post: ", datePicker);
-      endDay.setDate(datePicker.getDate() + duration);
+  const handlClickFinishPayment = async () => {
+    if (!postId) return;
+
+    const body = {
+      post_id: postId,
+      package_pricing_id: idChooseSubPackage,
+      start_date: datePicker || new Date().toISOString(),
+      money: amountPayment
+    };
+
+    console.log("check body: ", body);
+
+    const url = "/payment/payment-wallet/new";
+    const response_data = await fetchApi(url, {
+      method: "post",
+      skipAuth: false,
+      body
+    })
+
+    if (response_data.success) {
+      setShowSuccess(true);
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
     }
     else {
-      const datePicker = new Date();
-      console.log("date post: ", datePicker);
-      endDay.setDate(datePicker.getDate() + duration);
+      setError("Thanh toán thất bại");
+      setShowPopupErr(true);
+      return;
     }
-
-    console.log("duration day: ", duration);
-    console.log("duration day: ", endDay);
-
-    return;
   }
 
   return (
@@ -816,7 +816,7 @@ const ContentNewPost = () => {
           width={100}
           height={100}
           message={error}
-          onClick={() => {setShowPopupErr(false); console.log("scroll to: ", idScroll); scrollToField(idScroll); }}
+          onClick={() => {setShowPopupErr(false); scrollToField(idScroll); }}
         />
       )}
       <div className={cx("left_content")}>
@@ -831,7 +831,7 @@ const ContentNewPost = () => {
           <div className={cx("step")}>
             <div className={cx("line_step", { isStep2: step2 })}></div>
             <div className={cx("step_num", { isStep2: step2 })}>
-              {!step3 ? "1" : "✓"}
+              {!step3 ? "2" : "✓"}
             </div>
             <div className={cx("line_step", { isStep2: step2 })}></div>
           </div>
@@ -911,8 +911,8 @@ const ContentNewPost = () => {
                     }}
                   >
                     <option value="">-- Chọn Tỉnh/Thành phố --</option>
-                    {provinces.map((p) => (
-                      <option key={p.code} value={p.code}>
+                    {provinces.map((p, index) => (
+                      <option key={index} value={p.code}>
                         {p.name}
                       </option>
                     ))}
@@ -936,8 +936,8 @@ const ContentNewPost = () => {
                     disabled={!address.provinceCode}
                   >
                     <option value="">-- Chọn Xã/Phường --</option>
-                    {wards.map((w) => (
-                      <option key={w.code} value={w.code}>
+                    {wards.map((w, index) => (
+                      <option key={index} value={w.code}>
                         {w.name}
                       </option>
                     ))}
@@ -985,8 +985,8 @@ const ContentNewPost = () => {
                 onChange={(e) => handleChangeCategory(e)}
               >
                 <option value="">-- Chọn loại hình bất động sản --</option>
-                {categories.map((ele) => (
-                  <option key={ele._id} value={ele._id}>
+                {categories.map((ele, index) => (
+                  <option key={index} value={ele._id}>
                     {ele.category}
                   </option>
                 ))}
@@ -1113,9 +1113,9 @@ const ContentNewPost = () => {
                         </div>
                         <div className={cx("list_choosing", "row")}>
                           {/* List đã chọn */}
-                          {chooseProp.map((prop) => {
+                          {chooseProp.map((prop, index) => {
                             return (
-                              <div key={prop._id} className={cx("item_choosing")}>
+                              <div key={index} className={cx("item_choosing")}>
                                 <div className={cx("item_name")}>
                                   {prop.name}
                                   <div className={cx("delete_item")}>
@@ -1198,9 +1198,9 @@ const ContentNewPost = () => {
                   </button>
                 </div>
                 {/* --------- Render hiển thị sau khi chọn xong ------ */}
-                {submitFaci.map((faci) => {
+                {submitFaci.map((faci, index) => {
                   return (
-                    <div key={faci._id} className={cx("item_property")}>{`${faci.name}`}</div>
+                    <div key={index} className={cx("item_property")}>{`${faci.name}`}</div>
                   );
                 })}
 
@@ -1223,9 +1223,9 @@ const ContentNewPost = () => {
                           Chọn cơ sở vật chất
                         </div>
                         {/* Toàn bộ facility trong DB */}
-                        {facilities.map((faci) => (
+                        {facilities.map((faci, index) => (
                           <div
-                            key={faci._id}
+                            key={index}
                             className={cx(
                               "property_item",
                               chooseFaci.find(
@@ -1242,9 +1242,9 @@ const ContentNewPost = () => {
                         </div>
                         <div className={cx("list_choosing_faci", "row")}>
                           {/* List đã chọn */}
-                          {chooseFaci.map((faci) => {
+                          {chooseFaci.map((faci, index) => {
                             return (
-                              <div key={faci._id} className={cx("item_choosing_faci")}>
+                              <div key={index} className={cx("item_choosing_faci")}>
                                 <div className={cx("item_name_faci")}>
                                   {faci.name}
                                   <div className={cx("delete_item")}>
@@ -1451,9 +1451,9 @@ const ContentNewPost = () => {
               />
               <div className={cx("option_title")}>Chọn gói tin đăng</div>
               <div className={cx("all_package")}>
-                {packages.map((pkg) => (
+                {packages.map((pkg, index) => (
                   <div
-                    key={pkg._id}
+                    key={index}
                     className={cx("package_item", {
                       active: pkg._id === idChoosePackage,
                     })}
@@ -1503,9 +1503,9 @@ const ContentNewPost = () => {
                 Tùy chọn đăng tin
               </div>
               <div className={cx("all_sub_packages")}>
-                {subPackages.map((subPkg) => (
+                {subPackages.map((subPkg, index) => (
                   <div
-                    key={subPkg._id}
+                    key={index}
                     className={cx("subpack_item", {
                       active: idChooseSubPackage === subPkg._id,
                     })}
@@ -1671,8 +1671,8 @@ const ContentNewPost = () => {
                   <span className={cx("analys_title")}>Tình trạng</span>
                   <span className={cx("analys_status")}>{validMoney ? "Có thể thanh toán" : "Số dư không đủ"}</span>
                 </div>
-                <button class={cx("btn_deposit", {active: !validMoney})}>Nạp tiền ngay</button>
-                <button class={cx("btn_submit_payment", {disabled: !validMoney})} disabled={!validMoney} onClick={handlClickFinishPayment}>Thanh toán ngay</button>
+                <button className={cx("btn_deposit", {active: !validMoney})}>Nạp tiền ngay</button>
+                <button className={cx("btn_submit_payment", {disabled: !validMoney})} disabled={!validMoney} onClick={handlClickFinishPayment}>Thanh toán ngay</button>
               </div>
 
               {/* Div cho cái handle paypal */}
