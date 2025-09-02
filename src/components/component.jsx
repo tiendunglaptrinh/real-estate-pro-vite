@@ -14,6 +14,7 @@ import CustomDatePicker from "./DatePicker";
 import PropertySlider from "./PropertySlider";
 import PaymentPaypal from "./PaymentPaypal";
 import SpinnerComponent from "./SpinnerComponent";
+import ChatWidge from "./ChatWidge";
 
 export {
   Header,
@@ -32,4 +33,5 @@ export {
   PropertySlider,
   PaymentPaypal,
   SpinnerComponent,
+  ChatWidge
 };

@@ -1,0 +1,131 @@
+// Toàn trang
+.chatwidge_container {
+  position: fixed;
+  display: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  z-index: 999;
+}
+
+// Icon chatbot
+.btn_chatwidge {
+  width: 70px;
+  height: fit-content;
+  position: absolute;
+  right: 50px;
+  bottom: 100px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  border: 1px solid var(--accent1);
+  border-radius: 50%;
+}
+.chatwidge_icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+// Box chat hiện lên
+.chatwidge_boxchat {
+  position: absolute;
+  width: 30%;
+  min-width: 400px;
+  max-width: 450px;
+  height: 600px;
+  right: 80px;
+  bottom: 157px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 1px 1px 5px #0b2c3d;
+  display: none;
+
+  &.active {
+    display: block;
+  }
+}
+
+// Header boxchat
+.chatwidge_header {
+  background: #b2935d;
+  padding: 20px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.chatwidth_header_icon {
+  width: 40px;
+  height: fit-content;
+  object-fit: contain;
+}
+.chatwidth_header_title {
+  margin: 0;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+// Dưới botchat để send tin nhắn
+.chatwidge_bottom {
+  position: absolute;
+  width: 100%;
+  height: 70px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--accent1);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+.chatwidge_input {
+  width: 70%;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 13px;
+}
+.icon_message{
+  // color: var(--primary2);
+}
+
+
+
+//
+.chatwidge_body {
+  flex: 1;
+}
+
+.chatwidge_messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chatwidge_bubble {
+  padding: 8px 12px;
+  border-radius: 16px;
+  max-width: 70%;
+  white-space: pre-line; // giữ xuống dòng
+  font-size: 12px;
+}
+
+.chatwidge_bubble.user {
+  align-self: flex-end; // bubble user bên phải
+  background-color: #0d6efd;
+  color: white;
+}
+
+.chatwidge_bubble.bot {
+  align-self: flex-start; // bubble bot bên trái
+  background-color: #e5e5ea;
+  color: black;
+}

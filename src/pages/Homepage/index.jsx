@@ -12,6 +12,7 @@ import {
   ButtonCollapse,
   TransitionPage,
   Spinner,
+  ChatWidge
 } from "@components/component";
 import { fetchApi } from "@utils/utils";
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +21,7 @@ const cx = classnames.bind(styles);
 const Banner = () => {
   return (
     <div className={cx("wrapper_banner")}>
+      <ChatWidge />
       <img className={cx("layer_banner")} src={banner} alt="" />
       <div className={cx("content_banner")}>
         <div className={cx("title_banner")}>
