@@ -15,6 +15,8 @@ import PropertySlider from "./PropertySlider";
 import PaymentPaypal from "./PaymentPaypal";
 import SpinnerComponent from "./SpinnerComponent";
 import ChatWidge from "./ChatWidge";
+import PropertyGallery from "./PropertyGallery";
+import IconRender from "./IconRender";
 
 export {
   Header,
@@ -33,5 +35,7 @@ export {
   PropertySlider,
   PaymentPaypal,
   SpinnerComponent,
-  ChatWidge
+  ChatWidge,
+  PropertyGallery,
+  IconRender,
 };

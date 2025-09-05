@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import classNames from "classnames/bind";
 import styles from "./Header.module.scss";
 import logo from "@images/logo.png";
@@ -7,15 +8,20 @@ import { Button } from "@components/component";
 import { getCurrentUser } from "@utils/utils";
 import maleDefault from "@assets/avatar_defaults/male.png";
 import femaleDefault from "@assets/avatar_defaults/female.png";
+import { fetchApi } from "@utils/utils";
 // import gg from "@images/google.png";
 
 const cx = classNames.bind(styles);
 
 function Header() {
   const [isLogin, setLogin] = useState(false);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState(null);
   const [user, setUser] = useState(null);
+  const [isScroll, setIsScroll] = useState(false);
+
+  const navigate = useNavigate();
 
   // check user
   useEffect(() => {
@@ -25,136 +31,123 @@ function Header() {
     };
     fetchUser();
   }, []);
-  
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScroll(true);
+      } else {
+        setIsScroll(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   // set user, avatar
   useEffect(() => {
-  if (user) {
-    setLogin(true);
-    if (user.userAvatar === "default" && user.userSex === "male") {
-      setAvatar(maleDefault);
-      console.log("avatar male: ", maleDefault);
-    } else if (user.userAvatar === "default" && user.userSex === "female") {
-      setAvatar(femaleDefault);
-      console.log("avatar male: ", maleDefault);
-    } else {
-      setAvatar(user.userAvatar);
+    if (user) {
+      setLogin(true);
+      if (user.userAvatar === "default" && user.userSex === "male") {
+        setAvatar(maleDefault);
+        console.log("avatar male: ", maleDefault);
+      } else if (user.userAvatar === "default" && user.userSex === "female") {
+        setAvatar(femaleDefault);
+        console.log("avatar male: ", maleDefault);
+      } else {
+        setAvatar(user.userAvatar);
+      }
     }
-  }
-}, [user]);
+  }, [user]);
+
+  // Get category
+  useEffect(() => {
+    const getRealEstateCategory = async () => {
+      const url = "/category/all";
+      const response_data = await fetchApi(url, {
+        method: "get",
+        skipAuth: true,
+      });
+
+      if (response_data.success) {
+        setCategories(response_data.category);
+      } else return;
+    };
+    getRealEstateCategory();
+  }, []);
+
+  const handleMoveSellPost = () => {
+    const url = "/login";
+    // navigate(url);
+  };
+  const hanldeMoveRentPost = () => {
+    const url = "/login";
+    // navigate(url);
+  };
+  const hanldeMoveShortUtilityPost = () => {
+    const url = "/login";
+    // navigate(url);
+  };
 
   return (
-    <div className={cx("wrapper_header")}>
+    <div className={cx("wrapper_header", { scroll: isScroll })}>
       <Link to="/">
         <div className={cx("logo")}>
           <img className={cx("logo_img")} src={logo} alt="Logo Homepro" />
         </div>
       </Link>
       <div className={cx("menu")}>
-        <div className={cx("dropdown", "menu_item")}>
-          <button
-            className={cx("dropdown-toggle", "menu_item_btn")}
-            type="button"
-            id="dropdownMenuButton1"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
+        <div className={cx("menu_item")}>
+          <button className={cx("menu_item_btn")} onClick={handleMoveSellPost}>
             Nhà đất bán
           </button>
-          <ul
-            className={cx("dropdown-menu")}
-            aria-labelledby="dropdownMenuButton1"
-          >
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Bán căn hộ chung cư</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Bán nhà riêng</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Bán chung cư mini</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Bán đất nền</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Bán kho, nhà xưởng</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Bán bất động sản khác</Link>{" "}
-            </li>
+          <ul className={cx("dropdown_menu")}>
+            {categories
+              .filter((cate) => cate.type === "sell")
+              .map((cate, i) => (
+                <li key={i} className={cx("dropdown_menu_item")}>
+                  <Link to="/">{cate.category}</Link>
+                </li>
+              ))}
           </ul>
         </div>
-
-        <div className={cx("dropdown", "menu_item")}>
-          <button
-            className={cx("dropdown-toggle", "menu_item_btn")}
-            type="button"
-            id="dropdownMenuButton2"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-          >
-            Nhà đất cho thuê
+        <div className={cx("menu_item")}>
+          <button className={cx("menu_item_btn")} onClick={hanldeMoveRentPost}>
+            {" "}
+            Nhà đất cho thuê{" "}
           </button>
-          <ul
-            className={cx("dropdown-menu")}
-            aria-labelledby="dropdownMenuButton2"
-          >
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Cho thuê căn hộ chung cư</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Cho thuê chung cư mini</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Cho thuê phòng trọ</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Cho thuê văn phòng làm việc</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Cho thuê kho, nhà xưởng</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Cho thuê bất động sản khác</Link>{" "}
-            </li>
+          <ul className={cx("dropdown_menu")}>
+            {categories
+              .filter((cate) => cate.type === "rent")
+              .map((cate, i) => (
+                <li key={i} className={cx("dropdown_menu_item")}>
+                  {" "}
+                  <Link to="/">{cate.category}</Link>{" "}
+                </li>
+              ))}
           </ul>
         </div>
-
-        <div className={cx("dropdown", "menu_item")}>
+        <div className={cx("menu_item")}>
           <button
-            className={cx("dropdown-toggle", "menu_item_btn")}
-            type="button"
-            id="dropdownMenuButton3"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
+            className={cx("menu_item_btn")}
+            onClick={hanldeMoveShortUtilityPost}
           >
             {" "}
-            Dịch vụ ngắn hạn{" "}
+            Tiện ích ngắn hạn{" "}
           </button>
-          <ul
-            className={cx("dropdown-menu")}
-            aria-labelledby="dropdownMenuButton3"
-          >
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Cho thuê khách sạn, nhà nghỉ</Link>{" "}
-            </li>
-            <li className={cx("dropdown-item", "dropdown_menu_item")}>
-              {" "}
-              <Link to="/">Cho thuê khu nghỉ dưỡng</Link>{" "}
-            </li>
+          <ul className={cx("dropdown_menu")}>
+            {categories
+              .filter((cate) => cate.type === "short_utility")
+              .map((cate, i) => (
+                <li key={i} className={cx("dropdown_menu_item")}>
+                  {" "}
+                  <Link to="/">{cate.category}</Link>{" "}
+                </li>
+              ))}
           </ul>
         </div>
       </div>
@@ -180,6 +173,7 @@ function Header() {
             <Link to="/login">
               {" "}
               <Button
+                className={cx("btn_login")}
                 size="small"
                 borderRadius="10px"
                 background="transparent"
@@ -194,6 +188,7 @@ function Header() {
             <Link to="/register">
               {" "}
               <Button
+                className={cx("btn_register")}
                 size="small"
                 borderRadius="10px"
                 background="transparent"
@@ -207,6 +202,7 @@ function Header() {
             <Link to="/new-post">
               {" "}
               <Button
+              className={cx("btn_post")}
                 size="small"
                 borderRadius="10px"
                 background="#B2935D"

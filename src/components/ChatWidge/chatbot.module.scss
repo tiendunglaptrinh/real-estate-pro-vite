@@ -33,9 +33,7 @@
 // Box chat hiện lên
 .chatwidge_boxchat {
   position: absolute;
-  width: 30%;
-  min-width: 400px;
-  max-width: 450px;
+  width: 400px;
   height: 600px;
   right: 80px;
   bottom: 157px;
@@ -60,6 +58,14 @@
   display: flex;
   gap: 10px;
   align-items: center;
+  position: relative;
+}
+.close_boxchat{
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  cursor: pointer;
 }
 .chatwidth_header_icon {
   width: 40px;
@@ -93,11 +99,9 @@
   border-radius: 5px;
   font-size: 13px;
 }
-.icon_message{
+.icon_message {
   // color: var(--primary2);
 }
-
-
 
 //
 .chatwidge_body {
@@ -106,8 +110,11 @@
 
 .chatwidge_messages {
   display: flex;
+  max-height: 450px;
+  overflow-y: auto;
   flex-direction: column;
   gap: 8px;
+  padding: 8px;
 }
 
 .chatwidge_bubble {
@@ -120,11 +127,11 @@
 
 .chatwidge_bubble.user {
   align-self: flex-end; // bubble user bên phải
-  background-color: #0d6efd;
+  background-color: var(--primary1);
   color: white;
 }
 
-.chatwidge_bubble.bot {
+.chatwidge_bubble.assistant {
   align-self: flex-start; // bubble bot bên trái
   background-color: #e5e5ea;
   color: black;

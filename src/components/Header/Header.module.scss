@@ -29,37 +29,66 @@
 }
 
 .menu_item {
-  color: #fff;
-  cursor: pointer;
-  background-color: transparent;
-  
-}
-.menu_item_btn {
-  background-color: transparent;
-  color: #fff;
-  font-size: var(--fs-header);
-  padding: 5px 10px;
-  transition: 0.3s;
+  position: relative;
+  display: inline-block;
 
-  &:hover {
-    transition: color 0.3s ease-in;
-    transition: background-color 0.5s ease-in;
+  /* tạo vùng đệm hover */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 10px; /* khoảng cách menu */
+  }
+
+  &:hover > .dropdown_menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  &:hover > .menu_item_btn {
     background-color: #fff;
     color: var(--primary1);
   }
 }
 
-.dropdown_menu_item{
-  font-size: 16px;
+.menu_item_btn {
+  background-color: var(--primary1);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 400;
+  padding: 5px 15px;
+  border-radius: 3px;
+}
+
+.dropdown_menu {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  background: white;
+  list-style: none;
+  padding: 0;
+  margin: 0;
   box-shadow: var(--shadow-light);
-  padding: 15px 35px !important;
+  z-index: 1000;
+  width: 250px;
+  transform: translateY(5px);
+  transition: all 0.2s ease-in-out;
+}
 
-  &:nth-last-child(1){
-    box-shadow: none;
-  }
+.dropdown_menu_item {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 20px;
+  box-shadow: 0 1px 2px #ccc;
+  cursor: pointer;
 
-  &:hover{
-    background-color: var(--hover-light) !important;
+  &:hover {
+    background-color: var(--hover-light);
   }
 }
 
@@ -92,3 +121,25 @@
   cursor: pointer;
 }
 
+
+.btn_login, .btn_register{
+  transition: 0.2s ease-in;
+  font-weight: 400;
+
+  &:hover{
+    background-color: #fff !important;
+    color: var(--primary1) !important;
+    transition: 0.2s ease-in-out;
+  }
+}
+.btn_post{
+  transition: 0.2s ease-in;
+  font-weight: 400;
+
+  &:hover{
+    background-color: #9d7f4d !important;
+    color: #fff !important;
+    transition: 0.2s ease-in-out;
+    box-shadow: 0 1px   4px #fff;
+  }
+}

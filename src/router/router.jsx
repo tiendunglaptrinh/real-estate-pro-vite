@@ -1,6 +1,15 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { HomePage, Unauthorized, LoginPage, TestUseEffect, PostDetail, NotFound, NewPost, } from "@pages/page";
+import {
+  HomePage,
+  Unauthorized,
+  LoginPage,
+  TestUseEffect,
+  PostDetail,
+  NotFound,
+  NewPost,
+  ListPostFilter,
+} from "@pages/page";
 import ProtectRoute from "../middlewares/ProtectRoute";
 
 export default function Router() {
@@ -12,6 +21,7 @@ export default function Router() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/post/:id" element={<PostDetail />} />
+        <Route path="/post-list" element={<ListPostFilter />} />
         <Route
           path="/new-post"
           element={

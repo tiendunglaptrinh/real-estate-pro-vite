@@ -1,0 +1,52 @@
+.property_gallery_container {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  height: 500px; // cố định chiều cao gallery
+  margin-top: 10px;
+}
+
+.property_gallery_subitem {
+  width: 150px;
+  .property_gallery_wrap_Swipper {
+    height: 100%;
+    justify-content: space-around;
+  }
+}
+.property_gallery_wrap_SwipperSlide {
+  // height: 20% !;
+}
+.property_gallery_img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #3b82f6;
+    transform: scale(1.03);
+  }
+
+  &.active {
+    border-color: #2563eb;
+  }
+}
+
+.property_gallery_mainitem {
+  flex: 1;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #ccc;
+}
+
+.property_gallery_main_img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  user-select: none;
+}

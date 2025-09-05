@@ -3,41 +3,25 @@ import classnames from "classnames/bind";
 import styles from "./chatbot.module.scss";
 import chatbot from "@images/chatbot.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCommentDots, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
+import { faCommentDots, faPaperPlane, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { fetchApi } from "@utils/utils";
 
 const cx = classnames.bind(styles);
 
 // Component typing effect
-function TypingMessage({ text }) {
-  const [displayText, setDisplayText] = useState("");
-
-  useEffect(() => {
-    setDisplayText(""); // reset khi text mới
-    let i = 0;
-    const interval = setInterval(() => {
-      setDisplayText((prev) => prev + text[i]);
-      i++;
-      if (i >= text.length) clearInterval(interval);
-    }, 15);
-    return () => clearInterval(interval);
-  }, [text]);
-
-  return <div>{displayText}</div>;
-}
 
 function ChatWidget() {
   const [showBoxChat, setShowBoxChat] = useState(false);
-  const [botStarted, setBotStarted] = useState(false);
+  const [finishResponse, setFinishReponse] = useState(true);
+  const [inputValue, setInputValue] = useState("");
+  const chatContainerRef = useRef(null);
 
   const [messages, setMessages] = useState([
     {
-      id: 1,
-      role: "bot",
+      role: "assistant",
       content: "Chào bạn! Tôi là Homepro Chatbot. Hãy gửi câu hỏi của bạn.",
     },
   ]);
-  const [inputValue, setInputValue] = useState("");
-  const chatContainerRef = useRef(null);
 
   // Auto scroll xuống cuối mỗi khi messages thay đổi
   useEffect(() => {
@@ -49,37 +33,55 @@ function ChatWidget() {
 
   const handleClickChatBot = () => {
     setShowBoxChat(!showBoxChat);
-
-    // trigger typing lần đầu khi mở chat
-    if (!botStarted) setBotStarted(true);
-  };
-
-  const handleSendMessage = () => {
-    if (!inputValue.trim()) return;
-
-    const newMessage = {
-      id: messages.length + 1,
-      role: "user",
-      content: inputValue,
-    };
-
-    setMessages([...messages, newMessage]);
-    setInputValue("");
-
-    // Mock bot response sau 1s
-    setTimeout(() => {
-      const botReply = {
-        id: messages.length + 2,
-        role: "bot",
-        content: `Bot trả lời: Bạn vừa gửi "${newMessage.content}". Đây là phản hồi thử nghiệm dài để test scroll và typing effect. Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
-      };
-      setMessages((prev) => [...prev, botReply]);
-    }, 1000);
   };
 
   // Xử lý keyboard: Enter
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") handleSendMessage();
+    if (e.key === "Enter") handleSendMessageToChatBot();
+  };
+
+  const handleSendMessageToChatBot = async () => {
+    if (!inputValue.trim()) return;
+
+    const user_message = {
+      role: "user",
+      content: inputValue,
+    };
+
+    // Thêm tin nhắn user ngay lập tức
+    setMessages((prev) => [...prev, user_message]);
+    setInputValue(""); // Reset input
+
+    try {
+      const url = "/message/send-message";
+      const response_data = await fetchApi(url, {
+        method: "post",
+        body: { user_message: inputValue },
+        skipAuth: false,
+      });
+
+      // Xác định nội dung bot trả lời
+      const bot_response = {
+        role: "assistant",
+        content: response_data.success
+          ? response_data.bot_response
+          : response_data.message,
+      };
+
+      // Thêm tin nhắn bot
+      setMessages((prev) => [...prev, bot_response]);
+    } catch (err) {
+      console.error(err);
+
+      // Trong trường hợp lỗi server/network
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Xin lỗi, đã xảy ra lỗi. Vui lòng thử lại!",
+        },
+      ]);
+    }
   };
 
   return (
@@ -97,48 +99,29 @@ function ChatWidget() {
       <div className={cx("chatwidge_boxchat", { active: showBoxChat })}>
         {/* Header */}
         <div className={cx("chatwidge_header")}>
+          <FontAwesomeIcon className={cx("close_boxchat")} icon={faXmark} fontSize="20px" color="#fff" onClick={() => {setShowBoxChat(false)}} />
           <img className={cx("chatwidth_header_icon")} src={chatbot} alt="" />
           <p className={cx("chatwidth_header_title")}>Homepro Chatbot</p>
         </div>
 
         {/* Body chat */}
-        <div
-          ref={chatContainerRef}
-          className={cx("chatwidge_messages")}
-          style={{
-            maxHeight: "450px",
-            overflowY: "auto",
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            padding: "8px",
-          }}
-        >
+        <div ref={chatContainerRef} className={cx("chatwidge_messages")}>
           {messages.map((msg, index) => (
             <div
-              key={msg.id}
+              key={index}
               className={cx("chatwidge_bubble", {
                 user: msg.role === "user",
-                bot: msg.role === "bot",
+                assistant: msg.role === "assistant",
               })}
             >
-              {msg.role === "bot" && index === 0 && botStarted ? (
-                <TypingMessage text={msg.content} />
-              ) : (
-                msg.content
-              )}
+              {msg.content}
             </div>
           ))}
         </div>
 
         {/* Input */}
         <div className={cx("chatwidge_bottom")}>
-          <FontAwesomeIcon
-            className={cx("icon_message")}
-            icon={faCommentDots}
-            fontSize="30px"
-            color="#fff"
-          />
+          <FontAwesomeIcon className={cx("icon_message")} icon={faCommentDots} fontSize="30px" color="#fff" />
           <input
             className={cx("chatwidge_input")}
             type="text"
@@ -147,14 +130,7 @@ function ChatWidget() {
             onKeyPress={handleKeyPress}
             placeholder="Nhập tin nhắn..."
           />
-          <FontAwesomeIcon
-            className={cx("icon_message")}
-            icon={faPaperPlane}
-            fontSize="30px"
-            color="#fff"
-            onClick={handleSendMessage}
-            style={{ cursor: "pointer" }}
-          />
+          <FontAwesomeIcon className={cx("icon_message")} icon={faPaperPlane} fontSize="30px" color="#fff" onClick={handleSendMessageToChatBot} style={{ cursor: "pointer" }} />
         </div>
       </div>
     </div>

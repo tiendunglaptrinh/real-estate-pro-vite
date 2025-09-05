@@ -193,7 +193,7 @@ const News = () => {
 
 const ListPost = () => {
   const [posts, setPosts] = useState([]);
-  const [limitPost, setLimitPost] = useState(2); // handle cho nút xem thêm bất động sản ở cuối
+  const [limitPost, setLimitPost] = useState(12); // handle cho nút xem thêm bất động sản ở cuối
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchPost = async () => {
