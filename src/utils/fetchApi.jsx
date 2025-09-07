@@ -11,14 +11,12 @@ const fetchApi = async (
 
     const response = await client(config);
 
-    return response.data; // trả nguyên data luôn
+    return response.data;
   } catch (err) {
-    // Nếu là lỗi axios (status >=400), lấy message từ response.data nếu có
     if (err.response && err.response.data) {
-      return err.response.data; // FE sẽ check success/message
+      return err.response.data;
     }
 
-    // Lỗi network/unexpected
     throw err;
   }
 };

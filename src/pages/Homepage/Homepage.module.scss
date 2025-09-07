@@ -210,12 +210,20 @@
 .img_post_item {
   aspect-ratio: 1.6;
   width: 100%;
+  border-radius: 15px;
+  overflow: hidden;
 }
 .img_post_item > img {
   object-fit: cover;
   width: 100%;
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
+  transition: 0.3s ease-in;
+
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.3s ease-in-out;
+  }
 }
 .list_post {
   gap: 30px;
@@ -225,6 +233,13 @@
   padding: 0 !important;
   border-radius: 15px;
   max-width: 400px !important;
+  cursor: pointer;
+  transition: 0.1s ease-in;
+
+  &:hover{
+    transition: 0.1 ease-in-out;
+    box-shadow: 1px 1px 5px #333;
+  }
 }
 .name_post {
   font-size: 16px;

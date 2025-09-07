@@ -17,6 +17,9 @@ import SpinnerComponent from "./SpinnerComponent";
 import ChatWidge from "./ChatWidge";
 import PropertyGallery from "./PropertyGallery";
 import IconRender from "./IconRender";
+import RequireLogin from "./RequireLogin";
+import QuickNav from "./QuickNav";
+import ScrollToTop from "./ScrollToTop";
 
 export {
   Header,
@@ -38,4 +41,7 @@ export {
   ChatWidge,
   PropertyGallery,
   IconRender,
+  RequireLogin,
+  QuickNav,
+  ScrollToTop
 };

@@ -17,10 +17,11 @@ import {
 import { fetchApi } from "@utils/utils";
 import { useNavigate } from 'react-router-dom';
 const cx = classnames.bind(styles);
+import { QuickNav } from "@components/component";
 
 const Banner = () => {
   return (
-    <div className={cx("wrapper_banner")}>
+    <div id="section_banner" className={cx("wrapper_banner")}>
       <ChatWidge />
       <img className={cx("layer_banner")} src={banner} alt="" />
       <div className={cx("content_banner")}>
@@ -113,7 +114,7 @@ const Banner = () => {
 
 const News = () => {
   return (
-    <div className={cx("wrapper_news")}>
+    <div id="section_news" className={cx("wrapper_news")}>
       <div className={cx("title_news")}>Tin tức nổi bật</div>
       <div className={cx("sub_title")}>Tìm kiếm mới nhất</div>
       <div className={cx("content_news")}>
@@ -193,7 +194,7 @@ const News = () => {
 
 const ListPost = () => {
   const [posts, setPosts] = useState([]);
-  const [limitPost, setLimitPost] = useState(12); // handle cho nút xem thêm bất động sản ở cuối
+  const [limitPost, setLimitPost] = useState(6);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchPost = async () => {
@@ -225,7 +226,7 @@ const ListPost = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setLimitPost((prev) => prev * 2);
+      setLimitPost((prev) => prev + 6);
     }, 1000);
   };
 
@@ -237,7 +238,7 @@ const ListPost = () => {
   } 
 
   return (
-    <div className={cx("wrapper_posts")}>
+    <div id="section_listpost" className={cx("wrapper_posts")}>
       {loading && <Spinner />}
       <div className={cx("post_sub_title")}>Tìm kiếm nhiều nhất</div>
       <div className={cx("post_main_title")}>Bất động sản dành cho bạn</div>
@@ -274,7 +275,7 @@ const ListPost = () => {
                   <div
                     className={cx("price")}
                   >{`${post.price} ${post.unit_price}`}</div>
-                  <div className={cx("size_post")}>{`${post.acreage} m2`}</div>
+                  <div className={cx("size_post")}>{`${post.acreage}`} m<sup>2</sup></div>
                   <div className={cx("heart")}>
                     <FontAwesomeIcon
                       icon={faHeart}
@@ -288,8 +289,8 @@ const ListPost = () => {
           </div>
         ))}
       </div>
-      <div className={cx("btn_more")} onClick={handleWatchMorePost}>
-        <Button width="150px" height="50px" background="#009BA1" color="#fff">
+      <div className={cx("btn_more")}>
+        <Button width="150px" height="50px" background="#009BA1" color="#fff" onClick={handleWatchMorePost}>
           Xem tất cả
         </Button>
       </div>
@@ -322,6 +323,13 @@ const HomePage = () => {
     <LayoutHeader>
       <TransitionPage show={transition} />
       <ContentHomepage />
+      <QuickNav
+        titlePage="Trang chủ"
+        items={[
+          { id: "section_news", name: "Tin mới" },
+          { id: "section_listpost", name: "Danh sách bất động sản" },
+        ]}
+      />
     </LayoutHeader>
   );
 };

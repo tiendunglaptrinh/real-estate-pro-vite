@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import classnames from "classnames/bind";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./ListPostFilter.module.scss";
-import { Header, Footer } from "@components/components";
+import { Header, Footer } from "@components/component";
 import { fetchApi } from "@utils/utils";
 
 const cx = classnames.bind(styles);

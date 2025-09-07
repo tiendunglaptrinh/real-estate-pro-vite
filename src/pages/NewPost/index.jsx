@@ -1028,15 +1028,9 @@ const ContentNewPost = () => {
                     onChange={(e) => setUnitPrice(e.target.value)}
                   >
                     <option value="milion">Triệu đồng</option>
-                    <option value="tens_milion">Chục triệu đồng</option>
-                    <option value="hundreds_milion">Trăm Triệu đồng</option>
                     <option value="bilion">Tỷ đồng</option>
                     <option value="milion_per_month">Triệu đồng/tháng</option>
-                    <option value="tens_milion_per_month">Chục triệu đồng/tháng</option>
-                    <option value="hundreds_milion_per_month">Trăm Triệu đồng/tháng</option>
                     <option value="milion_per_m2">Triệu đồng/m&sup2;</option>
-                    <option value="tens_milion_per_m2"> Chục triệu đồng/m&sup2; </option>
-                    <option value="hundreds_milion_per_m2"> Trăm triệu đồng/m&sup2; </option>
                   </select>
                 </div>
               </div>

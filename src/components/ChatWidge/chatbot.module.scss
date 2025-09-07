@@ -1,11 +1,10 @@
 // Toàn trang
 .chatwidge_container {
   position: fixed;
-  display: fixed;
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  left: 0;
+  width: fit-content;
+  height: fit-content;
+  bottom: 0;
+  right: 0;
   z-index: 999;
 }
 
@@ -60,7 +59,7 @@
   align-items: center;
   position: relative;
 }
-.close_boxchat{
+.close_boxchat {
   position: absolute;
   top: 50%;
   right: 20px;
