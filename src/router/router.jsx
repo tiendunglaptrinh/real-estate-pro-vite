@@ -1,5 +1,5 @@
-import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import {
   HomePage,
   Unauthorized,
@@ -12,16 +12,30 @@ import {
 } from "@pages/page";
 import ProtectRoute from "../middlewares/ProtectRoute";
 
+function ScrollHandler() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 export default function Router() {
   return (
     <BrowserRouter>
+      <ScrollHandler /> {/* auto scroll khi reload & khi đổi route */}
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/test" element={<TestUseEffect />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/post/:id" element={<PostDetail />} />
-        <Route path="/post-list" element={<ListPostFilter />} />
+        <Route path="/list-post" element={<ListPostFilter />} />
         <Route
           path="/new-post"
           element={

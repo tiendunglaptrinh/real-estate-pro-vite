@@ -181,7 +181,7 @@ const ContentNewPost = () => {
   const [categoryId, setCategoryId] = useState("");
   const [acreage, setAcreage] = useState("");
   const [price, setPrice] = useState("");
-  const [unitPrice, setUnitPrice] = useState("milion");
+  const [unitPrice, setUnitPrice] = useState("million");
 
   useEffect(() => {
     if (!needs) return;
@@ -627,16 +627,16 @@ const ContentNewPost = () => {
     }
   };
   const formatPrice = (price) => {
-    let milion = 0;
+    let million = 0;
     if (price >= 1000000) {
-      milion = Math.floor(price / 1000000);
+      million = Math.floor(price / 1000000);
       price %= 1000000;
     }
     if (price >= 1000) {
       price /= 1000;
     }
 
-    return milion ? `${milion},${price}` : `${price}`;
+    return million ? `${million},${price}` : `${price}`;
   };
 
   // Click subpack của mỗi gói to
@@ -1027,10 +1027,10 @@ const ContentNewPost = () => {
                     value={unitPrice}
                     onChange={(e) => setUnitPrice(e.target.value)}
                   >
-                    <option value="milion">Triệu đồng</option>
-                    <option value="bilion">Tỷ đồng</option>
-                    <option value="milion_per_month">Triệu đồng/tháng</option>
-                    <option value="milion_per_m2">Triệu đồng/m&sup2;</option>
+                    <option value="million">Triệu đồng</option>
+                    <option value="billion">Tỷ đồng</option>
+                    <option value="million_per_month">Triệu đồng/tháng</option>
+                    <option value="million_per_m2">Triệu đồng/m&sup2;</option>
                   </select>
                 </div>
               </div>

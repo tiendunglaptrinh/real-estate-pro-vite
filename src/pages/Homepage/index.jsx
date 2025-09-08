@@ -1,23 +1,24 @@
-import classnames from "classnames/bind";
 import { useState, useEffect } from "react";
-import styles from "./Homepage.module.scss";
-import LayoutHeader from "../../layouts/LayoutHeader";
-import banner from "@images/banner.png";
+import { useNavigate } from "react-router-dom";
+import classnames from "classnames/bind";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLocationDot, faMoneyBills } from "@fortawesome/free-solid-svg-icons";
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
+import styles from "./Homepage.module.scss";
 import {
   InputSearch,
   Button,
   ButtonCollapse,
   TransitionPage,
   Spinner,
-  ChatWidge
+  ChatWidge,
+  QuickNav,
 } from "@components/component";
-import { fetchApi } from "@utils/utils";
-import { useNavigate } from 'react-router-dom';
+import LayoutHeader from "@layouts/LayoutHeader";
+import { fetchApi, formatUnitPrice } from "@utils/utils";
+import banner from "@images/banner.png";
+
 const cx = classnames.bind(styles);
-import { QuickNav } from "@components/component";
 
 const Banner = () => {
   return (
@@ -235,7 +236,7 @@ const ListPost = () => {
     const url = `/post/${id}`;
     setLoading(true);
     navigate(url);
-  } 
+  };
 
   return (
     <div id="section_listpost" className={cx("wrapper_posts")}>
@@ -244,13 +245,14 @@ const ListPost = () => {
       <div className={cx("post_main_title")}>Bất động sản dành cho bạn</div>
       <div className={cx("row", "list_post")}>
         {posts.map((post) => (
-          <div key={post._id} className={cx("col-3", "list_item")} onClick={() => handleClickSinglePost(post._id)}>
+          <div
+            key={post._id}
+            className={cx("col-3", "list_item")}
+            onClick={() => handleClickSinglePost(post._id)}
+          >
             <div className={cx("img_post_item")}>
               {" "}
-              <img
-                src="https://i.pinimg.com/736x/51/3a/bd/513abd4be81f7b691d7e9aee4e6a948b.jpg"
-                alt=""
-              />{" "}
+              <img src={post.images[0]} alt="" />{" "}
             </div>
             <div className={cx("content_post")}>
               <div className={cx("name_post")}> {post.title} </div>
@@ -272,15 +274,17 @@ const ListPost = () => {
                     color="#848484"
                   />
                   <div className={cx("cost")}>Giá:</div>
-                  <div
-                    className={cx("price")}
-                  >{`${post.price} ${post.unit_price}`}</div>
-                  <div className={cx("size_post")}>{`${post.acreage}`} m<sup>2</sup></div>
+                  <div className={cx("price")}>{`${
+                    post.price
+                  } ${formatUnitPrice(post.unit_price)}`}</div>
+                  <div className={cx("size_post")}>
+                    {`${post.acreage}`} m<sup>2</sup>
+                  </div>
                   <div className={cx("heart")}>
                     <FontAwesomeIcon
                       icon={faHeart}
                       fontSize="18px"
-                      color="#848484"
+                      color="#cb3a26"
                     />
                   </div>
                 </div>
@@ -290,7 +294,13 @@ const ListPost = () => {
         ))}
       </div>
       <div className={cx("btn_more")}>
-        <Button width="150px" height="50px" background="#009BA1" color="#fff" onClick={handleWatchMorePost}>
+        <Button
+          width="150px"
+          height="50px"
+          background="#009BA1"
+          color="#fff"
+          onClick={handleWatchMorePost}
+        >
           Xem tất cả
         </Button>
       </div>

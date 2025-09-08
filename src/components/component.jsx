@@ -20,6 +20,7 @@ import IconRender from "./IconRender";
 import RequireLogin from "./RequireLogin";
 import QuickNav from "./QuickNav";
 import ScrollToTop from "./ScrollToTop";
+import CollapseSection from "./CollapseSection";
 
 export {
   Header,
@@ -43,5 +44,6 @@ export {
   IconRender,
   RequireLogin,
   QuickNav,
-  ScrollToTop
+  ScrollToTop,
+  CollapseSection,
 };

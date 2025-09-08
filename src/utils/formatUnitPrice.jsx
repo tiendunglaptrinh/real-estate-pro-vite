@@ -3,12 +3,12 @@ const formatUnitPrice = (unit_price) => {
     case "million":
       return "Triệu đồng";
 
-    case "bilion":
+    case "billion":
       return "Tỷ đồng";
-    case "milion_per_month":
+    case "million_per_month":
       return "Triệu đồng/tháng";
 
-    case "milion_per_m2":
+    case "million_per_m2":
       return "Triệu đồng/m²";
 
     default:

@@ -9,6 +9,7 @@ import { getCurrentUser } from "@utils/utils";
 import maleDefault from "@assets/avatar_defaults/male.png";
 import femaleDefault from "@assets/avatar_defaults/female.png";
 import { fetchApi } from "@utils/utils";
+import { useLocation } from "react-router-dom";
 // import gg from "@images/google.png";
 
 const cx = classNames.bind(styles);
@@ -22,6 +23,7 @@ function Header() {
   const [isScroll, setIsScroll] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   // check user
   useEffect(() => {
@@ -80,21 +82,19 @@ function Header() {
     getRealEstateCategory();
   }, []);
 
-  const handleMoveSellPost = () => {
-    const url = "/login";
-    // navigate(url);
-  };
-  const hanldeMoveRentPost = () => {
-    const url = "/login";
-    // navigate(url);
-  };
-  const hanldeMoveShortUtilityPost = () => {
-    const url = "/login";
-    // navigate(url);
-  };
+  const handleMoveByURLQuery = (params) => {
+  const queryParam = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value != null && value !== "") queryParam.append(key, value);
+  });
+
+  navigate(`/list-post?${queryParam.toString()}`);
+};
+
 
   return (
-    <div className={cx("wrapper_header", { scroll: isScroll })}>
+    <div key={location.key} className={cx("wrapper_header", { scroll: isScroll })}>
       <Link to="/">
         <div className={cx("logo")}>
           <img className={cx("logo_img")} src={logo} alt="Logo Homepro" />
@@ -102,21 +102,21 @@ function Header() {
       </Link>
       <div className={cx("menu")}>
         <div className={cx("menu_item")}>
-          <button className={cx("menu_item_btn")} onClick={handleMoveSellPost}>
+          <button className={cx("menu_item_btn")} onClick={() => handleMoveByURLQuery({needs: "sell"})}>
             Nhà đất bán
           </button>
           <ul className={cx("dropdown_menu")}>
             {categories
               .filter((cate) => cate.type === "sell")
               .map((cate, i) => (
-                <li key={i} className={cx("dropdown_menu_item")}>
-                  <Link to="/">{cate.category}</Link>
+                <li key={i} className={cx("dropdown_menu_item")} onClick={() => handleMoveByURLQuery({needs: "sell", category: cate.category_slug})}>
+                  {cate.category}
                 </li>
               ))}
           </ul>
         </div>
         <div className={cx("menu_item")}>
-          <button className={cx("menu_item_btn")} onClick={hanldeMoveRentPost}>
+          <button className={cx("menu_item_btn")} onClick={() => handleMoveByURLQuery({needs: "rent"})}>
             {" "}
             Nhà đất cho thuê{" "}
           </button>
@@ -124,9 +124,9 @@ function Header() {
             {categories
               .filter((cate) => cate.type === "rent")
               .map((cate, i) => (
-                <li key={i} className={cx("dropdown_menu_item")}>
+                <li key={i} className={cx("dropdown_menu_item")} onClick={() => handleMoveByURLQuery({needs: "rent", category: cate.category_slug})}>
                   {" "}
-                  <Link to="/">{cate.category}</Link>{" "}
+                  {cate.category}
                 </li>
               ))}
           </ul>
@@ -134,7 +134,7 @@ function Header() {
         <div className={cx("menu_item")}>
           <button
             className={cx("menu_item_btn")}
-            onClick={hanldeMoveShortUtilityPost}
+            onClick={() => handleMoveByURLQuery({needs: "short_utility"})}
           >
             {" "}
             Tiện ích ngắn hạn{" "}

@@ -1,0 +1,26 @@
+.collapse_section {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #fff;
+
+  .collapse_header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 16px;
+    cursor: pointer;
+    font-weight: 600;
+    background: #f7f7f7;
+    border: none;
+    border-radius: 8px;
+  }
+
+  .collapse_content {
+    transition: all 0.3s ease;
+  }
+
+  .collapse_inner {
+    padding: 12px 16px;
+  }
+}
