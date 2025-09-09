@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import classnames from "classnames/bind";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import styles from "./ListPostFilter.module.scss";
@@ -7,6 +7,8 @@ import {
   Footer,
   CollapseSection,
   Spinner,
+  PriceFilter,
+  AcreageFilter
 } from "@components/component";
 import { fetchApi, formatUnitPrice } from "@utils/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -27,38 +29,20 @@ import avatar from "@assets/avatar_defaults/male.png";
 const cx = classnames.bind(styles);
 
 const ContentListPostFilter = () => {
+  // Sử dụng toàn cục
   const [loading, setLoading] = useState(false);
-
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  // data in post list
   const [totalPage, setTotalPage] = useState(0);
   const [currentIndexPage, setCurrentIndexPage] = useState(0);
   const [countPost, setCountPost] = useState(0);
   const [listPost, setListPost] = useState([]);
 
-  const navigate = useNavigate();
-
-  // handle collapse
-  const [collapseNeeds, setCollapseNeeds] = useState(false);
-  const [needsFilter, setNeedsFilter] = useState(null);
-
-  const [collapseCategory, setCollapseCategory] = useState(false);
-  const [categoryFilter, setCategoryFilter] = useState(
-    "Loại hình bất động sản"
-  );
-
-  // Các trường params sẽ đọc từ query
-  const needs_param = searchParams.get("needs");
-  const category_param = searchParams.get("category");
-  const province_param = searchParams.get("province");
-  const ward_param = searchParams.get("ward");
-  const min_price_param = searchParams.get("min_price");
-  const max_price_param = searchParams.get("max_price");
-  const min_acreage_param = searchParams.get("min_acreage");
-  const max_acreage_param = searchParams.get("max_acreage");
-  const limit_post_param = searchParams.get("limit");
-  const page_post_param = searchParams.get("page");
-
-  const bufferParams = useState({
+  // ------------------------------------- Logic cho bufferParams ----------------------------
+  // Buffer params state
+  const [bufferParams, setBufferParams] = useState({
     needs: "",
     category: "",
     province: "",
@@ -71,66 +55,426 @@ const ContentListPostFilter = () => {
     page: "",
   });
 
-  // tải trang với query được đọc từ useSearchParams
+  const [applyParams, setApplyParams] = useState({
+    needs: "",
+    category: "",
+    province: "",
+    ward: "",
+    min_price: "",
+    max_price: "",
+    min_acreage: "",
+    max_acreage: "",
+    limit: "",
+    page: "",
+  });
+
+  // Sync từ URL query -> bufferParams khi load trang hoặc URL query thay đổi
   useEffect(() => {
-    const handleLoadListPostByParam = async () => {
-      setLoading(true);
-      const url = "/post/get-posts";
-      const rawParams = {
-        needs: needs_param,
-        category: category_param,
-        province: province_param,
-        ward: ward_param,
-        min_price: min_price_param,
-        max_price: max_price_param,
-        min_acreage: min_acreage_param,
-        max_acreage: max_acreage_param,
-        limit: limit_post_param,
-        page: page_post_param,
-      };
-
-      const listParams = Object.fromEntries(
-        Object.entries(rawParams).filter(([_, v]) => v != null)
-      );
-      const response_data = await fetchApi(url, {
-        method: "get",
-        skipAuth: true,
-        params: listParams,
-      });
-
-      if (response_data.success) {
-        console.log(
-          "[List Post]: get post successfully ",
-          response_data.data_posts
-        );
-        setListPost(response_data.data_posts);
-        setTotalPage(response_data.total_pages);
-        setCurrentIndexPage(response_data.current_index_page);
-        setCountPost(response_data.count_post_in_page);
-      } else {
-        console.log("get post error");
-      }
-
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+    const newParams = {
+      needs: searchParams.get("needs") || "",
+      category: searchParams.get("category") || "",
+      province: searchParams.get("province") || "",
+      ward: searchParams.get("ward") || "",
+      min_price: searchParams.get("min_price") || "",
+      max_price: searchParams.get("max_price") || "",
+      min_acreage: searchParams.get("min_acreage") || "",
+      max_acreage: searchParams.get("max_acreage") || "",
+      limit: searchParams.get("limit") || "",
+      page: searchParams.get("page") || "",
     };
-    handleLoadListPostByParam();
+    const allEmpty = Object.values(newParams).every((val) => val === "");
+    if (allEmpty) {
+      newParams.page = "1"; // set mặc định page=1
+    }
+    setBufferParams(newParams);
+    setApplyParams(newParams);
   }, [searchParams]);
+
+  // Gọi API mỗi khi searchParams thay đổi
+  useEffect(() => {
+    if (
+      bufferParams.needs !== "" ||
+      bufferParams.category !== "" ||
+      bufferParams.province !== "" ||
+      bufferParams.ward !== "" ||
+      bufferParams.min_price !== "" ||
+      bufferParams.max_price !== "" ||
+      bufferParams.page !== ""
+    ) {
+      const handleLoadListPostByParam = async () => {
+        // setLoading(true);
+        const listParams = Object.fromEntries(
+          Object.entries(bufferParams).filter(([_, v]) => v !== "")
+        );
+        if (listParams.category) {
+          listParams.category = listParams.category.split(",");
+        }
+        const response_data = await fetchApi("/post/get-posts", {
+          method: "get",
+          skipAuth: true,
+          params: listParams,
+        });
+
+        if (response_data.success) {
+          setListPost(response_data.data_posts);
+          setTotalPage(response_data.total_pages);
+          setCurrentIndexPage(response_data.current_index_page);
+          setCountPost(response_data.count_post_in_page);
+        } else {
+          setListPost([]);
+          setTotalPage(0);
+          setCurrentIndexPage(0);
+          setCountPost(0);
+        }
+
+        setTimeout(() => {
+          setLoading(false);
+        }, 1000);
+      };
+      handleLoadListPostByParam();
+    }
+  }, [bufferParams]);
+
+  const updateFilter = (newValues) => {
+    const updated = { ...bufferParams, ...newValues };
+    const query = Object.fromEntries(
+      Object.entries(updated).filter(([_, v]) => v !== "")
+    );
+
+    navigate({
+      pathname: "/list-post",
+      search: `?${new URLSearchParams(query).toString()}`,
+    });
+  };
+  // ------------------------------------- End logic cho bufferParams ----------------------------
+
+  // ----------------- Logic cho filter component -----------------
+  // ----------------- Location Filter -----------------
+  const [locations, setLocations] = useState([]);
+  const [showProvinceDropdown, setShowProvinceDropdown] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState(null);
+  const [showWardCollapse, setShowWardCollapse] = useState(false);
+  const [selectedWard, setSelectedWard] = useState(null);
+  const [provinceSlug, setProvinceSlug] = useState("");
+  const [wardSlug, setWardSlug] = useState("");
+
+  const provinceInputRef = useRef(null);
+
+  useEffect(() => {
+    const fetchLocations = async () => {
+      const res = await fetchApi("/location/all", { method: "get" });
+      if (res.success) setLocations(res.locations);
+    };
+    fetchLocations();
+  }, []);
+
+  const focusInput = () => {
+    if (!selectedProvince) {
+      setShowWardCollapse(false);
+      setShowProvinceDropdown(true);
+    } else {
+      setShowProvinceDropdown(false);
+      setShowWardCollapse(true);
+    }
+  };
+
+  // Khi chọn tỉnh/thành
+  const handleSelectProvince = (province) => {
+    setSelectedProvince(province);
+    setSelectedWard(null);
+    setShowProvinceDropdown(false);
+    setShowWardCollapse(true);
+  };
+
+  // Khi chọn huyện/phường
+  const handleSelectWard = (ward) => {
+    setSelectedWard(ward);
+    setShowWardCollapse(false);
+  };
+
+  const submitLocation = () => {
+    updateFilter({
+      province: selectedProvince ? selectedProvince.slug : "",
+      ward: selectedWard ? selectedWard.slug : "",
+      page: 1,
+    });
+  };
+
+  // Đồng bộ selectedProvince và selectedWard từ bufferParams và locations
+  useEffect(() => {
+    if (!locations.length) return;
+
+    // Tìm province theo slug
+    let province = null;
+    if (bufferParams.province) {
+      province = locations.find((p) => p.slug === bufferParams.province);
+      setSelectedProvince(province || null);
+    } else {
+      setSelectedProvince(null);
+    }
+
+    // Tìm ward theo slug (nếu có province và ward)
+    if (province && bufferParams.ward) {
+      const ward = (province.wards || []).find(
+        (w) => w.slug === bufferParams.ward
+      );
+      setSelectedWard(ward || null);
+    } else {
+      setSelectedWard(null);
+    }
+  }, [bufferParams.province, bufferParams.ward, locations]);
+
+  // ----------------- End Location Filter -----------------
+
+  // ----------------- Needs Filter -----------------
+  const [collapseNeeds, setCollapseNeeds] = useState(false);
+  const [needsFilter, setNeedsFilter] = useState(null);
+
+  // Đồng bộ needsFilter từ bufferParams
+  useEffect(() => {
+    if (bufferParams.needs === "rent") setNeedsFilter("Tìm thuê");
+    else if (bufferParams.needs === "sell") setNeedsFilter("Tìm mua");
+    else setNeedsFilter(null);
+  }, [bufferParams.needs]);
+  // ----------------- End Needs Filter -----------------
+
+  // ----------------- Category Filter -----------------
+  const [collapseCategory, setCollapseCategory] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState([]);
+
+  const CATEGORY_OPTIONS = [
+    { value: "can-ho-chung-cu", label: "Căn hộ chung cư" },
+    { value: "chung-cu-mini", label: "Chung cư mini" },
+    { value: "nha-rieng", label: "Nhà riêng" },
+    { value: "van-phong-lam-viec", label: "Văn phòng làm việc" },
+    { value: "phong-tro-nha-tro", label: "Phòng trọ, nhà trọ" },
+    { value: "kho-nha-xuong", label: "Kho, nhà xưởng" },
+    { value: "dat-nen", label: "Đất nền" },
+    { value: "bat-dong-san-khac", label: "Bất động sản khác" },
+  ];
+
+  // Đồng bộ categoryFilter từ bufferParams
+  useEffect(() => {
+    if (bufferParams.category) {
+      setCategoryFilter(bufferParams.category.split(","));
+    } else {
+      setCategoryFilter([]);
+    }
+  }, [bufferParams.category]);
+  // ----------------- End Category Filter -----------------
+
+  // ----------------- Price Filter -----------------
+  const [collapsePrice, setCollapsePrice] = useState(false);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(0);
+  const [textPriceFilter, setTextPriceFilter] = useState("Tất cả giá");
+
+  useEffect(() => {
+    if (bufferParams.min_price) setMinPrice(Number(bufferParams.min_price));
+    else setMinPrice(null);
+    if (bufferParams.max_price) setMaxPrice(Number(bufferParams.max_price));
+    else setMaxPrice(null);
+  }, [bufferParams.min_price, bufferParams.max_price]);
+
+  const formatPriceText = (min, max) => {
+    if (!min && !max) return "Tất cả giá";
+
+    const formatUnit = (value) => {
+      if (value >= 1e9) return { num: value / 1e9, unit: "tỷ" };
+      return { num: value / 1e6, unit: "triệu" };
+    };
+
+    const minF = min ? formatUnit(min) : null;
+    const maxF = max ? formatUnit(max) : null;
+
+    if (minF && maxF) {
+      if (minF.unit === maxF.unit) {
+        return `${minF.num}-${maxF.num} ${minF.unit}`;
+      } else {
+        return `${minF.num} ${minF.unit} - ${maxF.num} ${maxF.unit}`;
+      }
+    } else if (minF) {
+      return `Từ ${minF.num} ${minF.unit}`;
+    } else {
+      return `Đến ${maxF.num} ${maxF.unit}`;
+    }
+  };
+
+  const handleResetPriceFilter = () => {
+    // xóa param min_price / max_price trong URL
+    const params = new URLSearchParams(location.search);
+    params.delete("min_price");
+    params.delete("max_price");
+    params.set("page", "1"); // reset về page 1 nếu cần
+    navigate({ pathname: location.pathname, search: params.toString() });
+
+    // cập nhật state áp dụng
+    setApplyParams((prev) => ({
+      ...prev,
+      min_price: null,
+      max_price: null,
+      page: 1,
+    }));
+
+    // tắt collapse nếu muốn
+    setCollapsePrice(false);
+  };
+  // ----------------- End Price Filter -----------------
+
+  // ----------------- Acreage Filter -----------------
+  const [collapseAcreage, setCollapseAcreage] = useState(false);
+  const [minAcreage, setMinAcreage] = useState(0);
+  const [maxAcreage, setMaxAcreage] = useState(0);
+
+  useEffect(() => {
+    if (bufferParams.min_acreage)
+      setMinAcreage(Number(bufferParams.min_acreage));
+    else setMinAcreage(null);
+    if (bufferParams.max_acreage)
+      setMaxAcreage(Number(bufferParams.max_acreage));
+    else setMaxAcreage(null);
+  }, [bufferParams.min_acreage, bufferParams.max_acreage]);
+
+  const formatAcreageText = (min, max) => {
+    if (!min && !max) return "Tất cả khoảng diện tích";
+    if (min && max) return `Từ ${min} - đến ${max} m²`;
+  };
+
+  // ----------------- Logic dùng chung -----------------
+  // Đóng dropdown khi click ngoài
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        provinceInputRef.current &&
+        !provinceInputRef.current.contains(event.target)
+      ) {
+        setShowProvinceDropdown(false);
+        setShowWardCollapse(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const getDynamicTitle = () => {
+    // 1. Nhu cầu
+    let needsText = "Mua bán";
+    if (applyParams.needs === "rent") needsText = "Cho thuê";
+    else if (applyParams.needs === "sell") needsText = "Mua bán";
+
+    // 2. Category
+    let categoryText = "bất động sản";
+    if (applyParams.category) {
+      const categoryValues = applyParams.category.split(","); // tách query string thành array
+      if (
+        categoryValues.length > 0 &&
+        categoryValues.length < CATEGORY_OPTIONS.length
+      ) {
+        const labels = categoryValues
+          .map(
+            (val) => CATEGORY_OPTIONS.find((opt) => opt.value === val)?.label
+          )
+          .filter(Boolean);
+        if (labels.length > 0) {
+          categoryText = labels.map((label) => label.toLowerCase()).join(", ");
+        }
+      }
+    }
+
+    // 3. Địa chỉ & giới từ
+    let addressText = "trên toàn quốc";
+    let gioiTu = applyParams.needs === "rent" ? "tại" : "trên";
+    if (selectedProvince && selectedWard) {
+      addressText = `${selectedWard.name} ${selectedProvince.name}`;
+      gioiTu = "tại";
+    } else if (selectedProvince) {
+      addressText = selectedProvince.name;
+      gioiTu = "tại";
+    }
+
+    // 4. Kết hợp
+    return `${needsText} ${categoryText} ${gioiTu} ${addressText}`;
+  };
 
   return (
     <div className={cx("listpost_container")}>
       {loading && <Spinner />}
       <div className={cx("filter_post_container")}>
-        <div className={cx("filter_post_input")}>
+        <div className={cx("filter_post_input")} ref={provinceInputRef}>
           <Search className={cx("icon_search")} size={24} color="#777777" />
+          <div
+            className={cx("info_location", {
+              show: selectedProvince || selectedWard,
+            })}
+          >
+            <span
+              className={cx("info_location_item")}
+              onClick={() => {
+                setShowProvinceDropdown(!showProvinceDropdown);
+                setShowWardCollapse(false);
+              }}
+            >
+              {selectedProvince ? selectedProvince.name : ""}
+            </span>
+            <div className={cx("vertical_break_line")}></div>
+            <span
+              className={cx("info_location_item")}
+              onClick={() => {
+                setShowWardCollapse(!showWardCollapse);
+                setShowProvinceDropdown(false);
+              }}
+            >
+              {selectedWard ? selectedWard.name : "Xã/phường"}
+            </span>
+          </div>
           <input
             className={cx("filter_input")}
             type="text"
-            placeholder="Bạn muốn tìm kiếm gì?"
+            placeholder={selectedProvince ? "" : "Chọn tỉnh/thành"}
+            onFocus={focusInput}
+            readOnly
+            // value={selectedProvince ? selectedProvince.name : ""}
           />
-          <button className={cx("filter_finding")}>Tìm kiếm</button>
+          {/* Hiển thị tỉnh đã chọn ở cuối input */}
+          <button className={cx("filter_finding")} onClick={submitLocation}>
+            Tìm kiếm
+          </button>
+          {showProvinceDropdown && (
+            <div className={cx("province_dropdown")}>
+              {locations.map((province) => (
+                <div
+                  key={province.code}
+                  className={cx("province_option")}
+                  onClick={() => handleSelectProvince(province)}
+                >
+                  {province.name}
+                </div>
+              ))}
+            </div>
+          )}
+          {selectedProvince &&
+            Array.isArray(selectedProvince.wards) &&
+            selectedProvince.wards.length > 0 && (
+              <div
+                className={cx("ward_collapse", "row", {
+                  show: showWardCollapse,
+                })}
+              >
+                {selectedProvince.wards.map((ward) => (
+                  <div
+                    key={ward.code}
+                    className={cx("ward_option", "col-3")}
+                    onClick={() =>
+                      handleSelectWard(ward, selectedProvince.slug)
+                    }
+                  >
+                    {ward.name}
+                  </div>
+                ))}
+              </div>
+            )}
         </div>
+
         <button className={cx("btn_view_in_map")}>
           {" "}
           <FontAwesomeIcon
@@ -143,11 +487,12 @@ const ContentListPostFilter = () => {
         </button>
       </div>
       <div className={cx("sub_filter")}>
-        <div className={cx("sub_filter_item")}>
-          <div
-            className={cx("sub_filter_title")}
-            onClick={() => setCollapseNeeds(!collapseNeeds)}
-          >
+        {/* ----------------------------- Fiter needs ----------------------------- */}
+        <div
+          className={cx("sub_filter_item")}
+          onClick={() => setCollapseNeeds(!collapseNeeds)}
+        >
+          <div className={cx("sub_filter_title")}>
             {needsFilter ? needsFilter : "Nhu cầu"}
             <Settings2 color="#575757ff" size={24} />
           </div>
@@ -161,6 +506,7 @@ const ContentListPostFilter = () => {
               onClick={() => {
                 setNeedsFilter("Tìm thuê");
                 setCollapseNeeds(false);
+                updateFilter({ needs: "rent", page: 1 });
               }}
             >
               Tìm thuê
@@ -170,114 +516,198 @@ const ContentListPostFilter = () => {
               onClick={() => {
                 setNeedsFilter("Tìm mua");
                 setCollapseNeeds(false);
+                updateFilter({ needs: "sell", page: 1 });
               }}
             >
               Tìm mua
             </div>
           </div>
         </div>
-        <div className={cx("sub_filter_item")}>
-          <div
-            className={cx("sub_filter_title")}
-            onClick={() => setCollapseCategory(!collapseCategory)}
-          >
-            {categoryFilter}
+        {/* ----------------------------- Fiter category ----------------------------- */}
+        <div
+          className={cx("sub_filter_item")}
+          onClick={() => setCollapseCategory(!collapseCategory)}
+        >
+          <div className={cx("sub_filter_title")}>
+            {(() => {
+              if (categoryFilter.length === 0) return "Loại hình bất động sản";
+              const labels = categoryFilter
+                .filter((val) => val !== "all")
+                .map(
+                  (val) =>
+                    CATEGORY_OPTIONS.find((opt) => opt.value === val)?.label
+                )
+                .filter(Boolean);
+              if (
+                categoryFilter.length === CATEGORY_OPTIONS.length ||
+                (categoryFilter.includes("all") &&
+                  categoryFilter.length === CATEGORY_OPTIONS.length)
+              ) {
+                return "Tất cả";
+              }
+              const labelStr = labels.join(", ");
+              if (labelStr.length > 40) {
+                return labelStr.slice(0, 40) + "...";
+              }
+              return labelStr;
+            })()}
             <Settings2 color="#575757ff" size={24} />
           </div>
-          <div className={cx("sub_item_collapse", { show: collapseCategory })}>
+          <div
+            className={cx("sub_item_collapse", { show: collapseCategory })}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className={cx("item_collapse_title")}>
               Lựa chọn loại hình bất động sản bạn muốn
             </div>
             <div className={cx("break_line")}></div>
-            <div
-              className={cx("item_collapse_name")}
+            <div>
+              {/* Checkbox "Tất cả" */}
+              <label className={cx("item_collapse_checkbox")}>
+                <input
+                  type="checkbox"
+                  checked={categoryFilter.length === CATEGORY_OPTIONS.length}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setCategoryFilter(
+                        CATEGORY_OPTIONS.map((opt) => opt.value)
+                      );
+                    } else {
+                      setCategoryFilter([]);
+                    }
+                  }}
+                />
+                Tất cả
+              </label>
+              {/* Các checkbox loại hình */}
+              {CATEGORY_OPTIONS.map((opt) => (
+                <label key={opt.value} className={cx("item_collapse_checkbox")}>
+                  <input
+                    type="checkbox"
+                    checked={categoryFilter.includes(opt.value)}
+                    onChange={(e) => {
+                      let newSelected;
+                      if (e.target.checked) {
+                        newSelected = [...categoryFilter, opt.value];
+                        // Nếu chọn hết thì tự động check "Tất cả"
+                        if (newSelected.length === CATEGORY_OPTIONS.length) {
+                          newSelected = CATEGORY_OPTIONS.map((o) => o.value);
+                        }
+                      } else {
+                        newSelected = categoryFilter.filter(
+                          (v) => v !== opt.value
+                        );
+                      }
+                      setCategoryFilter([...new Set(newSelected)]);
+                    }}
+                  />
+                  {opt.label}
+                </label>
+              ))}
+            </div>
+            <button
+              className={cx("btn_apply_category")}
               onClick={() => {
-                setCategoryFilter("Tất cả");
                 setCollapseCategory(false);
+                updateFilter({
+                  category: categoryFilter.join(","),
+                  page: 1,
+                });
               }}
             >
-              Tất cả
-            </div>
-            <div
-              className={cx("item_collapse_name")}
+              Áp dụng
+            </button>
+            <button
+              className={cx("btn_clear_category")}
               onClick={() => {
-                setCategoryFilter("Căn hộ chung cư");
+                setCategoryFilter([]);
                 setCollapseCategory(false);
+                updateFilter({ category: "", page: 1 });
               }}
             >
-              Căn hộ chung cư
-            </div>
-            <div
-              className={cx("item_collapse_name")}
-              onClick={() => {
-                setCategoryFilter("Chung cư mini");
-                setCollapseCategory(false);
-              }}
-            >
-              Chung cư mini
-            </div>
-            <div
-              className={cx("item_collapse_name")}
-              onClick={() => {
-                setCategoryFilter("Nhà riêng");
-                setCollapseCategory(false);
-              }}
-            >
-              Nhà riêng
-            </div>
-            <div
-              className={cx("item_collapse_name")}
-              onClick={() => {
-                setCategoryFilter("Văn phòng làm việc");
-                setCollapseCategory(false);
-              }}
-            >
-              Văn phòng làm việc
-            </div>
-            <div
-              className={cx("item_collapse_name")}
-              onClick={() => {
-                setCategoryFilter("Phòng trọ, nhà trọ");
-                setCollapseCategory(false);
-              }}
-            >
-              Phòng trọ, nhà trọ
-            </div>
-            <div
-              className={cx("item_collapse_name")}
-              onClick={() => {
-                setCategoryFilter("Kho, nhà xưởng");
-                setCollapseCategory(false);
-              }}
-            >
-              Kho, nhà xưởng
-            </div>
-            <div
-              className={cx("item_collapse_name")}
-              onClick={() => {
-                setCategoryFilter("Đất nền");
-                setCollapseCategory(false);
-              }}
-            >
-              Đất nền
-            </div>
-            <div
-              className={cx("item_collapse_name")}
-              onClick={() => {
-                setCategoryFilter("Bất động sản khác");
-                setCollapseCategory(false);
-              }}
-            >
-              Bất động sản khác
-            </div>
+              Xóa chọn
+            </button>
           </div>
         </div>
+        {/* ----------------------------- Fiter price ----------------------------- */}
+        <div className={cx("sub_filter_item")}>
+          <div
+            className={cx("sub_filter_title")}
+            onClick={() => setCollapsePrice(true)}
+          >
+            {formatPriceText(applyParams.min_price, applyParams.max_price)}
+            <Settings2 color="#575757ff" size={24} />
+          </div>
+          <div className={cx("sub_item_collapse", { show: collapsePrice })}>
+            <div className={cx("item_collapse_title")}>Lọc khoảng giá</div>
+            <div className={cx("break_line")}></div>
+            <PriceFilter
+              min_price_param={minPrice}
+              max_price_param={maxPrice}
+              needs={applyParams.needs}
+              onSubmit={({ min_price, max_price }) => {
+                updateFilter({ min_price, max_price, page: 1 });
+
+                setLoading(true);
+                setTimeout(() => {
+                  setCollapsePrice(false); // tắt collapse sau submit
+                  setLoading(false);
+                }, 1000);
+              }}
+              onReset={() => {
+                console.log("Đã reset filter");
+                setLoading(true);
+                setTimeout(() => {
+                  setCollapsePrice(false); // tắt collapse sau submit
+                  setLoading(false);
+                }, 1000);
+              }}
+            />
+          </div>
+        </div>
+        {/* ----------------------------- End fiter Price ----------------------------- */}
+        {/* ----------------------------- Fiter Acreage ----------------------------- */}
+              <div className={cx("sub_filter_item")}>
+          <div
+            className={cx("sub_filter_title")}
+            onClick={() => setCollapseAcreage(!collapseAcreage)}
+          >
+            {formatAcreageText(applyParams.min_acreage, applyParams.max_acreage)}
+            <Settings2 color="#575757ff" size={24} />
+          </div>
+          <div className={cx("sub_item_collapse", { show: collapseAcreage })}>
+            <div className={cx("item_collapse_title")}>Lọc khoảng diện tích</div>
+            <div className={cx("break_line")}></div>
+            <AcreageFilter
+              min_acreage_param={minAcreage}
+              max_acreage_param={maxAcreage}
+              needs={applyParams.needs}
+              onSubmit={({ min_acreage, max_acreage }) => {
+                updateFilter({ min_acreage, max_acreage, page: 1 });
+
+                setLoading(true);
+                setTimeout(() => {
+                  setCollapseAcreage(false); // tắt collapse sau submit
+                  setLoading(false);
+                }, 500);
+              }}
+              onReset={() => {
+                handleResetPriceFilter();
+                console.log("Đã reset filter");
+                setLoading(true);
+                setTimeout(() => {
+                  setCollapseAcreage(false); // tắt collapse sau submit
+                  setLoading(false);
+                }, 500);
+              }}
+            />
+          </div>
+        </div>
+        {/* ----------------------------- End fiter Acreage ----------------------------- */}
       </div>
       <div className={cx("break_line")}></div>
       <div className={cx("category_subtitle")}>Danh mục</div>
-      <div className={cx("category_title")}>
-        Mua chung cư mini trên toàn quốc với giá từ 200 triệu - 3 tỷ
-      </div>
+      <div className={cx("category_title")}>{getDynamicTitle()}</div>
       <div className={cx("number_result")}>Hiện có: {countPost} kết quả</div>
       {listPost.map((post, index) => (
         <div

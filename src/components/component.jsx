@@ -21,7 +21,8 @@ import RequireLogin from "./RequireLogin";
 import QuickNav from "./QuickNav";
 import ScrollToTop from "./ScrollToTop";
 import CollapseSection from "./CollapseSection";
-
+import PriceFilter from "./PriceFliter";
+import AcreageFilter from "./AcreageFilter";
 export {
   Header,
   Footer,
@@ -46,4 +47,6 @@ export {
   QuickNav,
   ScrollToTop,
   CollapseSection,
+  PriceFilter,
+  AcreageFilter
 };
