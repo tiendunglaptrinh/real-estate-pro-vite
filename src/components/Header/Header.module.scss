@@ -88,7 +88,7 @@
   cursor: pointer;
 
   &:hover {
-    background-color: var(--hover-light);
+    background: var(--accent3);
   }
 }
 
@@ -111,35 +111,109 @@
   height: 30px;
   background-color: #fff;
 }
+.wrapper_avatar {
+  display: flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-right: 40px;
+}
 .avatar {
   width: 55px;
   height: 55px;
   border: 1px solid #fff;
   padding: 5px;
-  margin-right: 40px;
   border-radius: 50%;
   cursor: pointer;
 }
 
-
-.btn_login, .btn_register{
+.btn_login,
+.btn_register {
   transition: 0.2s ease-in;
   font-weight: 400;
 
-  &:hover{
+  &:hover {
     background-color: #fff !important;
     color: var(--primary1) !important;
     transition: 0.2s ease-in-out;
   }
 }
-.btn_post{
+.btn_post {
   transition: 0.2s ease-in;
   font-weight: 400;
 
-  &:hover{
+  &:hover {
     background-color: #9d7f4d !important;
     color: #fff !important;
     transition: 0.2s ease-in-out;
-    box-shadow: 0 1px   4px #fff;
+    box-shadow: 0 1px 4px #fff;
   }
+}
+// Add avatar
+.dropdown_avatar {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 8px 0;
+  padding-top: 20px;
+  min-width: 180px;
+
+  opacity: 0;
+  transform: translateY(-10px); // trượt nhẹ lên trên
+  visibility: hidden;
+  transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+
+  &.show {
+    opacity: 1;
+    transform: translateY(5px);
+    visibility: visible;
+  }
+}
+
+.dropdown_avatar_item {
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  min-width: 220px;
+
+  &:hover {
+    background: var(--accent3);
+  }
+}
+.break_line {
+  height: 1px;
+  width: 100%;
+  background: #d8d8d8;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.icon_user_menu {
+  font-size: 16px;
+  color: #3f3f3f;
+}
+
+.icon_close_menu {
+  position: absolute;
+  top: 5px;
+  font-size: 15px;
+  right: 5px;
+  color: #3f3f3f;
+
+  transition: 0.15s ease-in;
+
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.15s ease-in;
+  }
+
+  cursor: pointer;
 }

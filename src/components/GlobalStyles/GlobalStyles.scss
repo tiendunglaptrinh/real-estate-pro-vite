@@ -169,3 +169,31 @@ p {
   padding: 0 !important;
   margin: 0 !important;
 }
+
+
+//---------------- Mixin -----------------
+@mixin dropdown-animation($distance: 10px, $duration: 0.25s) {
+  opacity: 0;
+  transform: translateY(-#{$distance});
+  visibility: hidden;
+  transition: opacity $duration ease, transform $duration ease, visibility $duration ease;
+
+  &.show {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+  }
+}
+body {
+  font-family: 'Roboto', 'Noto Sans', sans-serif;
+  font-weight: 400;
+}
+
+h1, h2, h3 {
+  font-weight: 700; /* đậm cho tiêu đề */
+}
+
+p, span {
+  font-weight: 400; /* nhẹ cho nội dung */
+}
+

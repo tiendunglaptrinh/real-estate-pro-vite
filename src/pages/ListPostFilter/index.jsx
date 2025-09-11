@@ -8,7 +8,7 @@ import {
   CollapseSection,
   Spinner,
   PriceFilter,
-  AcreageFilter
+  AcreageFilter,
 } from "@components/component";
 import { fetchApi, formatUnitPrice } from "@utils/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -25,6 +25,9 @@ import {
   ChevronsRight,
   Star,
 } from "lucide-react";
+import hcm from "@backgrounds/ho_chi_minh.jpg";
+import hanoi from "@backgrounds/ha_noi.jpg";
+import danang from "@backgrounds/da_nang.jpg";
 import avatar from "@assets/avatar_defaults/male.png";
 const cx = classnames.bind(styles);
 
@@ -141,10 +144,14 @@ const ContentListPostFilter = () => {
       Object.entries(updated).filter(([_, v]) => v !== "")
     );
 
-    navigate({
-      pathname: "/list-post",
-      search: `?${new URLSearchParams(query).toString()}`,
-    });
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      navigate({
+        pathname: "/list-post",
+        search: `?${new URLSearchParams(query).toString()}`,
+      });
+    }, 500);
   };
   // ------------------------------------- End logic cho bufferParams ----------------------------
 
@@ -193,6 +200,8 @@ const ContentListPostFilter = () => {
   };
 
   const submitLocation = () => {
+    setShowProvinceDropdown(false);
+    setShowWardCollapse(false);
     updateFilter({
       province: selectedProvince ? selectedProvince.slug : "",
       ward: selectedWard ? selectedWard.slug : "",
@@ -396,6 +405,69 @@ const ContentListPostFilter = () => {
     return `${needsText} ${categoryText} ${gioiTu} ${addressText}`;
   };
 
+  // Logic toogle các collapse
+  const toggleNeeds = () => {
+    setCollapseNeeds((prev) => {
+      const newState = !prev;
+      if (newState) {
+        setCollapseCategory(false);
+        setCollapsePrice(false);
+        setCollapseAcreage(false);
+      }
+      return newState;
+    });
+  };
+
+  const toggleCategory = () => {
+    setCollapseCategory((prev) => {
+      const newState = !prev;
+      if (newState) {
+        setCollapseNeeds(false);
+        setCollapsePrice(false);
+        setCollapseAcreage(false);
+      }
+      return newState;
+    });
+  };
+
+  const togglePrice = () => {
+    setCollapsePrice((prev) => {
+      const newState = !prev;
+      if (newState) {
+        setCollapseNeeds(false);
+        setCollapseCategory(false);
+        setCollapseAcreage(false);
+      }
+      return newState;
+    });
+  };
+
+  const filterRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setCollapseNeeds(false);
+        setCollapseCategory(false);
+        setCollapsePrice(false);
+        setCollapseAcreage(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const toggleAcreage = () => {
+    setCollapseAcreage((prev) => {
+      const newState = !prev;
+      if (newState) {
+        setCollapseNeeds(false);
+        setCollapseCategory(false);
+        setCollapsePrice(false);
+      }
+      return newState;
+    });
+  };
+
   return (
     <div className={cx("listpost_container")}>
       {loading && <Spinner />}
@@ -440,16 +512,52 @@ const ContentListPostFilter = () => {
             Tìm kiếm
           </button>
           {showProvinceDropdown && (
-            <div className={cx("province_dropdown")}>
-              {locations.map((province) => (
-                <div
-                  key={province.code}
-                  className={cx("province_option")}
-                  onClick={() => handleSelectProvince(province)}
-                >
-                  {province.name}
-                </div>
-              ))}
+            <div className={cx("province_dropdown", "row")}>
+              <div className={cx("main_province")}>
+                Các bất động sản nổi bật
+              </div>
+              {/* Lấy các province có priority = 2 */}
+              {locations
+                .filter((province) => province.priority === 2)
+                .map((province, index) => {
+                  const bg = hanoi
+                    ? index % 3 === 0
+                      ? hanoi
+                      : index % 3 === 1
+                      ? hcm
+                      : danang
+                    : "";
+                  return (
+                    <div
+                      key={province.code}
+                      className={cx("province_option", "main")}
+                      style={{
+                        backgroundImage: `url(${bg})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                      onClick={() => handleSelectProvince(province)}
+                    >
+                      <div className={cx("province_overlay")}>
+                        {province.name}
+                      </div>
+                    </div>
+                  );
+                })}
+              <div className={cx("break_line", "province")}></div>
+              <div className={cx("sub_province")}>Các tỉnh thành khác</div>
+              {/* Lấy các province có priority = 1 */}
+              {locations
+                .filter((province) => province.priority === 1)
+                .map((province) => (
+                  <div
+                    key={province.code}
+                    className={cx("province_option", "sub")}
+                    onClick={() => handleSelectProvince(province)}
+                  >
+                    {province.name}
+                  </div>
+                ))}
             </div>
           )}
           {selectedProvince &&
@@ -460,6 +568,7 @@ const ContentListPostFilter = () => {
                   show: showWardCollapse,
                 })}
               >
+                <div className={cx("sub_province")}>Tất cả các xã/phường</div>
                 {selectedProvince.wards.map((ward) => (
                   <div
                     key={ward.code}
@@ -486,12 +595,9 @@ const ContentListPostFilter = () => {
           Xem bản đồ{" "}
         </button>
       </div>
-      <div className={cx("sub_filter")}>
+      <div className={cx("sub_filter")} ref={filterRef}>
         {/* ----------------------------- Fiter needs ----------------------------- */}
-        <div
-          className={cx("sub_filter_item")}
-          onClick={() => setCollapseNeeds(!collapseNeeds)}
-        >
+        <div className={cx("sub_filter_item")} onClick={toggleNeeds}>
           <div className={cx("sub_filter_title")}>
             {needsFilter ? needsFilter : "Nhu cầu"}
             <Settings2 color="#575757ff" size={24} />
@@ -503,7 +609,8 @@ const ContentListPostFilter = () => {
             <div className={cx("break_line")}></div>
             <div
               className={cx("item_collapse_name")}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation(); // chặn event không bubble lên div ngoài
                 setNeedsFilter("Tìm thuê");
                 setCollapseNeeds(false);
                 updateFilter({ needs: "rent", page: 1 });
@@ -511,9 +618,11 @@ const ContentListPostFilter = () => {
             >
               Tìm thuê
             </div>
+
             <div
               className={cx("item_collapse_name")}
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
                 setNeedsFilter("Tìm mua");
                 setCollapseNeeds(false);
                 updateFilter({ needs: "sell", page: 1 });
@@ -524,10 +633,7 @@ const ContentListPostFilter = () => {
           </div>
         </div>
         {/* ----------------------------- Fiter category ----------------------------- */}
-        <div
-          className={cx("sub_filter_item")}
-          onClick={() => setCollapseCategory(!collapseCategory)}
-        >
+        <div className={cx("sub_filter_item")} onClick={toggleCategory}>
           <div className={cx("sub_filter_title")}>
             {(() => {
               if (categoryFilter.length === 0) return "Loại hình bất động sản";
@@ -561,7 +667,7 @@ const ContentListPostFilter = () => {
               Lựa chọn loại hình bất động sản bạn muốn
             </div>
             <div className={cx("break_line")}></div>
-            <div>
+            <div className={cx("item_collapse_checkboxes")}>
               {/* Checkbox "Tất cả" */}
               <label className={cx("item_collapse_checkbox")}>
                 <input
@@ -605,36 +711,35 @@ const ContentListPostFilter = () => {
                 </label>
               ))}
             </div>
-            <button
-              className={cx("btn_apply_category")}
-              onClick={() => {
-                setCollapseCategory(false);
-                updateFilter({
-                  category: categoryFilter.join(","),
-                  page: 1,
-                });
-              }}
-            >
-              Áp dụng
-            </button>
-            <button
-              className={cx("btn_clear_category")}
-              onClick={() => {
-                setCategoryFilter([]);
-                setCollapseCategory(false);
-                updateFilter({ category: "", page: 1 });
-              }}
-            >
-              Xóa chọn
-            </button>
+            <div className={cx("wrap_btn")}>
+              <button
+                className={cx("btn_apply_category")}
+                onClick={() => {
+                  setCollapseCategory(false);
+                  updateFilter({
+                    category: categoryFilter.join(","),
+                    page: 1,
+                  });
+                }}
+              >
+                Áp dụng
+              </button>
+              <button
+                className={cx("btn_clear_category")}
+                onClick={() => {
+                  setCategoryFilter([]);
+                  setCollapseCategory(false);
+                  updateFilter({ category: "", page: 1 });
+                }}
+              >
+                Xóa chọn
+              </button>
+            </div>
           </div>
         </div>
         {/* ----------------------------- Fiter price ----------------------------- */}
         <div className={cx("sub_filter_item")}>
-          <div
-            className={cx("sub_filter_title")}
-            onClick={() => setCollapsePrice(true)}
-          >
+          <div className={cx("sub_filter_title")} onClick={togglePrice}>
             {formatPriceText(applyParams.min_price, applyParams.max_price)}
             <Settings2 color="#575757ff" size={24} />
           </div>
@@ -667,16 +772,18 @@ const ContentListPostFilter = () => {
         </div>
         {/* ----------------------------- End fiter Price ----------------------------- */}
         {/* ----------------------------- Fiter Acreage ----------------------------- */}
-              <div className={cx("sub_filter_item")}>
-          <div
-            className={cx("sub_filter_title")}
-            onClick={() => setCollapseAcreage(!collapseAcreage)}
-          >
-            {formatAcreageText(applyParams.min_acreage, applyParams.max_acreage)}
+        <div className={cx("sub_filter_item")}>
+          <div className={cx("sub_filter_title")} onClick={toggleAcreage}>
+            {formatAcreageText(
+              applyParams.min_acreage,
+              applyParams.max_acreage
+            )}
             <Settings2 color="#575757ff" size={24} />
           </div>
           <div className={cx("sub_item_collapse", { show: collapseAcreage })}>
-            <div className={cx("item_collapse_title")}>Lọc khoảng diện tích</div>
+            <div className={cx("item_collapse_title")}>
+              Lọc khoảng diện tích
+            </div>
             <div className={cx("break_line")}></div>
             <AcreageFilter
               min_acreage_param={minAcreage}
@@ -709,6 +816,11 @@ const ContentListPostFilter = () => {
       <div className={cx("category_subtitle")}>Danh mục</div>
       <div className={cx("category_title")}>{getDynamicTitle()}</div>
       <div className={cx("number_result")}>Hiện có: {countPost} kết quả</div>
+      {countPost === 0 && (
+        <div className={cx("no_data")}>
+          Hiện chưa có bài đăng phù hợp với nhu cầu.
+        </div>
+      )}
       {listPost.map((post, index) => (
         <div
           key={index}

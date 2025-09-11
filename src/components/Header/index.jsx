@@ -10,7 +10,16 @@ import maleDefault from "@assets/avatar_defaults/male.png";
 import femaleDefault from "@assets/avatar_defaults/female.png";
 import { fetchApi } from "@utils/utils";
 import { useLocation } from "react-router-dom";
-// import gg from "@images/google.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faUser,
+  faCreditCard,
+  faCircleQuestion,
+  faEye,
+  faFileLines,
+} from "@fortawesome/free-regular-svg-icons";
+import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
 const cx = classNames.bind(styles);
 
@@ -83,18 +92,36 @@ function Header() {
   }, []);
 
   const handleMoveByURLQuery = (params) => {
-  const queryParam = new URLSearchParams();
+    const queryParam = new URLSearchParams();
 
-  Object.entries(params).forEach(([key, value]) => {
-    if (value != null && value !== "") queryParam.append(key, value);
-  });
+    Object.entries(params).forEach(([key, value]) => {
+      if (value != null && value !== "") queryParam.append(key, value);
+    });
 
-  navigate(`/list-post?${queryParam.toString()}`);
-};
+    navigate(`/list-post?${queryParam.toString()}`);
+  };
 
+  const [collapseAvatar, setCollapseAvatar] = useState(false);
+  const handleOnclickAvatar = () => {
+    setCollapseAvatar(!collapseAvatar);
+  };
+
+  const navigateDashBoardUser = (url) => {
+    const urlObj = {
+      account: "/dashboard/account",
+      customer: "/dashboard/customer",
+      post: "/dashboard/post",
+      wallet: "/dashboard/wallet",
+    };
+
+    navigate(urlObj[url]);
+  };
 
   return (
-    <div key={location.key} className={cx("wrapper_header", { scroll: isScroll })}>
+    <div
+      key={location.key}
+      className={cx("wrapper_header", { scroll: isScroll })}
+    >
       <Link to="/">
         <div className={cx("logo")}>
           <img className={cx("logo_img")} src={logo} alt="Logo Homepro" />
@@ -102,21 +129,36 @@ function Header() {
       </Link>
       <div className={cx("menu")}>
         <div className={cx("menu_item")}>
-          <button className={cx("menu_item_btn")} onClick={() => handleMoveByURLQuery({needs: "sell"})}>
+          <button
+            className={cx("menu_item_btn")}
+            onClick={() => handleMoveByURLQuery({ needs: "sell" })}
+          >
             Nhà đất bán
           </button>
           <ul className={cx("dropdown_menu")}>
             {categories
               .filter((cate) => cate.type === "sell")
               .map((cate, i) => (
-                <li key={i} className={cx("dropdown_menu_item")} onClick={() => handleMoveByURLQuery({needs: "sell", category: cate.category_slug})}>
+                <li
+                  key={i}
+                  className={cx("dropdown_menu_item")}
+                  onClick={() =>
+                    handleMoveByURLQuery({
+                      needs: "sell",
+                      category: cate.category_slug,
+                    })
+                  }
+                >
                   {cate.category}
                 </li>
               ))}
           </ul>
         </div>
         <div className={cx("menu_item")}>
-          <button className={cx("menu_item_btn")} onClick={() => handleMoveByURLQuery({needs: "rent"})}>
+          <button
+            className={cx("menu_item_btn")}
+            onClick={() => handleMoveByURLQuery({ needs: "rent" })}
+          >
             {" "}
             Nhà đất cho thuê{" "}
           </button>
@@ -124,7 +166,16 @@ function Header() {
             {categories
               .filter((cate) => cate.type === "rent")
               .map((cate, i) => (
-                <li key={i} className={cx("dropdown_menu_item")} onClick={() => handleMoveByURLQuery({needs: "rent", category: cate.category_slug})}>
+                <li
+                  key={i}
+                  className={cx("dropdown_menu_item")}
+                  onClick={() =>
+                    handleMoveByURLQuery({
+                      needs: "rent",
+                      category: cate.category_slug,
+                    })
+                  }
+                >
                   {" "}
                   {cate.category}
                 </li>
@@ -134,7 +185,7 @@ function Header() {
         <div className={cx("menu_item")}>
           <button
             className={cx("menu_item_btn")}
-            onClick={() => handleMoveByURLQuery({needs: "short_utility"})}
+            onClick={() => handleMoveByURLQuery({ needs: "short_utility" })}
           >
             {" "}
             Tiện ích ngắn hạn{" "}
@@ -151,10 +202,75 @@ function Header() {
           </ul>
         </div>
       </div>
+
+      {/* ---------------------------- Đã login ---------------------------- */}
       <div className={cx("wrapper_user")}>
         {isLogin ? (
           <>
-            <img className={cx("avatar")} src={avatar} alt="" />
+            <div className={cx("wrapper_avatar")}>
+              <img
+                onClick={handleOnclickAvatar}
+                className={cx("avatar")}
+                src={avatar}
+                alt=""
+              />
+              <div className={cx("dropdown_avatar", { show: collapseAvatar })}>
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  className={cx("icon_close_menu")}
+                  onClick={() => setCollapseAvatar(false)}
+                />
+                <div className={cx("user_info_dropdown")}>
+                  <div className={cx("dropdown_avatar_item")} onClick={() => navigateDashBoardUser("account")}>
+                    <FontAwesomeIcon
+                      className={cx("icon_user_menu")}
+                      icon={faUser}
+                    />{" "}
+                    Thông tin cá nhân{" "}
+                  </div>
+                  <div className={cx("dropdown_avatar_item")} onClick={() => navigateDashBoardUser("wallet")}>
+                    <FontAwesomeIcon
+                      className={cx("icon_user_menu")}
+                      icon={faCreditCard}
+                    />
+                    Quản lý tài chính
+                  </div>
+                  <div className={cx("dropdown_avatar_item")} onClick={() => navigateDashBoardUser("post")}>
+                    {" "}
+                    <FontAwesomeIcon
+                      className={cx("icon_user_menu")}
+                      icon={faFileLines}
+                    />
+                    Quản lý tin đăng{" "}
+                  </div>
+                  <div className={cx("dropdown_avatar_item")} onClick={() => navigateDashBoardUser("customer")}>
+                    {" "}
+                    <FontAwesomeIcon
+                      className={cx("icon_user_menu")}
+                      icon={faEye}
+                    />
+                    Thông tin người xem{" "}
+                  </div>
+                </div>
+                <div className={cx("break_line")}></div>
+                <div className={cx("user_info_dropdown")}>
+                  <div className={cx("dropdown_avatar_item")}>
+                    <FontAwesomeIcon
+                      className={cx("icon_user_menu")}
+                      icon={faCircleQuestion}
+                    />
+                    Hỗ trợ
+                  </div>
+                  <div className={cx("dropdown_avatar_item")}>
+                    <FontAwesomeIcon
+                      className={cx("icon_user_menu")}
+                      icon={faRightFromBracket}
+                    />
+                    Đăng xuất
+                  </div>
+                </div>
+              </div>
+            </div>
             <Link to="/new-post">
               {" "}
               <Button
@@ -169,6 +285,7 @@ function Header() {
             </Link>
           </>
         ) : (
+          // {/* ---------------------------- Chưa login ---------------------------- */}
           <div className={cx("auth_buttons")}>
             <Link to="/login">
               {" "}
@@ -202,7 +319,7 @@ function Header() {
             <Link to="/new-post">
               {" "}
               <Button
-              className={cx("btn_post")}
+                className={cx("btn_post")}
                 size="small"
                 borderRadius="10px"
                 background="#B2935D"

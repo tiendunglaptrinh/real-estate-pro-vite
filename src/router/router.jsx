@@ -9,6 +9,10 @@ import {
   NotFound,
   NewPost,
   ListPostFilter,
+  UserAccount,
+  UserCustomer,
+  UserPost,
+  UserWallet,
 } from "@pages/page";
 import ProtectRoute from "../middlewares/ProtectRoute";
 
@@ -36,9 +40,7 @@ export default function Router() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/list-post" element={<ListPostFilter />} />
-        <Route
-          path="/new-post"
-          element={
+        <Route path="/new-post" element={
             <ProtectRoute roleRoute="user">
               <NewPost />
             </ProtectRoute>
@@ -46,6 +48,32 @@ export default function Router() {
         />
         <Route path="/notfound" element={<NotFound />} />
         <Route path="*" element={<NotFound />} />
+
+        {/* Dashboard */}
+        <Route path="/dashboard/account" element={
+            <ProtectRoute roleRoute="user">
+              <UserAccount />
+            </ProtectRoute>
+          }
+        />
+        <Route path="/dashboard/wallet" element={
+            <ProtectRoute roleRoute="user">
+              <UserWallet />
+            </ProtectRoute>
+          }
+        />
+        <Route path="/dashboard/post" element={
+            <ProtectRoute roleRoute="user">
+              <UserPost />
+            </ProtectRoute>
+          }
+        />
+        <Route path="/dashboard/customer" element={
+            <ProtectRoute roleRoute="user">
+              <UserCustomer/>
+            </ProtectRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

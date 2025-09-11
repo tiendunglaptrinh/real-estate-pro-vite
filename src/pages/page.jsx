@@ -7,6 +7,12 @@ import NotFound from "./NotFound";
 import NewPost from "./NewPost";
 import ListPostFilter from "./ListPostFilter/index";
 
+// Dashboard
+import UserAccount from "./User/UserAccount";
+import UserCustomer from "./User/UserCustomer";
+import UserPost from "./User/UserPost";
+import UserWallet from "./User/UserWaller";
+
 export {
   HomePage,
   Unauthorized,
@@ -16,4 +22,8 @@ export {
   NotFound,
   NewPost,
   ListPostFilter,
+  UserAccount,
+  UserCustomer,
+  UserPost,
+  UserWallet,
 };

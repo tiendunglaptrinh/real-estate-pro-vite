@@ -82,7 +82,7 @@ const AcreageFilter = ({
 
   return (
     <div style={{ width: 300, padding: "1rem" }}>
-      <p className={cx("price_filter_text")}>
+      <p className={cx("acreage_filter_text")}>
         {acreageRange[0]} → {acreageRange[1]} m<sup>2</sup>
       </p>
       <Slider
@@ -100,14 +100,14 @@ const AcreageFilter = ({
         railStyle={{ backgroundColor: "#ddd" }}
       />
 
-      <div className={cx("price_filter_input")}>
-        <div className={cx("wrap_price_item")}>
-          <div className={cx("price_title")}>Diện tích nhỏ nhất</div>
-          <div className={cx("price_num")}>
+      <div className={cx("acreage_filter_input")}>
+        <div className={cx("wrap_acreage_item")}>
+          <div className={cx("acreage_title")}>Diện tích nhỏ nhất</div>
+          <div className={cx("acreage_num")}>
             <input
               min={range[0]}
               max={range[1]}
-              className={cx("input_price")}
+              className={cx("input_acreage")}
               value={inputs.min}
               onChange={(e) => handleInputChange("min", e.target.value)}
               placeholder="Từ"
@@ -115,13 +115,13 @@ const AcreageFilter = ({
           </div>
         </div>
 
-        <div className={cx("wrap_price_item")}>
-          <div className={cx("price_title")}>Diện tích lớn nhất</div>
-          <div className={cx("price_num")}>
+        <div className={cx("wrap_acreage_item")}>
+          <div className={cx("acreage_title")}>Diện tích lớn nhất</div>
+          <div className={cx("acreage_num")}>
             <input
               min={range[0]}
               max={range[1]}
-              className={cx("input_price")}
+              className={cx("input_acreage")}
               value={inputs.max}
               onChange={(e) => handleInputChange("max", e.target.value)}
               placeholder="Đến"

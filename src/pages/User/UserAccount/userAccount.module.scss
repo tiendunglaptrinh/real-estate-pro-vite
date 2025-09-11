@@ -1,0 +1,181 @@
+.user_account_title {
+  font-size: 30px;
+  font-weight: 600;
+}
+
+.user_account_content {
+  width: 100%;
+  display: flex;
+  gap: 50px;
+  margin-top: 30px;
+  height: fit-content;
+}
+
+.user_account_left {
+  width: 40%;
+  height: fit-content;
+  aspect-ratio: 4/5;
+  background-color: transparent;
+  border-radius: 20px;
+  box-shadow: 0px 1px 4px #9e9e9e;
+}
+.user_info_top {
+  width: 100%;
+  height: 35%;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  background-image: url("@backgrounds/bg_account.jpg");
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+.user_account_right {
+  flex: 1;
+}
+.img_avatar {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  padding: 2px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background-color: #fff;
+  bottom: 0;
+  left: 0;
+  transform: translate(50%, 50%);
+}
+
+.user_name {
+  position: absolute;
+  font-size: 20px;
+  font-weight: 500;
+  top: 100%;
+  left: 30%;
+  transform: translate(0, 10px);
+}
+.user_info_bottom {
+  padding: 0 40px;
+  padding-top: 70px;
+  padding-bottom: 20px;
+}
+.sub_title_info {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 16px;
+  font-weight: 500;
+}
+.user_input_info {
+  width: 100%;
+  background: #f1f1f1;
+  padding: 7px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  font-weight: 400;
+  color: #616161;
+  border-radius: 5px;
+}
+
+.user_account_system {
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0px 1px 4px #9e9e9e;
+  margin-bottom: 30px;
+}
+.title_info {
+  font-size: 19px;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+.account_system_item {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+}
+.account_system_left {
+  width: 40%;
+}
+.account_system_right {
+  width: 50%;
+}
+.section_chart {
+  width: 100%;
+}
+.piechart_container {
+  width: 100% !important;
+  height: 300px !important;
+}
+/* ================= Legend ================= */
+:global(.recharts-legend-wrapper) {
+  top: auto;
+  left: 70%;
+  width: 200px;
+  font-size: 15px !important;
+  color: #333;
+
+  .recharts-legend-item {
+    display: flex;
+    align-items: center;
+    margin-right: 12px;
+    margin-bottom: 10px !important;
+    cursor: pointer;
+
+    &:hover {
+      color: #555;
+    }
+
+    .recharts-legend-item-text {
+      margin-left: 8px;
+    }
+
+    .recharts-legend-item-icon {
+      width: 15px !important;
+      height: 15px !important;
+      border-radius: 20px !important;
+    }
+  }
+}
+/* ================= Legend spacing ================= */
+:global(.recharts-legend-wrapper) {
+  .recharts-legend-item {
+    margin-bottom: 12px; /* tăng khoảng cách giữa các item */
+  }
+}
+:global(.recharts-legend-item-text) {
+  font-size: 15px;
+  font-weight: 500;
+}
+:global(li.recharts-legend-item) {
+  margin-bottom: 10px;
+  font-size: 14px;
+  font-weight: 500;
+}
+:global(text.recharts-text.recharts-pie-label-text) {
+  font-size: 15px;
+  font-weight: 500;
+}
+/* ================= Tooltip ================= */
+:global(.recharts-tooltip-wrapper) {
+  /* Toàn bộ khung tooltip khi hover */
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-size: 15px !important;
+  color: #333;
+  pointer-events: none; /* Không chặn hover */
+}
+
+/* ================= Labels (số trên chart) ================= */
+:global(.recharts-pie-label) {
+  /* Text hiển thị ngay trên Pie slice */
+  font-size: 15px !important;
+  fill: #333; /* Màu chữ */
+  font-weight: 500;
+}
+/* ================= Labels (số ngoài chart) ================= */
+:global(.recharts-text.recharts-pie-label) {
+  font-size: 15px !important; /* cỡ chữ */
+  fill: #333; /* màu chữ */
+  font-weight: 500;
+}

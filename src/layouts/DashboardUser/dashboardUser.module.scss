@@ -1,0 +1,226 @@
+.dashboard_container {
+  width: 100vw;
+  height: 100vh;
+  background: var(--primary1);
+  padding: 20px;
+  display: flex;
+  gap: 20px;
+}
+.dashboard_right {
+  flex: 1;
+  background-color: #fff;
+  height: 100%;
+  border-radius: 20px;
+  padding: 30px;
+}
+.dashboard_left {
+  width: 20%;
+  min-width: 300px;
+  height: 100%;
+  position: relative;
+}
+
+.logo_name {
+  object-fit: contain;
+  margin-top: 30px;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+.user_avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 70px;
+  flex-direction: column;
+  height: 70px;
+  border: 1px solid #fff;
+  justify-content: center;
+  align-items: center;
+}
+.image_avatar {
+  width: 75px;
+  height: 75px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.user_fullname {
+  font-size: 17px;
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 10px;
+}
+.user_email {
+  font-size: 14px;
+  color: #fff;
+  font-weight: 400;
+  text-align: center;
+  margin-top: 5px;
+}
+.user_phone {
+  font-size: 17px;
+  color: #fff;
+  font-weight: 500;
+  text-align: center;
+  margin-top: 10px;
+}
+.dashboard_top {
+  background: #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 20px;
+}
+
+.dashboard_left_bottom {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  width: 100%;
+  gap: 10px;
+}
+
+.user_info {
+  display: flex;
+  border-radius: 7px;
+  border: 1px solid #497c97;
+  width: 80%;
+  padding: 10px;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-around;
+  white-space: nowrap;
+}
+.img_avatar {
+  width: 50x;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.user_name {
+  font-size: 17px;
+  color: #fff;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn_logout {
+  height: 50px;
+  width: 80%;
+  padding: 10px 20px;
+  background: var(--primary2);
+  color: #fff;
+  transition: 0.15s ease-in;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  font-size: 16px;
+  font-weight: 500;
+  &:hover {
+    transition: 0.15s ease-in;
+    background: var(--primary2-hover);
+    border: 1px solid #fff;
+  }
+}
+
+.status_active {
+  font-weight: 400;
+  font-size: 11px;
+}
+.wrap_avatar {
+  border-radius: 50%;
+  padding: 3px;
+  border: 1px solid #fff;
+  position: relative;
+}
+.dot_status {
+  width: 12px;
+  height: 12px;
+  background-color: #499e60;
+  border-radius: 50%;
+  position: absolute;
+  right: 5px;
+  bottom: 0px;
+}
+.title_dashboard {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  font-size: 20px;
+  font-weight: 400;
+  color: #fff;
+  font-weight: 500;
+  padding-bottom: 10px;
+}
+
+.wrapper_link {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  padding-left: 10px;
+  width: 100%;
+  margin: 0 auto;
+  margin-top: 30px;
+}
+.nav_item {
+  width: 100%;
+  background: transparent;
+  color: #fff;
+  padding: 15px;
+  border-radius: 20px;
+  font-size: 20px;
+  font-weight: 300;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  cursor: pointer;
+  transition: 0.2s ease-in;
+  border: 1px solid transparent;
+  user-select: none;
+
+  &:hover {
+    transition: 0.2s ease-in-out;
+    background: var(--primary2);
+    color: #fff;
+  }
+
+  &:active {
+    transition: 0.2s ease-in-out;
+    background: var(--primary2-hover);
+    border: 1px solid #fff;
+  }
+
+  &.active {
+    transition: 0.2s ease-in-out;
+    background: var(--primary2);
+    color: #fff;
+  }
+}
+.icon_user_menu {
+  font-size: 13px;
+  border: 1px solid #fff;
+  padding: 3px;
+  border-radius: 50%;
+}
+.user_account_background {
+  width: 100%;
+  border-radius: 20px;
+  //   background-color: ;
+}
+.break_line_vertical {
+  width: 80%;
+  height: 1px;
+  background-color: #12435d;
+  margin-top: 2px;
+  margin-bottom: 2px;
+  margin-left: 10px;
+}
