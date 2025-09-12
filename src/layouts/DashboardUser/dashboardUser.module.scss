@@ -19,7 +19,10 @@
   height: 100%;
   position: relative;
 }
-
+.dashboard_content{
+  height: 100%;
+  overflow: hidden;
+}
 .logo_name {
   object-fit: contain;
   margin-top: 30px;

@@ -75,21 +75,21 @@ const ContentUserAccount = () => {
               readOnly={true}
               className={cx("user_input_info")}
               type="text"
-              value={dataUser.fullname}
+              value={dataUser?.fullname ? dataUser.fullname : ""}
             />
             <div className={cx("sub_title_info")}>Giới tính</div>
             <input
               readOnly={true}
               className={cx("user_input_info")}
               type="text"
-              value={formatSex(dataUser.sex)}
+              value={dataUser?.sex ? formatSex(dataUser.sex) : ""}
             />
             <div className={cx("sub_title_info")}>Số điện thoại</div>
             <input
               readOnly={true}
               className={cx("user_input_info")}
               type="text"
-              value={dataUser.phone}
+              value={dataUser?.phone ? dataUser.phone : ""}
             />
             <div className={cx("sub_title_info")}>Ngày tháng năm sinh</div>
             <input
@@ -108,7 +108,7 @@ const ContentUserAccount = () => {
               readOnly={true}
               className={cx("user_input_info")}
               type="text"
-              value={dataUser.cccd}
+              value={dataUser?.cccd ? dataUser.cccd : ""}
             />
           </div>
         </div>
@@ -122,21 +122,21 @@ const ContentUserAccount = () => {
                   readOnly={true}
                   className={cx("user_input_info")}
                   type="text"
-                  value={dataUser.email}
+                  value={dataUser?.email ? dataUser.email : ""}
                 />
                 <div className={cx("sub_title_info")}>Mật khẩu </div>
                 <input
                   readOnly={true}
                   className={cx("user_input_info")}
                   type="password"
-                  value={dataUser.password}
+                  value={dataUser?.password ? dataUser.password : ""}
                 />
                 <div className={cx("sub_title_info")}>Mức độ xác thực</div>
                 <input
                   readOnly={true}
                   className={cx("user_input_info")}
                   type="text"
-                  value={dataUser.authen}
+                  value={dataUser?.authen ? dataUser.authen : 1}
                 />
               </div>
               <div className={cx("account_system_right")}>
@@ -145,7 +145,7 @@ const ContentUserAccount = () => {
                   readOnly={true}
                   className={cx("user_input_info")}
                   type="text"
-                  value={formatStatusActive(dataUser.status)}
+                  value={dataUser?.status ? formatStatusActive(dataUser.status) : ""}
                 />
                 <div className={cx("sub_title_info")}>Tham gia HomePro từ</div>
                 <input

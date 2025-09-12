@@ -1,0 +1,190 @@
+.user_wallet_container {
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  .balance_info {
+    text-align: center;
+    .balance_amount {
+      font-size: 28px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+  }
+
+  .line_chart_container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-card);
+  }
+}
+
+// Adding
+.user_wallet_title {
+  font-size: 30px;
+  font-weight: 600;
+}
+.balance_wrapper {
+  width: 30%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  justify-content: center;
+  background: var(--accent3);
+
+  gap: 10px;
+  flex-direction: column;
+}
+.balance_title {
+  font-size: 18.5px;
+  font-weight: 500;
+}
+.balance_item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.balance_item_name {
+  font-size: 14px;
+}
+.balance_item_content {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+// Biến động số dư
+.month_filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+.month_choosing {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b4b4b;
+}
+.select_month {
+  padding: 7px 15px;
+  border-radius: 6px;
+  border: 1px solid #fff;
+  cursor: pointer;
+  font-size: 13px;
+  background: var(--accent1);
+  color: #fff;
+}
+.select_month option {
+  padding: 10px;
+  font-size: 14px;
+  background-color: #fff;
+  color: #333;
+}
+.transaction_filter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.filter_buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+
+  button {
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #f5f5f5;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4b4b4b;
+
+    &.active {
+      background: var(--accent1);
+      color: #fff;
+      border: 1px solid #fff;
+    }
+  }
+}
+.date_filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+// Table
+.transaction_table_container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+
+  .transaction_table {
+    width: 100%;
+    border-collapse: collapse;
+
+    tbody tr:hover {
+      background-color: #f0f0f0;
+    }
+  }
+}
+.header_table {
+  background-color: var(--accent1);
+  color: #fff;
+
+  th {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 7px;
+    text-align: center;
+  }
+}
+
+.transaction_table td {
+  font-size: 12px;
+  text-align: center;
+  padding: 5px;
+}
+.money_balance {
+  font-size: 15px !important;
+  font-weight: 500;
+  color: #4c4c4c;
+
+  &.sub {
+    color: #f44336;
+  }
+  &.plus {
+    color: #4caf50;
+  }
+}
+
+.transaction_table th,
+.transaction_table td {
+  border: 1px solid #e7e7e7;
+}
+.label_day {
+  font-size: 14px;
+  font-weight: 500;
+  color: #4b4b4b;
+}
+.choosing_day {
+  font-size: 13px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.btn_reset {
+  border-radius: 5px;
+  background: var(--accent1);
+  font-size: 13px;
+  color: #fff;
+  padding: 7px 20px;
+  font-weight: 500;
+}
