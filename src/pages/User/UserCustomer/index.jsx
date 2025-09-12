@@ -16,6 +16,7 @@ const UserCustomerContent = () => {
   const [listPost, setListPost] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [choosePost, setChoosePost] = useState({});
+  const [activeRead, setActiveRead] = useState("read");
   useEffect(() => {
     const getListPostUser = async () => {
       const url = "/post/get-user-post";
@@ -34,6 +35,102 @@ const UserCustomerContent = () => {
     };
     getListPostUser();
   }, []);
+
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      name: "Tạ Nguyễn Tiến Dũng",
+      avatar,
+      time: "1 ngày trước",
+      message: "Liên hệ với tôi qua số điện thoại đính kèm",
+      read: false,
+    },
+    {
+      id: 2,
+      name: "Nguyễn Văn A",
+      avatar,
+      time: "2 giờ trước",
+      message: "Tôi cần hỗ trợ về sản phẩm",
+      read: true,
+    },
+    {
+      id: 3,
+      name: "Trần Thị B",
+      avatar,
+      time: "30 phút trước",
+      message: "Xin vui lòng gọi lại cho tôi",
+      read: false,
+    },
+    {
+      id: 4,
+      name: "Lê Văn C",
+      avatar,
+      time: "5 ngày trước",
+      message: "Cần tư vấn về dịch vụ",
+      read: true,
+    },
+    {
+      id: 5,
+      name: "Phạm Thị D",
+      avatar,
+      time: "12 giờ trước",
+      message: "Gửi hóa đơn cho tôi",
+      read: false,
+    },
+    {
+      id: 6,
+      name: "Hoàng Văn E",
+      avatar,
+      time: "1 tuần trước",
+      message: "Hỏi về khuyến mãi mới",
+      read: true,
+    },
+    {
+      id: 7,
+      name: "Ngô Thị F",
+      avatar,
+      time: "3 ngày trước",
+      message: "Cần cập nhật thông tin tài khoản",
+      read: false,
+    },
+    {
+      id: 8,
+      name: "Vũ Văn G",
+      avatar,
+      time: "2 tuần trước",
+      message: "Hỏi về chính sách bảo hành",
+      read: true,
+    },
+    {
+      id: 9,
+      name: "Đặng Thị H",
+      avatar,
+      time: "6 giờ trước",
+      message: "Gửi yêu cầu hủy dịch vụ",
+      read: false,
+    },
+    {
+      id: 10,
+      name: "Bùi Văn I",
+      avatar,
+      time: "4 ngày trước",
+      message: "Cần hỗ trợ kỹ thuật",
+      read: true,
+    },
+  ]);
+
+  const toggleRead = (id) => {
+    setMessages((prev) =>
+      prev.map((msg) => (msg.id === id ? { ...msg, read: !msg.read } : msg))
+    );
+  };
+
+  // Lọc theo nút bấm
+  const filteredMessages = messages.filter((msg) => {
+    if (activeRead === "read") return !msg.read; // chưa đọc
+    if (activeRead === "noread") return msg.read; // đã đọc
+    return true;
+  });
 
   return (
     <div className={cx("user_customer_container")}>
@@ -139,48 +236,75 @@ const UserCustomerContent = () => {
           <div className={cx("customer_detail_wrapper")}>
             <h2 className={cx("customer_detail_title")}>Chi tiết tin đăng</h2>
             <div className={cx("option_customer_details")}>
-              <button className={cx("option_customer_tag")}>
+              <button
+                className={cx("option_customer_tag", {
+                  active: activeRead === "read",
+                })}
+                onClick={() => setActiveRead("read")}
+              >
                 Thông báo chưa xem
               </button>
-              <button className={cx("option_customer_tag")}>
+              <button
+                className={cx("option_customer_tag", {
+                  active: activeRead === "noread",
+                })}
+                onClick={() => setActiveRead("noread")}
+              >
                 Thông báo đã xem
               </button>
             </div>
-            <div className={cx("option_customer_item")}>
-              <div className={cx("customer_info_wrap")}>
-                <div className={cx("customer_info")}>
-                  <img className={cx("avatar_customer")} src={avatar} alt="" />
-                  <div className={cx("user_name")}>
-                    Tạ Nguyễn Tiến Dũng
-                    <span className={cx("time_send")}>1 ngày trước</span>
+            {filteredMessages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cx("option_customer_item", { read: msg.read })}
+              >
+                <div className={cx("customer_info_wrap")}>
+                  <div className={cx("customer_info")}>
+                    <img
+                      className={cx("avatar_customer")}
+                      src={msg.avatar}
+                      alt=""
+                    />
+                    <div className={cx("user_name")}>
+                      {msg.name}
+                      <span className={cx("time_send")}>{msg.time}</span>
+                    </div>
+                  </div>
+                  <div className={cx("customer_message")}>
+                    <label className={cx("tag_message")}>Lời nhắn</label>
+                    <div className={cx("message_content")}>{msg.message}</div>
                   </div>
                 </div>
-                <div className={cx("customer_message")}>
-                  <label className={cx("tag_message")}>Lời nhắn</label>
-                  <div className={cx("message_content")}>
-                    Liên hệ với tôi qua số điện thoại đính kèm
-                  </div>
+                <div className={cx("group_btn")}>
+                  <button
+                    className={cx("btn_help_post")}
+                    onClick={() => toggleRead(msg.id)}
+                  >
+                    <FontAwesomeIcon
+                      icon={faPenToSquare}
+                      fontSize="18px"
+                      className={cx("icon_update")}
+                    />
+                    {msg.read ? "Đánh dấu chưa đọc" : "Đánh dấu đã đọc"}
+                  </button>
+                  <button className={cx("btn_help_post", "zalo")}>
+                    <img className={cx("icon_zalo")} src={zalo} alt="" />
+                    Chat với Zalo
+                  </button>
+                  <button className={cx("btn_help_post", "phone")}>
+                    <Phone
+                      className={cx("icon_phone")}
+                      size={20}
+                      color="#fff"
+                    />
+                    Liên hệ 0378515369
+                  </button>
                 </div>
               </div>
-              <div className={cx("group_btn")}>
-                <button className={cx("btn_help_post")}>
-                  <FontAwesomeIcon
-                    icon={faPenToSquare}
-                    fontSize="18px"
-                    className={cx("icon_update")}
-                  />
-                  Đánh dấu đã đọc
-                </button>
-                <button className={cx("btn_help_post", "zalo")}>
-                  <img className={cx("icon_zalo")} src={zalo} alt="" />
-                  Chat với Zalo
-                </button>
-                <button className={cx("btn_help_post", "phone")}>
-                  <Phone className={cx("icon_phone")} size={20} color="#fff" />
-                  Liên hệ 0378515369
-                </button>
-              </div>
-            </div>
+            ))}
+            {filteredMessages.length === 0 && (
+              <span className={cx("subscript_read")}>Hiện không có lời nhắn nào</span>
+            )}
           </div>
         </div>
       </div>

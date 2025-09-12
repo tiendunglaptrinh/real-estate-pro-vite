@@ -196,6 +196,11 @@
   font-size: 13px;
   margin-bottom: 2px;
 }
+.customer_detail_wrapper {
+  width: 80%;
+  margin: 0 auto;
+  margin-top: 20px;
+}
 .option_customer_details {
   display: flex;
   gap: 15px;
@@ -209,12 +214,22 @@
   border-radius: 5px;
   background: #fff;
   border: 1px solid #e1e1e1;
+  opacity: 1;
+  transition: 0.2s;
+
+  &.active {
+    background-color: var(--accent1);
+    transition: 0.2s;
+    opacity: 1;
+    color: #fff;
+  }
 }
 .option_customer_item {
   padding: 20px;
   border-radius: 10px;
   box-shadow: var(--shadow-card);
   border: 1px solid #eaeaea;
+  margin-bottom: 15px;
 }
 .customer_info_wrap {
   display: flex;
@@ -277,21 +292,21 @@
   border-radius: 7px;
   border: 1px solid transparent;
 
-  &:hover{
+  &:hover {
     background-color: #cacaca;
     border: 1px solid #ccc;
   }
 
-  &.phone{
+  &.phone {
     color: #fff;
     background-color: var(--accent1);
-    
-    &:hover{
+
+    &:hover {
       background-color: var(--accent1-hover);
     }
   }
-  
-  &.zalo{
+
+  &.zalo {
     background-color: #f0f0f0;
   }
 }
@@ -300,6 +315,11 @@
   height: 20px;
   object-fit: contain;
 }
-.icon_phone, .icon_update{
+.icon_phone,
+.icon_update {
   color: #4d4d4d;
-} 
+}
+.subscript_read {
+  font-size: 15px;
+  color: #dc2323;
+}
