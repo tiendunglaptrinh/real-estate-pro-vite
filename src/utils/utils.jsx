@@ -5,6 +5,7 @@ import scrollToField from "./scrollToField";
 import formatUnitPrice from "./formatUnitPrice";
 import formatISODate from "./formatISODate";
 import {formatDateUI} from "./formatISODate";
+import slugify from "./slugify";
 
 export {
   fetchApi,
@@ -13,5 +14,6 @@ export {
   scrollToField,
   formatUnitPrice,
   formatISODate,
-  formatDateUI
+  formatDateUI,
+  slugify
 };

@@ -1,12 +1,21 @@
 // PaymentPaypal.jsx
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import fetchApi from "@utils/fetchApi";
-import { SpinnerComponent } from "../component";
-import cx from "classnames";
+import { SpinnerComponent, Success } from "../component";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 
-const PaymentPaypal = ({ orderId }) => {
+const PaymentPaypal = ({
+  orderId,
+  postId,
+  packagePricingId,
+  startDate,
+  money,
+}) => {
   const [loading, setLoading] = useState(true);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const navigate = useNavigate();
 
   if (!orderId) return null;
 
@@ -14,8 +23,17 @@ const PaymentPaypal = ({ orderId }) => {
     <PayPalScriptProvider
       options={{ "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID }}
     >
-      <div className={cx("payment_content", "paypal-wrapper")} style={{ position: "relative" }}>
-        {/* Spinner overlay */}
+      <div style={{ position: "relative" }}>
+        {/* Overlay spinner */}
+        {loading && (
+          <div className="spinner-overlay">
+            <SpinnerComponent loading={true} />
+          </div>
+        )}
+
+        {/* Success portal ra body để full màn hình */}
+        {showSuccess &&
+          createPortal(<Success />, document.body)}
 
         <PayPalButtons
           createOrder={() => Promise.resolve(orderId)}
@@ -23,10 +41,23 @@ const PaymentPaypal = ({ orderId }) => {
             try {
               const response = await fetchApi(
                 `/payment/capture-order/${data.orderID}`,
-                { method: "POST" }
+                {
+                  method: "POST",
+                  skipAuth: false,
+                  body: {
+                    post_id: postId,
+                    package_pricing_id: packagePricingId,
+                    start_date: startDate,
+                    money,
+                  },
+                }
               );
+
               if (response.success) {
-                alert("Thanh toán thành công!");
+                setShowSuccess(true);
+                setTimeout(() => {
+                  navigate("/");
+                }, 2000);
               } else {
                 alert(response.message || "Thanh toán thất bại");
               }
@@ -35,7 +66,7 @@ const PaymentPaypal = ({ orderId }) => {
               alert("Có lỗi khi xác nhận thanh toán");
             }
           }}
-          onReady={() => setLoading(false)} // tắt spinner khi button sẵn sàng
+          onInit={() => setLoading(false)}
         />
       </div>
     </PayPalScriptProvider>

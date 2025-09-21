@@ -23,6 +23,8 @@ import ScrollToTop from "./ScrollToTop";
 import CollapseSection from "./CollapseSection";
 import PriceFilter from "./PriceFliter";
 import AcreageFilter from "./AcreageFilter";
+import DepositForm from "./DepositForm";
+
 export {
   Header,
   Footer,
@@ -48,5 +50,6 @@ export {
   ScrollToTop,
   CollapseSection,
   PriceFilter,
-  AcreageFilter
+  AcreageFilter,
+  DepositForm
 };

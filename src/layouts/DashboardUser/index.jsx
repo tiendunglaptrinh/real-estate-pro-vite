@@ -37,7 +37,7 @@ function DashBoardUser({ children }) {
   return (
     <div className={cx("dashboard_container")}>
       <div className={cx("dashboard_left")}>
-        <img className={cx("logo_name")} src={logo_name} alt="" />
+        <img style={{cursor: "pointer"}} onClick={() => navigate("/")} className={cx("logo_name")} src={logo_name} alt="" />
         <div className={cx("wrapper_link")}>
           <div
             className={cx("nav_item", {

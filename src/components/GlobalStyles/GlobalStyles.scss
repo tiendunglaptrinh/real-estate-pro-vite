@@ -197,4 +197,13 @@ h1, h2, h3 {
 p, span {
   font-weight: 400; /* nhẹ cho nội dung */
 }
-
+input{
+  border: 1px solid transparent;
+}
+input:focus{
+  transition: 0.2s ease-in;
+  border: 1px solid #575757
+}
+button:disabled:hover {
+  cursor: not-allowed;
+}

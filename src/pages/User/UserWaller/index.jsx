@@ -2,7 +2,7 @@
 import DashBoardUser from "@layouts/DashboardUser";
 import styles from "./userWallet.module.scss";
 import classnames from "classnames/bind";
-import { useState, useEffect, memo  } from "react";
+import { useState, useEffect, memo } from "react";
 import {
   LineChart,
   Line,
@@ -13,7 +13,10 @@ import {
   CartesianGrid,
 } from "recharts";
 
+import { DepositForm } from "@components/component";
 import { fetchApi } from "@utils/utils";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMoneyCheckDollar } from '@fortawesome/free-solid-svg-icons';
 
 const cx = classnames.bind(styles);
 
@@ -149,6 +152,7 @@ function UserWallet() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [dataUser, setDataUser] = useState({});
+  const [showDeposit, setShowDeposit] = useState(false);
 
   useEffect(() => {
     const getDataUser = async () => {
@@ -195,6 +199,7 @@ function UserWallet() {
 
   return (
     <DashBoardUser>
+      {showDeposit && <DepositForm />}
       <div className={cx("user_wallet_container")}>
         <h1 className={cx("user_wallet_title")}>Quản lý tài chính</h1>
         {/* Số dư hiện tại */}
@@ -212,6 +217,13 @@ function UserWallet() {
               {(dataUser?.wallet ?? 0).toLocaleString("vi-VN")} VNĐ
             </div>
           </div>
+          <button
+            className={cx("btn_deposit")}
+            onClick={() => setShowDeposit(true)}
+          >
+            <FontAwesomeIcon fontSize="14px" icon={faMoneyCheckDollar} />
+            Nạp thêm tiền
+          </button>
         </div>
 
         {/* Filter chọn tháng cho biểu đồ */}
@@ -264,17 +276,54 @@ function UserWallet() {
           <div className={cx("transaction_filter")}>
             {/* Filter loại giao dịch */}
             <div className={cx("filter_buttons")}>
-              <button className={filterType === "all" ? cx("active") : ""} onClick={() => setFilterType("all")} > Tất cả giao dịch</button>
-              <button className={filterType === "deposit" ? cx("active") : ""} onClick={() => setFilterType("deposit")} > Lịch sử nạp </button>
-              <button className={filterType === "payment" ? cx("active") : ""} onClick={() => setFilterType("payment")} > Lịch sử thanh toán </button>
+              <button
+                className={filterType === "all" ? cx("active") : ""}
+                onClick={() => setFilterType("all")}
+              >
+                {" "}
+                Tất cả giao dịch
+              </button>
+              <button
+                className={filterType === "deposit" ? cx("active") : ""}
+                onClick={() => setFilterType("deposit")}
+              >
+                {" "}
+                Lịch sử nạp{" "}
+              </button>
+              <button
+                className={filterType === "payment" ? cx("active") : ""}
+                onClick={() => setFilterType("payment")}
+              >
+                {" "}
+                Lịch sử thanh toán{" "}
+              </button>
             </div>
             {/* Filter từ ngày → đến ngày */}
             <div className={cx("date_filter")}>
               <label className={cx("label_day")}>Từ ngày: </label>
-              <input className={cx("choosing_day")} type="date" value={fromDate} onChange={(e) => setFromDate(e.target.value)} />
+              <input
+                className={cx("choosing_day")}
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+              />
               <label className={cx("label_day")}>Đến ngày: </label>
-              <input className={cx("choosing_day")} type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
-              <button className={cx("btn_reset")} onClick={() => { setFromDate(""); setToDate(""); }} > Đặt lại </button>
+              <input
+                className={cx("choosing_day")}
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+              />
+              <button
+                className={cx("btn_reset")}
+                onClick={() => {
+                  setFromDate("");
+                  setToDate("");
+                }}
+              >
+                {" "}
+                Đặt lại{" "}
+              </button>
             </div>
           </div>
 
@@ -293,9 +342,21 @@ function UserWallet() {
               {filteredTransactions.map((txn) => (
                 <tr key={txn.id}>
                   <td>{txn.id}</td>
-                  <td className={cx("money_balance", {sub: txn.amount < 0}, {plus: txn.amount >= 0})}>{txn.amount.toLocaleString()}</td>
-                  <td className={cx("money_balance")}>{txn.balanceBefore.toLocaleString()}</td>
-                  <td className={cx("money_balance")}>{txn.balanceAfter.toLocaleString()}</td>
+                  <td
+                    className={cx(
+                      "money_balance",
+                      { sub: txn.amount < 0 },
+                      { plus: txn.amount >= 0 }
+                    )}
+                  >
+                    {txn.amount.toLocaleString()}
+                  </td>
+                  <td className={cx("money_balance")}>
+                    {txn.balanceBefore.toLocaleString()}
+                  </td>
+                  <td className={cx("money_balance")}>
+                    {txn.balanceAfter.toLocaleString()}
+                  </td>
                   <td>{txn.type}</td>
                   <td>{txn.date}</td>
                 </tr>

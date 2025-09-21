@@ -52,6 +52,11 @@
     background-color: #fff;
     color: var(--primary1);
   }
+
+  &.active > .menu_item_btn {
+    background-color: #fff;
+    color: var(--primary1);
+  }
 }
 
 .menu_item_btn {
@@ -117,6 +122,21 @@
   align-items: center;
   justify-content: center;
   margin-right: 40px;
+}
+.notification {
+  border: 1px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+.icon_notification {
+  color: #fff;
+  font-size: 30px;
 }
 .avatar {
   width: 55px;

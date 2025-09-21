@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import classNames from "classnames/bind";
 import styles from "./Header.module.scss";
 import logo from "@images/logo.png";
@@ -11,13 +11,7 @@ import femaleDefault from "@assets/avatar_defaults/female.png";
 import { fetchApi } from "@utils/utils";
 import { useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faUser,
-  faCreditCard,
-  faCircleQuestion,
-  faEye,
-  faFileLines,
-} from "@fortawesome/free-regular-svg-icons";
+import { faUser, faCreditCard, faCircleQuestion, faEye, faFileLines, faBell} from "@fortawesome/free-regular-svg-icons";
 import { faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 
@@ -31,8 +25,19 @@ function Header() {
   const [user, setUser] = useState(null);
   const [isScroll, setIsScroll] = useState(false);
 
+  const [type, setType] = useState("");
+
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    const type = searchParams.get("needs");
+    if (!type) return;
+    setType(type.toString());
+    return;
+  }, [searchParams])
 
   // check user
   useEffect(() => {
@@ -128,7 +133,7 @@ function Header() {
         </div>
       </Link>
       <div className={cx("menu")}>
-        <div className={cx("menu_item")}>
+        <div className={cx("menu_item", { active: type == "sell"})}>
           <button
             className={cx("menu_item_btn")}
             onClick={() => handleMoveByURLQuery({ needs: "sell" })}
@@ -154,7 +159,7 @@ function Header() {
               ))}
           </ul>
         </div>
-        <div className={cx("menu_item")}>
+        <div className={cx("menu_item", { active: type == "rent"})}>
           <button
             className={cx("menu_item_btn")}
             onClick={() => handleMoveByURLQuery({ needs: "rent" })}
@@ -182,7 +187,7 @@ function Header() {
               ))}
           </ul>
         </div>
-        <div className={cx("menu_item")}>
+        <div className={cx("menu_item", { active: type == "short_utility"})}>
           <button
             className={cx("menu_item_btn")}
             onClick={() => handleMoveByURLQuery({ needs: "short_utility" })}
@@ -207,6 +212,9 @@ function Header() {
       <div className={cx("wrapper_user")}>
         {isLogin ? (
           <>
+            <div className={cx("notification")}>
+              <FontAwesomeIcon className={cx("icon_notification")} icon={faBell} />
+            </div>
             <div className={cx("wrapper_avatar")}>
               <img
                 onClick={handleOnclickAvatar}

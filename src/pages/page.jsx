@@ -6,6 +6,8 @@ import PostDetail from "./PostDetail";
 import NotFound from "./NotFound";
 import NewPost from "./NewPost";
 import ListPostFilter from "./ListPostFilter/index";
+import MapPage from "./MapPage";
+import Register from "./Register";
 
 // Dashboard
 import UserAccount from "./User/UserAccount";
@@ -26,4 +28,6 @@ export {
   UserCustomer,
   UserPost,
   UserWallet,
+  MapPage,
+  Register
 };
