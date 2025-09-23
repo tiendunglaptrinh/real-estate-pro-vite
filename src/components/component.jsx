@@ -24,6 +24,8 @@ import CollapseSection from "./CollapseSection";
 import PriceFilter from "./PriceFliter";
 import AcreageFilter from "./AcreageFilter";
 import DepositForm from "./DepositForm";
+import PaginationComponent from "./Pagination/pagination";
+import LogoutForm from "./LogoutForm";
 
 export {
   Header,
@@ -51,5 +53,7 @@ export {
   CollapseSection,
   PriceFilter,
   AcreageFilter,
-  DepositForm
+  DepositForm,
+  PaginationComponent,
+  LogoutForm
 };

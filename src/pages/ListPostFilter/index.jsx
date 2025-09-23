@@ -9,11 +9,13 @@ import {
   Spinner,
   PriceFilter,
   AcreageFilter,
+  PaginationComponent,
+  ScrollToTop,
 } from "@components/component";
 import { fetchApi, formatUnitPrice } from "@utils/utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMap } from "@fortawesome/free-regular-svg-icons";
-import { faStar } from "@fortawesome/free-solid-svg-icons";
+import { faStar, faXmark, faSliders } from "@fortawesome/free-solid-svg-icons";
 import {
   Search,
   Filter,
@@ -82,7 +84,7 @@ const ContentListPostFilter = () => {
       max_price: searchParams.get("max_price") || "",
       min_acreage: searchParams.get("min_acreage") || "",
       max_acreage: searchParams.get("max_acreage") || "",
-      limit: searchParams.get("limit") || "",
+      limit: searchParams.get("limit") || 2,
       page: searchParams.get("page") || "",
     };
     const allEmpty = Object.values(newParams).every((val) => val === "");
@@ -119,10 +121,11 @@ const ContentListPostFilter = () => {
         });
 
         if (response_data.success) {
+          console.log("list post: ", response_data);
           setListPost(response_data.data_posts);
           setTotalPage(response_data.total_pages);
           setCurrentIndexPage(response_data.current_index_page);
-          setCountPost(response_data.count_post_in_page);
+          setCountPost(response_data.total_result);
         } else {
           setListPost([]);
           setTotalPage(0);
@@ -468,9 +471,282 @@ const ContentListPostFilter = () => {
     });
   };
 
+  const handlePageChange = (newCurrentPage) => {
+    updateFilter({ page: newCurrentPage });
+  };
+
+  // Logic combination filter: prefix: CF
+  const [combinationParams, setCombinationParams] = useState({
+    needs: "",
+    category: "",
+    province: "",
+    ward: "",
+    min_price: "",
+    max_price: "",
+    min_acreage: "",
+    max_acreage: "",
+    limit: "",
+    page: "",
+  });
+
+  const [showCombinationFilter, setShowCombinationFilter] = useState(false);
+
+  useEffect(() => {
+    setCombinationParams(bufferParams);
+    console.log("Combination params: ", combinationParams);
+  }, [bufferParams]);
+
+  // Sử dụng combination filter.
+  const hadleSubmitCombinationFitler = () => {
+    setShowCombinationFilter(false);
+    updateFilter(combinationParams);
+  };
+
+  // Loại bỏ hết các filter
+  const clearFilter = () => {
+    setShowCombinationFilter(false);
+    updateFilter({
+      needs: "",
+      category: "",
+      province: "",
+      ward: "",
+      min_price: "",
+      max_price: "",
+      min_acreage: "",
+      max_acreage: "",
+      limit: 10,
+      page: 1,
+    });
+  };
+
+  // Hủy bỏ thay đổi
+  const cancelChangeFilter = () => {
+    setCombinationParams(bufferParams);
+    setShowCombinationFilter(false);
+    return;
+  };
+
+  const handleChangeCombination = (field, value) => {
+    setCombinationParams((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+  const formatPrice = (value) => {
+    if (!value) return "Chưa chọn";
+    const num = Number(value);
+    if (isNaN(num)) return "";
+    if (num >= 1000) {
+      return `${num / 1000} tỷ`; // 1000 triệu = 1 tỷ
+    }
+    return `${num} triệu`;
+  };
+
   return (
     <div className={cx("listpost_container")}>
+      <ScrollToTop />
       {loading && <Spinner />}
+      {/* --- Combination filter --- */}
+      <button
+        className={cx("btn_show_combination_filter")}
+        onClick={() => setShowCombinationFilter(!showCombinationFilter)}
+      >
+        <FontAwesomeIcon icon={faSliders} className={cx("icon_combination_filter")} />
+        Bộ lọc tổng hợp
+      </button>
+      <div className={cx("cf_container", { show: showCombinationFilter })}>
+        <FontAwesomeIcon
+          icon={faXmark}
+          className={cx("close_cf")}
+          onClick={cancelChangeFilter}
+        />
+        <div className={cx("cf_title")}>Bộ lọc tổng hợp</div>
+        <div className={cx("break_line", "cf")}></div>
+        <div className={cx("cf_option")}>Nhu cầu</div>
+        {/* -------- COMBINATION NEEDS --------*/}
+        <div className={cx("cf_needs_wrap")}>
+          <div
+            className={cx("cf_needs_item", {
+              active: combinationParams.needs === "sell",
+            })}
+            onClick={() => handleChangeCombination("needs", "sell")}
+          >
+            Tìm mua
+          </div>
+          <div
+            className={cx("cf_needs_item", {
+              active: combinationParams.needs === "rent",
+            })}
+            onClick={() => handleChangeCombination("needs", "rent")}
+          >
+            Tìm thuê
+          </div>
+        </div>
+        <div className={cx("break_line", "cf")}></div>
+        {/* -------- COMBINATION CATEGORY --------*/}
+        <div className={cx("cf_option")}>Loại hình bất động sản</div>
+        <div className={cx("cf_category_wrap")}>
+          {/* Checkbox Tất cả */}
+          <div className={cx("cf_category_item")}>
+            <label>
+              <input
+                type="checkbox"
+                checked={
+                  combinationParams.category?.length === CATEGORY_OPTIONS.length
+                }
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    // chọn hết
+                    handleChangeCombination(
+                      "category",
+                      CATEGORY_OPTIONS.map((o) => o.value)
+                    );
+                  } else {
+                    // bỏ hết
+                    handleChangeCombination("category", []);
+                  }
+                }}
+              />
+              Tất cả
+            </label>
+          </div>
+
+          {/* Các category bình thường */}
+          {CATEGORY_OPTIONS.map((opt) => (
+            <div key={opt.value} className={cx("cf_category_item")}>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={combinationParams.category?.includes(opt.value)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      handleChangeCombination("category", [
+                        ...(combinationParams.category || []),
+                        opt.value,
+                      ]);
+                    } else {
+                      handleChangeCombination(
+                        "category",
+                        combinationParams.category.filter(
+                          (c) => c !== opt.value
+                        )
+                      );
+                    }
+                  }}
+                />
+                {opt.label}
+              </label>
+            </div>
+          ))}
+        </div>
+        <div className={cx("break_line", "cf")}></div>
+        {/* -------- COMBINATION PRICE --------*/}
+        <div className={cx("cf_option")}>Lọc khoảng giá</div>
+        <div className={cx("cf_price_wrap")}>
+          <div className={cx("cf_price_option")}>
+            <div className={cx("cf_price_title")}>Giá thấp nhất</div>
+            <input
+              className={cx("input_price_cf")}
+              type="number"
+              placeholder="Min (triệu)"
+              value={
+                combinationParams.min_price
+                  ? combinationParams.min_price / 1e6
+                  : ""
+              }
+              onChange={(e) => {
+                const val = e.target.value;
+                handleChangeCombination(
+                  "min_price",
+                  val ? Number(val) * 1e6 : ""
+                );
+              }}
+            />
+            <div className={cx("display_price")}>
+              {formatPrice(
+                combinationParams.min_price
+                  ? combinationParams.min_price / 1e6
+                  : ""
+              )}
+            </div>
+          </div>
+
+          <div className={cx("cf_price_option")}>
+            <div className={cx("cf_price_title")}>Giá cao nhất</div>
+            <input
+              className={cx("input_price_cf")}
+              type="number"
+              placeholder="Max (triệu)"
+              value={
+                combinationParams.max_price
+                  ? combinationParams.max_price / 1e6
+                  : ""
+              }
+              onChange={(e) => {
+                const val = e.target.value;
+                handleChangeCombination(
+                  "max_price",
+                  val ? Number(val) * 1e6 : ""
+                );
+              }}
+            />
+            <div className={cx("display_price")}>
+              {formatPrice(
+                combinationParams.max_price
+                  ? combinationParams.max_price / 1e6
+                  : ""
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className={cx("break_line", "cf")}></div>
+        {/* -------- COMBINATION ACREAGE --------*/}
+        <div className={cx("cf_option")}>Lọc diện tích</div>
+        <div className={cx("cf_acreage_wrap")}>
+          <div className={cx("cf_acreage_item")}>
+            <div className={cx("cf_acreage_title")}>
+              Diện tích nhỏ nhất (m<sup>2</sup>)
+            </div>
+            <input
+              className={cx("input_acreage_cf")}
+              type="number"
+              placeholder="Min"
+              value={combinationParams.min_acreage}
+              onChange={(e) =>
+                handleChangeCombination("min_acreage", e.target.value)
+              }
+            />
+          </div>
+          <div className={cx("cf_acreage_item")}>
+            <div className={cx("cf_acreage_title")}>
+              Diện tích nhỏ nhất (m<sup>2</sup>)
+            </div>
+            <input
+              className={cx("input_acreage_cf")}
+              type="number"
+              placeholder="Max"
+              value={combinationParams.max_acreage}
+              onChange={(e) =>
+                handleChangeCombination("max_acreage", e.target.value)
+              }
+            />
+          </div>
+        </div>
+        <div className={cx("break_line", "cf")}></div>
+        {/* -------- COMBINATION BUTTON --------*/}
+        <div className={cx("cf_btn_wrap")}>
+          <button className={cx("btn_cf", "delete")} onClick={clearFilter}>
+            Đặt lại
+          </button>
+          <button
+            className={cx("btn_cf", "find")}
+            onClick={hadleSubmitCombinationFitler}
+          >
+            Tìm kiếm
+          </button>
+        </div>
+      </div>
       <div className={cx("filter_post_container")}>
         <div className={cx("filter_post_input")} ref={provinceInputRef}>
           <Search className={cx("icon_search")} size={24} color="#777777" />
@@ -713,6 +989,16 @@ const ContentListPostFilter = () => {
             </div>
             <div className={cx("wrap_btn")}>
               <button
+                className={cx("btn_clear_category")}
+                onClick={() => {
+                  setCategoryFilter([]);
+                  setCollapseCategory(false);
+                  updateFilter({ category: "", page: 1 });
+                }}
+              >
+                Xóa chọn
+              </button>
+              <button
                 className={cx("btn_apply_category")}
                 onClick={() => {
                   setCollapseCategory(false);
@@ -723,16 +1009,6 @@ const ContentListPostFilter = () => {
                 }}
               >
                 Áp dụng
-              </button>
-              <button
-                className={cx("btn_clear_category")}
-                onClick={() => {
-                  setCategoryFilter([]);
-                  setCollapseCategory(false);
-                  updateFilter({ category: "", page: 1 });
-                }}
-              >
-                Xóa chọn
               </button>
             </div>
           </div>
@@ -1006,6 +1282,11 @@ const ContentListPostFilter = () => {
           )}
         </div>
       ))}
+      <PaginationComponent
+        totalPage={totalPage}
+        currentPage={currentIndexPage}
+        functionClick={handlePageChange}
+      />
     </div>
   );
 };

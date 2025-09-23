@@ -20,11 +20,11 @@ import {
   IconRender,
   RequireLogin,
   QuickNav,
-  ScrollToTop
+  ScrollToTop,
 } from "@components/component";
 import classnames from "classnames/bind";
 import styles from "./postDetail.module.scss";
-import { formatUnitPrice } from "@utils/utils";
+import { formatUnitPrice, formatHiddenPhone } from "@utils/utils";
 import avatar from "@assets/avatar_defaults/male.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { faPhoneVolumn } from "@fortawesome/free-solid-svg-icons";
@@ -105,13 +105,8 @@ const ContentPostDetail = () => {
         setIsLogin(false);
       }
     };
+    getUser();
   }, []);
-
-  // const calculateAvgPrice = (price, acreage) =>{
-  //   return (
-  //     <span>{price/acreage}m<sup>2</sup></span>
-  //   )
-  // }
 
   useEffect(() => {
     if (!properties) return;
@@ -188,6 +183,20 @@ const ContentPostDetail = () => {
     const zaloUrl = `https://zalo.me/${phone}`;
     window.open(zaloUrl, "_blank");
   };
+
+  const handleClickPhone = () => {
+    const phone = userContent.phone;
+    if (!phone) return;
+
+    if (!isLogin) {
+      setShowRequireLogin(true);
+      return;
+    }
+
+    // Nếu đã login thì gọi số
+    window.location.href = `tel:${phone}`;
+  };
+
   return (
     <div className={cx("post_detail_container")}>
       <QuickNav
@@ -199,7 +208,7 @@ const ContentPostDetail = () => {
           { id: "section_video", name: "Video bất động sản" },
         ]}
       />
-      <ScrollToTop/>
+      <ScrollToTop />
       <div className={cx("post_detail_content")}>
         <div className={cx("post_detail_left")}>
           <PropertyGallery classname={cx("slider_img")} images={images} />
@@ -392,9 +401,15 @@ const ContentPostDetail = () => {
                 <img className={cx("logo_zalo")} src={zalo} alt="" />
                 Chat qua Zalo
               </button>
-              <button className={cx("post_detail_owner_phone")}>
+              <button
+                className={cx("post_detail_owner_phone")}
+                onClick={handleClickPhone}
+              >
                 <Phone className={cx("icon_phone")} size={24} color="#fff" />
-                {userContent.phone}. Hiện số
+                {isLogin
+                  ? userContent.phone
+                  : formatHiddenPhone(userContent.phone)}
+                . Hiện số
               </button>
             </div>
           </div>
@@ -408,39 +423,6 @@ const ContentPostDetail = () => {
             navigate("/login");
           }}
         />
-        {/* <div className={cx("post_detail_title")}>{title}</div>
-
-        <div className={cx("post_detail_description")}>{description}</div>
-
-        <div className={cx("post_detail_unitprice")}>
-          {formatUnitPrice(unitPrice)}, {typeof unitPrice}
-        </div>
-
-        <div className={cx("post_detail_acreage")}>Diện tích: {acreage}</div>
-
-        <div className={cx("post_detail_address")}>Địa chỉ: {address}</div>
-
-        <div className={cx("post_detail_province")}>tỉnh: {province}</div>
-
-        <div className={cx("post_detail_ward")}>phường/xã: {ward}</div>
-        {propRender.map((p, index) => (
-          <div key={index} className={cx("property_item_wrap")}>
-            <p>name: {p.name}</p>
-            <p>icon: {p.icon}</p>
-          </div>
-        ))}
-        {faciRender.map((f, index) => (
-          <div key={index} className={cx("property_item_wrap")}>
-            <p>name: {f.name}</p>
-            <IconRender name={f.icon} size={24} color="#333" />
-          </div>
-        ))}
-
-        <div className={cx("post_detail_user_name")}>
-          {userContent.fullname}
-        </div>
-        <div className={cx("post_detail_user_email")}>{userContent.email}</div>
-        <div className={cx("post_detail_user_phone")}>{userContent.phone}</div> */}
       </div>
     </div>
   );

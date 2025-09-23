@@ -6,6 +6,7 @@ import formatUnitPrice from "./formatUnitPrice";
 import formatISODate from "./formatISODate";
 import {formatDateUI} from "./formatISODate";
 import slugify from "./slugify";
+import formatHiddenPhone from "./formatHiddenPhone";
 
 export {
   fetchApi,
@@ -15,5 +16,6 @@ export {
   formatUnitPrice,
   formatISODate,
   formatDateUI,
-  slugify
+  slugify,
+  formatHiddenPhone
 };

@@ -17,8 +17,8 @@ const PriceFilter = ({
   let range;
   let step;
 
-  // nếu need là bán thì range là 0 - 50 triệu và step 1 triệu
-  // nếu need là thuê thì range là 0 - 20 tỷ và step 100 triệu
+  // nếu need là thuê thì range là 0 - 50 triệu và step 1 triệu
+  // nếu need là bán thì range là 0 - 20 tỷ và step 100 triệu
   if (needs === "rent") {
     range = [0, 50000000];
     step = 1000000;
@@ -49,11 +49,23 @@ const PriceFilter = ({
     maxUnit: "million",
   });
 
+  // ✅ Fix bug hiển thị input sai đơn vị
   useEffect(() => {
     setInputs({
-      min: priceRange[0] != null ? Math.floor(priceRange[0] / 1e6).toString() : "",
+      min:
+        priceRange[0] != null
+          ? priceRange[0] >= 1e9
+            ? Math.floor(priceRange[0] / 1e9).toString()
+            : Math.floor(priceRange[0] / 1e6).toString()
+          : "",
       minUnit: priceRange[0] >= 1e9 ? "billion" : "million",
-      max: priceRange[1] != null ? Math.floor(priceRange[1] / 1e6).toString() : "",
+
+      max:
+        priceRange[1] != null
+          ? priceRange[1] >= 1e9
+            ? Math.floor(priceRange[1] / 1e9).toString()
+            : Math.floor(priceRange[1] / 1e6).toString()
+          : "",
       maxUnit: priceRange[1] >= 1e9 ? "billion" : "million",
     });
   }, [priceRange]);
@@ -97,9 +109,15 @@ const PriceFilter = ({
     setPriceRange(value);
 
     setInputs({
-      min: Math.floor(value[0] / 1e6).toString(),
+      min:
+        value[0] >= 1e9
+          ? Math.floor(value[0] / 1e9).toString()
+          : Math.floor(value[0] / 1e6).toString(),
       minUnit: value[0] >= 1e9 ? "billion" : "million",
-      max: Math.floor(value[1] / 1e6).toString(),
+      max:
+        value[1] >= 1e9
+          ? Math.floor(value[1] / 1e9).toString()
+          : Math.floor(value[1] / 1e6).toString(),
       maxUnit: value[1] >= 1e9 ? "billion" : "million",
     });
   };
@@ -180,7 +198,12 @@ const PriceFilter = ({
               }
             >
               <option value="million">Triệu</option>
-              <option className={cx({hidden: needs == "rent"})} value="billion">Tỷ</option>
+              <option
+                className={cx({ hidden: needs == "rent" })}
+                value="billion"
+              >
+                Tỷ
+              </option>
             </select>
           </div>
         </div>
@@ -207,7 +230,12 @@ const PriceFilter = ({
               }
             >
               <option value="million">Triệu</option>
-               <option className={cx({hidden: needs == "rent"})} value="billion">Tỷ</option>
+              <option
+                className={cx({ hidden: needs == "rent" })}
+                value="billion"
+              >
+                Tỷ
+              </option>
             </select>
           </div>
         </div>
@@ -215,16 +243,16 @@ const PriceFilter = ({
 
       <div className={cx("wrap_submit_button")}>
         <button
-          className={cx("btn_submit_item", "submit")}
-          onClick={handleSubmit}
-        >
-          Áp dụng
-        </button>
-        <button
           className={cx("btn_submit_item", "reset")}
           onClick={handleReset}
         >
           Đặt lại
+        </button>
+        <button
+          className={cx("btn_submit_item", "submit")}
+          onClick={handleSubmit}
+        >
+          Áp dụng
         </button>
       </div>
     </div>

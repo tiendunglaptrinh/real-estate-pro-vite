@@ -301,7 +301,7 @@ const ListPost = () => {
           color="#fff"
           onClick={handleWatchMorePost}
         >
-          Xem tất cả
+          Xem thêm
         </Button>
       </div>
     </div>

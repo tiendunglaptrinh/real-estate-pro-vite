@@ -1,0 +1,29 @@
+.pagination_container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: center;
+  gap: 10px;
+}
+
+.previous,
+.next,
+.page_item {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--accent1);
+  background-color: #fff;
+  border: 1px solid var(--accent1);
+  transition: 0.15s ease-in;
+  &:hover {
+      transition: 0.15s ease-out;
+    background-color: #009ba046;
+  }
+}
+.page_item.active {
+  color: #fff;
+  background-color: var(--accent1);
+}

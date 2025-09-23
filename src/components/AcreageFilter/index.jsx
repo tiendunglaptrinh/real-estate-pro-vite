@@ -23,8 +23,10 @@ const AcreageFilter = ({
 
   // Sync từ URL params hoặc default
   useEffect(() => {
-    const minVal = min_acreage_param != null ? Number(min_acreage_param) : range[0];
-    const maxVal = max_acreage_param != null ? Number(max_acreage_param) : range[1];
+    const minVal =
+      min_acreage_param != null ? Number(min_acreage_param) : range[0];
+    const maxVal =
+      max_acreage_param != null ? Number(max_acreage_param) : range[1];
     setAcreageRange([minVal, maxVal]);
     setInputs({
       min: minVal.toString(),
@@ -94,8 +96,20 @@ const AcreageFilter = ({
         onChange={handleSliderChange}
         trackStyle={[{ backgroundColor: "#e2c594ff" }]}
         handleStyle={[
-          { width: 22, height: 22, marginTop: -9, borderColor: "#4caf50", backgroundColor: "#009ba1" },
-          { width: 22, height: 22, marginTop: -9, borderColor: "#4caf50", backgroundColor: "#009ba1" },
+          {
+            width: 22,
+            height: 22,
+            marginTop: -9,
+            borderColor: "#4caf50",
+            backgroundColor: "#009ba1",
+          },
+          {
+            width: 22,
+            height: 22,
+            marginTop: -9,
+            borderColor: "#4caf50",
+            backgroundColor: "#009ba1",
+          },
         ]}
         railStyle={{ backgroundColor: "#ddd" }}
       />
@@ -131,11 +145,17 @@ const AcreageFilter = ({
       </div>
 
       <div className={cx("wrap_submit_button")}>
-        <button className={cx("btn_submit_item", "submit")} onClick={handleSubmit}>
-          Áp dụng
-        </button>
-        <button className={cx("btn_submit_item", "reset")} onClick={handleReset}>
+        <button
+          className={cx("btn_submit_item", "reset")}
+          onClick={handleReset}
+        >
           Đặt lại
+        </button>
+        <button
+          className={cx("btn_submit_item", "submit")}
+          onClick={handleSubmit}
+        >
+          Áp dụng
         </button>
       </div>
     </div>

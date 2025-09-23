@@ -791,7 +791,7 @@ const ContentNewPost = () => {
   // Click thanh toán tiền - cho phương thức tính tiền bằng số dư ví
   const handlClickFinishPayment = async () => {
     if (!postId) return;
-
+    setLoading(true);
     const body = {
       post_id: postId,
       package_pricing_id: idChooseSubPackage,
@@ -809,10 +809,11 @@ const ContentNewPost = () => {
     });
 
     if (response_data.success) {
+      setLoading(false);
       setShowSuccess(true);
       setTimeout(() => {
         navigate("/");
-      }, 1000);
+      }, 2000);
     } else {
       setError("Thanh toán thất bại");
       setShowPopupErr(true);
@@ -822,10 +823,10 @@ const ContentNewPost = () => {
 
   return (
     <>
+      {loading && <Spinner />}
+      {showSuccess && <Success />}
       {!showPaymentProcess && (
         <div className={cx("wrapper_new_post")}>
-          {loading && <Spinner />}
-          {showSuccess && <Success />}
           {showPopupErr && (
             <Error
               width={100}
@@ -1652,12 +1653,9 @@ const ContentNewPost = () => {
                 <div className={cx("payment_title")}>Thông tin bài đăng</div>
                 <PropertySlider
                   className={cx("payment_slider_wrap")}
-                  images={[
-                    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-                    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-                    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-                    "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
-                  ]}
+                  images={images.map((img) =>
+                    typeof img === "string" ? img : URL.createObjectURL(img)
+                  )}
                 />
 
                 <label className={cx("label_payment")} htmlFor="">

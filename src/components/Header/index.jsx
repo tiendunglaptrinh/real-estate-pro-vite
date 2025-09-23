@@ -4,7 +4,7 @@ import classNames from "classnames/bind";
 import styles from "./Header.module.scss";
 import logo from "@images/logo.png";
 import { Link } from "react-router-dom";
-import { Button } from "@components/component";
+import { Button, LogoutForm } from "@components/component";
 import { getCurrentUser } from "@utils/utils";
 import maleDefault from "@assets/avatar_defaults/male.png";
 import femaleDefault from "@assets/avatar_defaults/female.png";
@@ -24,6 +24,7 @@ function Header() {
   const [avatar, setAvatar] = useState(null);
   const [user, setUser] = useState(null);
   const [isScroll, setIsScroll] = useState(false);
+  const [openLogout, setOpenLogout] = useState(false);
 
   const [type, setType] = useState("");
 
@@ -127,6 +128,7 @@ function Header() {
       key={location.key}
       className={cx("wrapper_header", { scroll: isScroll })}
     >
+      <LogoutForm open={openLogout} onClose={() => setOpenLogout(false)} />
       <Link to="/">
         <div className={cx("logo")}>
           <img className={cx("logo_img")} src={logo} alt="Logo Homepro" />
@@ -269,7 +271,7 @@ function Header() {
                     />
                     Hỗ trợ
                   </div>
-                  <div className={cx("dropdown_avatar_item")}>
+                  <div className={cx("dropdown_avatar_item")} onClick={() => setOpenLogout(true)}>
                     <FontAwesomeIcon
                       className={cx("icon_user_menu")}
                       icon={faRightFromBracket}

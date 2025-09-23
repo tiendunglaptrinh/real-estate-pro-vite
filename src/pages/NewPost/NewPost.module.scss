@@ -765,7 +765,7 @@
     //   /* Xanh da trời pastel */ rgba(135, 206, 235, 0.85) 90%
     //     /* Xanh sky blue đậm hơn */
     // );
-    background-color: #1a4e82;
+    background-color: var(--accent2);
     color: #fff !important;
   }
 }
@@ -1009,13 +1009,17 @@
   height: 100vh;
   background: #fff;
   position: relative;
+  background-image: url("@backgrounds/bg_logins.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  box-shadow: 0px 1px 13px #fff;
 }
 .payment_process {
   width: 800px;
   min-height: 600px;
   height: fit-content;
-  background-color: #f2f6ff;
-  box-shadow: 0 1px 5px #d1dfff;
+  background-color: #ffffff66;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -1025,6 +1029,7 @@
   padding: 30px;
   justify-content: space-between;
   gap: 30px;
+  border-radius: 5px;
 }
 
 .payment_left {
@@ -1034,7 +1039,7 @@
 .payment_item_wrap {
   padding: 10px;
   border-radius: 10px;
-  box-shadow: 0px 1px 5px #dcdcdc;
+  box-shadow: 0px 1px 7px #fff;
 }
 .payment_title {
   font-size: 15px;
@@ -1114,7 +1119,7 @@
   gap: 5px;
   align-items: center;
   justify-content: center;
-  border: 1px solid #cfdeff;
+  border: 1px solid #fff;
   border-radius: 10px;
   cursor: pointer;
   transition: 0.2s;
@@ -1126,12 +1131,13 @@
 
   &:active {
     transition: 0.2s;
-    border: 1px solid #333;
-    box-shadow: 0 1px 3px #333;
+    border: 1px solid #ffedc3;
+    box-shadow: 0 1px 3px #fff;
+    background-color: #ffedc3;
   }
 
   &.active {
-    background-color: #000;
+    background-color: #ffedc3;
   }
 }
 .content_title {
@@ -1167,7 +1173,7 @@
   border: 1px solid transparent;
 
   &:not(:disabled):hover {
-    box-shadow: 0px 1px 5px #333;
+    box-shadow: 0px 1px 5px #a4a4a4;
   }
 
   &:not(:disabled):active {
@@ -1212,7 +1218,7 @@
   align-items: end;
   padding: 10px;
   border-radius: 5px;
-  border: 1px solid #bbcffa;
+  border: 1px solid #fff;
 }
 .analys_title {
   font-size: 13px;
@@ -1231,7 +1237,7 @@
     display: block;
   }
 }
-.credit_title{
+.credit_title {
   font-size: 14px;
   font-weight: 500;
   background-color: #fff;
