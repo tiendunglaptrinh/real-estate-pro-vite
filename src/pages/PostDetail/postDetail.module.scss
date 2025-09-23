@@ -364,3 +364,46 @@
   height: 100%;
   border: 0;
 }
+// -------- VIEW IN MAP -------
+.view_map_container {
+  position: fixed;
+  width: 100vw;
+  height: calc(100vh - 100px);
+  top: 100px;
+  left: 0;
+  background-color: #00000080;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.map_view {
+  width: 80%;
+  height: 90%;
+  position: relative;
+}
+
+.close_view_map {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  z-index: 1000;
+  padding: 13px;
+  background: var(--accent2);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 17px;
+  transition: 0.15s ease-in;
+  cursor: pointer;
+
+  &:hover {
+    transform: scale(1.1);
+    transition: 0.15s ease-in-out;
+  }
+}
+:global(.leaflet-popup-content) {
+  font-size: 14px;
+  font-weight: 600 !important;
+  text-align: center;
+  color: #115ca8;
+}
