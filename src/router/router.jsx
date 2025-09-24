@@ -14,7 +14,8 @@ import {
   UserPost,
   UserWallet,
   MapPage,
-  Register
+  Register,
+  Profile
 } from "@pages/page";
 import ProtectRoute from "../middlewares/ProtectRoute";
 
@@ -44,6 +45,7 @@ export default function Router() {
         <Route path="/post/:id" element={<PostDetail />} />
         <Route path="/list-post" element={<ListPostFilter />} />
         <Route path="/map" element={<MapPage />} />
+        <Route path="/profile/:id" element={<Profile />} />
         <Route path="/new-post" element={
             <ProtectRoute roleRoute="user">
               <NewPost />

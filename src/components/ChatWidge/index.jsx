@@ -3,8 +3,13 @@ import classnames from "classnames/bind";
 import styles from "./chatbot.module.scss";
 import chatbot from "@images/chatbot.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCommentDots, faPaperPlane, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { fetchApi } from "@utils/utils";
+import {
+  faCommentDots,
+  faPaperPlane,
+  faXmark,
+} from "@fortawesome/free-solid-svg-icons";
+import { fetchApi, getCurrentUser } from "@utils/utils";
+import { useNavigate } from "react-router-dom";
 
 const cx = classnames.bind(styles);
 
@@ -15,6 +20,21 @@ function ChatWidget() {
   const [finishResponse, setFinishReponse] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const chatContainerRef = useRef(null);
+  const [isLogin, setIsLogin] = useState(false);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const user = await getCurrentUser();
+      if (user) {
+        setIsLogin(true);
+      } else {
+        setIsLogin(false);
+      }
+    };
+    getUser();
+  }, []);
 
   const [messages, setMessages] = useState([
     {
@@ -96,32 +116,55 @@ function ChatWidget() {
       </div>
 
       {/* Box chat */}
-      <div className={cx("chatwidge_boxchat", { active: showBoxChat })}>
+      <div className={cx("chatwidge_boxchat", { active: showBoxChat }, {not_login: !isLogin})}>
         {/* Header */}
         <div className={cx("chatwidge_header")}>
-          <FontAwesomeIcon className={cx("close_boxchat")} icon={faXmark} fontSize="20px" color="#fff" onClick={() => {setShowBoxChat(false)}} />
+          <FontAwesomeIcon
+            className={cx("close_boxchat")}
+            icon={faXmark}
+            fontSize="20px"
+            color="#fff"
+            onClick={() => {
+              setShowBoxChat(false);
+            }}
+          />
           <img className={cx("chatwidth_header_icon")} src={chatbot} alt="" />
           <p className={cx("chatwidth_header_title")}>Homepro Chatbot</p>
         </div>
 
         {/* Body chat */}
         <div ref={chatContainerRef} className={cx("chatwidge_messages")}>
-          {messages.map((msg, index) => (
-            <div
-              key={index}
-              className={cx("chatwidge_bubble", {
-                user: msg.role === "user",
-                assistant: msg.role === "assistant",
-              })}
-            >
-              {msg.content}
+          {isLogin ? (
+            messages.map((msg, index) => (
+              <div
+                key={index}
+                className={cx("chatwidge_bubble", {
+                  user: msg.role === "user",
+                  assistant: msg.role === "assistant",
+                })}
+              >
+                {msg.content}
+              </div>
+            ))
+          ) : (
+            <div className={cx("require_login")}>
+              <div className={cx("title_require_login")}>Chức năng này cần đăng nhập để sử dụng</div>
+              <div className={cx("wrap_button")}>
+                <button className={cx("btn_require_login")} onClick={() => setShowBoxChat(false)}>Để sau</button>
+                <button className={cx("btn_require_login", "navigate")} onClick={() => navigate("/login")}>Đăng nhập</button>
+              </div>
             </div>
-          ))}
+          )}
         </div>
 
         {/* Input */}
         <div className={cx("chatwidge_bottom")}>
-          <FontAwesomeIcon className={cx("icon_message")} icon={faCommentDots} fontSize="30px" color="#fff" />
+          <FontAwesomeIcon
+            className={cx("icon_message")}
+            icon={faCommentDots}
+            fontSize="30px"
+            color="#fff"
+          />
           <input
             className={cx("chatwidge_input")}
             type="text"
@@ -130,7 +173,14 @@ function ChatWidget() {
             onKeyPress={handleKeyPress}
             placeholder="Nhập tin nhắn..."
           />
-          <FontAwesomeIcon className={cx("icon_message")} icon={faPaperPlane} fontSize="30px" color="#fff" onClick={handleSendMessageToChatBot} style={{ cursor: "pointer" }} />
+          <FontAwesomeIcon
+            className={cx("icon_message")}
+            icon={faPaperPlane}
+            fontSize="30px"
+            color="#fff"
+            onClick={handleSendMessageToChatBot}
+            style={{ cursor: "pointer" }}
+          />
         </div>
       </div>
     </div>

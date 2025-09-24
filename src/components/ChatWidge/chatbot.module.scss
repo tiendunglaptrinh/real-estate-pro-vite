@@ -29,7 +29,6 @@
   object-fit: contain;
 }
 
-// Box chat hiện lên
 .chatwidge_boxchat {
   position: absolute;
   width: 400px;
@@ -37,18 +36,41 @@
   right: 80px;
   bottom: 157px;
   background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 1px 1px 5px #0b2c3d;
-  display: none;
+  border-radius: 15px;
+  box-shadow: 0 0 10px #ffffff;
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none; // tránh click khi ẩn
+  transition: opacity 0.3s ease, transform 0.3s ease;
 
   &.active {
-    display: block;
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    animation: glowingShadow 4s linear infinite;
+  }
+
+  &.not_login {
+    height: 320px;
+  }
+}
+
+/* Animation đổi màu box-shadow */
+@keyframes glowingShadow {
+  0% {
+    box-shadow: 0 0 10px #fff;
+  }
+  50% {
+    box-shadow: 0 0 10px var(--primary1);
+  }
+  100% {
+    box-shadow: 0 0 10px #ccc;
   }
 }
 
 // Header boxchat
 .chatwidge_header {
-  background: #b2935d;
+  background: var(--accent5);
   padding: 20px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
@@ -85,7 +107,7 @@
   height: 70px;
   bottom: 0;
   left: 0;
-  background-color: var(--accent1);
+  background: var(--accent5);
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   display: flex;
@@ -114,6 +136,7 @@
   flex-direction: column;
   gap: 8px;
   padding: 8px;
+  position: relative;
 }
 
 .chatwidge_bubble {
@@ -121,17 +144,63 @@
   border-radius: 16px;
   max-width: 70%;
   white-space: pre-line; // giữ xuống dòng
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .chatwidge_bubble.user {
   align-self: flex-end; // bubble user bên phải
-  background-color: var(--primary1);
-  color: white;
+  background: linear-gradient(135deg, #11998e, #4559ba);
+  color: #fff;
 }
 
 .chatwidge_bubble.assistant {
   align-self: flex-start; // bubble bot bên trái
-  background-color: #e5e5ea;
-  color: black;
+  background: #eceff1;
+  color: #0f2027;
+}
+
+// ------ Require login -----
+.require_login {
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 1px 4px #ccc;
+  background: var(--accent3);
+}
+.wrap_button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 50px;
+}
+
+.title_require_login {
+  font-size: 15px;
+  white-space: nowrap;
+  font-weight: 500;
+}
+.btn_require_login {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 10px;
+  min-width: 100px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  transition: 0.15s ease-in;
+  background-color: #fff;
+  box-shadow: 0 1px 5px #ccc;
+
+  &:hover {
+    transition: 0.15s ease-in-out;
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+  }
 }

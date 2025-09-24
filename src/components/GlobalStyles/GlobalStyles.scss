@@ -4,17 +4,19 @@
   // Primary color
   --primary1: #0b2c3d;
   --primary2: #b2935d;
-
+  --primary3: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+  // background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   // Accent color
   --accent1: #009ba1;
   --accent2: #355c7d;
   --accent3: radial-gradient(
       circle at top left,
-      rgba(255, 223, 128, 0.25),
+      rgba(255, 223, 128, 0.25),  
       transparent 60%
     ),
     linear-gradient(135deg, #ffffff 0%, #fffaf0 50%, #fdf6e3 100%);
   --accent4: #115ca8;
+  --accent5: linear-gradient(135deg, #0f2027, #2c5364);
 
   --primary2-hover: #9f7f48;
   --accent1-hover: #00878d;
@@ -33,7 +35,7 @@
   --black: #000000;
 
   --shadow-light: 0px 1px 1px #ede6e6;
-  --shadow-card:  0 2px 6px rgba(0, 0, 0, 0.1);;
+  --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.1);
 
   --hover-light: #caedff;
 
@@ -171,13 +173,13 @@ p {
   margin: 0 !important;
 }
 
-
 //---------------- Mixin -----------------
 @mixin dropdown-animation($distance: 10px, $duration: 0.25s) {
   opacity: 0;
   transform: translateY(-#{$distance});
   visibility: hidden;
-  transition: opacity $duration ease, transform $duration ease, visibility $duration ease;
+  transition: opacity $duration ease, transform $duration ease,
+    visibility $duration ease;
 
   &.show {
     opacity: 1;
@@ -186,23 +188,26 @@ p {
   }
 }
 body {
-  font-family: 'Roboto', 'Noto Sans', sans-serif;
+  font-family: "Roboto", "Noto Sans", sans-serif;
   font-weight: 400;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-weight: 700; /* đậm cho tiêu đề */
 }
 
-p, span {
+p,
+span {
   font-weight: 400; /* nhẹ cho nội dung */
 }
-input{
+input {
   border: 1px solid transparent;
 }
-input:focus{
+input:focus {
   transition: 0.2s ease-in;
-  border: 1px solid #575757
+  border: 1px solid #575757;
 }
 button:disabled:hover {
   cursor: not-allowed;

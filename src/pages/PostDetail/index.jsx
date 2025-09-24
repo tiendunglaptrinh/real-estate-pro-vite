@@ -216,6 +216,12 @@ const ContentPostDetail = () => {
     }
   };
 
+  const handleMoveToProfile = () => {
+    const userId = postData.user_id;
+    console.log("user id: ", userId)
+    navigate(`/profile/${userId}`);
+  }
+
   return (
     <>
       {showViewMap && (
@@ -441,7 +447,7 @@ const ContentPostDetail = () => {
                   </div>
                 </div>
                 <div className={cx("owner_personal")}>
-                  <div className={cx("owner_personal_redirect")}>
+                  <div className={cx("owner_personal_redirect")} onClick={handleMoveToProfile}>
                     Xem trang cá nhân
                   </div>
                   <ChevronsRight
