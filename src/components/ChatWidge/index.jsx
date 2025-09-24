@@ -116,7 +116,13 @@ function ChatWidget() {
       </div>
 
       {/* Box chat */}
-      <div className={cx("chatwidge_boxchat", { active: showBoxChat }, {not_login: !isLogin})}>
+      <div
+        className={cx(
+          "chatwidge_boxchat",
+          { active: showBoxChat },
+          { not_login: !isLogin }
+        )}
+      >
         {/* Header */}
         <div className={cx("chatwidge_header")}>
           <FontAwesomeIcon
@@ -142,16 +148,27 @@ function ChatWidget() {
                   user: msg.role === "user",
                   assistant: msg.role === "assistant",
                 })}
-              >
-                {msg.content}
-              </div>
+                dangerouslySetInnerHTML={{ __html: msg.content }} // ✅ chỉ dùng cái này
+              />
             ))
           ) : (
             <div className={cx("require_login")}>
-              <div className={cx("title_require_login")}>Chức năng này cần đăng nhập để sử dụng</div>
+              <div className={cx("title_require_login")}>
+                Chức năng này cần đăng nhập để sử dụng
+              </div>
               <div className={cx("wrap_button")}>
-                <button className={cx("btn_require_login")} onClick={() => setShowBoxChat(false)}>Để sau</button>
-                <button className={cx("btn_require_login", "navigate")} onClick={() => navigate("/login")}>Đăng nhập</button>
+                <button
+                  className={cx("btn_require_login")}
+                  onClick={() => setShowBoxChat(false)}
+                >
+                  Để sau
+                </button>
+                <button
+                  className={cx("btn_require_login", "navigate")}
+                  onClick={() => navigate("/login")}
+                >
+                  Đăng nhập
+                </button>
               </div>
             </div>
           )}

@@ -232,8 +232,8 @@ const ListPost = () => {
   };
 
   const navigate = useNavigate();
-  const handleClickSinglePost = (id) => {
-    const url = `/post/${id}`;
+  const handleClickSinglePost = (slug) => {
+    const url = `/post/${slug}`;
     setLoading(true);
     navigate(url);
   };
@@ -248,7 +248,7 @@ const ListPost = () => {
           <div
             key={post._id}
             className={cx("col-3", "list_item")}
-            onClick={() => handleClickSinglePost(post._id)}
+            onClick={() => handleClickSinglePost(post.title_slug)}
           >
             <div className={cx("img_post_item")}>
               {" "}

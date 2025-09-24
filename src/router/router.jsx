@@ -42,7 +42,7 @@ export default function Router() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-        <Route path="/post/:id" element={<PostDetail />} />
+        <Route path="/post/:slug" element={<PostDetail />} />
         <Route path="/list-post" element={<ListPostFilter />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/profile/:id" element={<Profile />} />

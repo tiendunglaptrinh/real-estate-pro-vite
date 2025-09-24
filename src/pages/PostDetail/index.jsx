@@ -61,13 +61,13 @@ const ContentPostDetail = () => {
   const [isLogin, setIsLogin] = useState(false);
 
   const navigate = useNavigate();
-  const { id } = useParams();
+  const { slug } = useParams();
 
   // Lấy data bài đăng
   useEffect(() => {
     const getDatapost = async () => {
-      const url = `/post/get-post/${id}`;
-      console.log("id :", id);
+      const url = `/post/get-post/${slug}`;
+      console.log("id :", slug);
       const response_data = await fetchApi(url, {
         method: "get",
         skipAuth: false,
