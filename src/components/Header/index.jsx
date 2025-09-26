@@ -214,9 +214,10 @@ function Header() {
       <div className={cx("wrapper_user")}>
         {isLogin ? (
           <>
-            <div className={cx("notification")}>
+            <div className={cx("homehub")} onClick={() => navigate("/homehub")}>Homepro Hub</div>
+            {/* <div className={cx("notification")}>
               <FontAwesomeIcon className={cx("icon_notification")} icon={faBell} />
-            </div>
+            </div> */}
             <div className={cx("wrapper_avatar")}>
               <img
                 onClick={handleOnclickAvatar}

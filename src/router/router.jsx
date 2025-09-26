@@ -15,7 +15,8 @@ import {
   UserWallet,
   MapPage,
   Register,
-  Profile
+  Profile,
+  HomeHub,
 } from "@pages/page";
 import ProtectRoute from "../middlewares/ProtectRoute";
 
@@ -46,9 +47,19 @@ export default function Router() {
         <Route path="/list-post" element={<ListPostFilter />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/profile/:id" element={<Profile />} />
-        <Route path="/new-post" element={
+        <Route
+          path="/new-post"
+          element={
             <ProtectRoute roleRoute="user">
               <NewPost />
+            </ProtectRoute>
+          }
+        />
+        <Route
+          path="/homehub"
+          element={
+            <ProtectRoute roleRoute="user">
+              <HomeHub />
             </ProtectRoute>
           }
         />
@@ -56,27 +67,35 @@ export default function Router() {
         <Route path="*" element={<NotFound />} />
 
         {/* Dashboard */}
-        <Route path="/dashboard/account" element={
+        <Route
+          path="/dashboard/account"
+          element={
             <ProtectRoute roleRoute="user">
               <UserAccount />
             </ProtectRoute>
           }
         />
-        <Route path="/dashboard/wallet" element={
+        <Route
+          path="/dashboard/wallet"
+          element={
             <ProtectRoute roleRoute="user">
               <UserWallet />
             </ProtectRoute>
           }
         />
-        <Route path="/dashboard/post" element={
+        <Route
+          path="/dashboard/post"
+          element={
             <ProtectRoute roleRoute="user">
               <UserPost />
             </ProtectRoute>
           }
         />
-        <Route path="/dashboard/customer" element={
+        <Route
+          path="/dashboard/customer"
+          element={
             <ProtectRoute roleRoute="user">
-              <UserCustomer/>
+              <UserCustomer />
             </ProtectRoute>
           }
         />

@@ -13,25 +13,30 @@ import { useNavigate } from "react-router-dom";
 
 const cx = classnames.bind(styles);
 
-// Component typing effect
+// Typing indicator
+function TypingIndicator() {
+  return (
+    <div className={cx("chatwidge_bubble", "assistant", "typing")}>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  );
+}
 
 function ChatWidget() {
   const [showBoxChat, setShowBoxChat] = useState(false);
-  const [finishResponse, setFinishReponse] = useState(true);
   const [inputValue, setInputValue] = useState("");
   const chatContainerRef = useRef(null);
   const [isLogin, setIsLogin] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const getUser = async () => {
       const user = await getCurrentUser();
-      if (user) {
-        setIsLogin(true);
-      } else {
-        setIsLogin(false);
-      }
+      setIsLogin(!!user);
     };
     getUser();
   }, []);
@@ -43,19 +48,18 @@ function ChatWidget() {
     },
   ]);
 
-  // Auto scroll xuống cuối mỗi khi messages thay đổi
+  // Auto scroll xuống cuối
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop =
         chatContainerRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isTyping]);
 
   const handleClickChatBot = () => {
     setShowBoxChat(!showBoxChat);
   };
 
-  // Xử lý keyboard: Enter
   const handleKeyPress = (e) => {
     if (e.key === "Enter") handleSendMessageToChatBot();
   };
@@ -68,9 +72,11 @@ function ChatWidget() {
       content: inputValue,
     };
 
-    // Thêm tin nhắn user ngay lập tức
     setMessages((prev) => [...prev, user_message]);
-    setInputValue(""); // Reset input
+    setInputValue("");
+
+    // Hiện typing indicator
+    setIsTyping(true);
 
     try {
       const url = "/message/send-message";
@@ -80,7 +86,6 @@ function ChatWidget() {
         skipAuth: false,
       });
 
-      // Xác định nội dung bot trả lời
       const bot_response = {
         role: "assistant",
         content: response_data.success
@@ -88,12 +93,14 @@ function ChatWidget() {
           : response_data.message,
       };
 
-      // Thêm tin nhắn bot
-      setMessages((prev) => [...prev, bot_response]);
+      // Delay nhỏ cho tự nhiên (vd: 1.2s)
+      setTimeout(() => {
+        setIsTyping(false);
+        setMessages((prev) => [...prev, bot_response]);
+      }, 1200);
     } catch (err) {
       console.error(err);
-
-      // Trong trường hợp lỗi server/network
+      setIsTyping(false);
       setMessages((prev) => [
         ...prev,
         {
@@ -130,9 +137,7 @@ function ChatWidget() {
             icon={faXmark}
             fontSize="20px"
             color="#fff"
-            onClick={() => {
-              setShowBoxChat(false);
-            }}
+            onClick={() => setShowBoxChat(false)}
           />
           <img className={cx("chatwidth_header_icon")} src={chatbot} alt="" />
           <p className={cx("chatwidth_header_title")}>Homepro Chatbot</p>
@@ -141,16 +146,19 @@ function ChatWidget() {
         {/* Body chat */}
         <div ref={chatContainerRef} className={cx("chatwidge_messages")}>
           {isLogin ? (
-            messages.map((msg, index) => (
-              <div
-                key={index}
-                className={cx("chatwidge_bubble", {
-                  user: msg.role === "user",
-                  assistant: msg.role === "assistant",
-                })}
-                dangerouslySetInnerHTML={{ __html: msg.content }} // ✅ chỉ dùng cái này
-              />
-            ))
+            <>
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={cx("chatwidge_bubble", {
+                    user: msg.role === "user",
+                    assistant: msg.role === "assistant",
+                  })}
+                  dangerouslySetInnerHTML={{ __html: msg.content }}
+                />
+              ))}
+              {isTyping && <TypingIndicator />}
+            </>
           ) : (
             <div className={cx("require_login")}>
               <div className={cx("title_require_login")}>

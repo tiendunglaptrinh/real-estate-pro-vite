@@ -16,6 +16,9 @@ import UserCustomer from "./User/UserCustomer";
 import UserPost from "./User/UserPost";
 import UserWallet from "./User/UserWaller";
 
+// HomeHub
+import HomeHub from "./StatusPart/HomeHub";
+
 export {
   HomePage,
   Unauthorized,
@@ -31,5 +34,6 @@ export {
   UserWallet,
   MapPage,
   Register,
-  Profile
+  Profile,
+  HomeHub
 };
