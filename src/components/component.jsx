@@ -26,6 +26,9 @@ import AcreageFilter from "./AcreageFilter";
 import DepositForm from "./DepositForm";
 import PaginationComponent from "./Pagination/pagination";
 import LogoutForm from "./LogoutForm";
+import CopyClipBoard from "./CopyClipBoard";
+import FormWarning from "./FormWarning";
+import FormContact from "./FormContact";
 
 export {
   Header,
@@ -55,5 +58,8 @@ export {
   AcreageFilter,
   DepositForm,
   PaginationComponent,
-  LogoutForm
+  LogoutForm,
+  CopyClipBoard,
+  FormWarning,
+  FormContact
 };

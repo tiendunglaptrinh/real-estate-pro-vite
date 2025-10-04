@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import classnames from "classnames/bind";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,7 +21,37 @@ import banner from "@images/banner.png";
 
 const cx = classnames.bind(styles);
 
-const Banner = () => {
+const SubFilter = () => {
+  const navigate = useNavigate();
+
+  // Hardcode category slug + needs
+  const categories = [
+    { name: "Phòng trọ, nhà trọ", slug: "phong-tro-nha-tro", needs: "rent" },
+    { name: "Chung cư mini", slug: "chung-cu-mini", needs: "rent" },
+    { name: "Căn hộ chung cư", slug: "can-ho-chung-cu", needs: "rent" },
+    { name: "Đất nền", slug: "dat-nen", needs: "sell" },
+  ];
+
+  return (
+    <div className={cx("filter_container")}>
+      {categories.map((cat) => (
+        <div
+          key={cat.slug}
+          className={cx("filter_item")}
+          onClick={() =>
+            navigate(
+              `/list-post?category=${cat.slug}&needs=${cat.needs}`
+            )
+          }
+        >
+          <div className={cx("overlay_filter")}>{cat.name}</div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const Banner = ({ onClickScroll }) => {
   return (
     <div id="section_banner" className={cx("wrapper_banner")}>
       <ChatWidge />
@@ -40,11 +71,12 @@ const Banner = () => {
           borderRadius="5px"
           background="#B2935D"
           color="#fff"
+          onClick={onClickScroll}
         >
           Tìm hiểu ngay
         </Button>
       </div>
-      <div className={cx("wrapper_search")}>
+      {/* <div className={cx("wrapper_search")}>
         <div className={cx("option")}>
           <div
             className={cx("option_item")}
@@ -108,7 +140,7 @@ const Banner = () => {
             </ButtonCollapse>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
@@ -309,11 +341,21 @@ const ListPost = () => {
 };
 
 const ContentHomepage = () => {
+
+  const listPostRef = useRef(null);
+
+  const scrollToListPost = () => {
+    listPostRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <>
-      <Banner />
+      <Banner onClickScroll={scrollToListPost} />
+      <SubFilter />
       <News />
-      <ListPost />
+      <div ref={listPostRef}>
+        <ListPost />
+      </div>
     </>
   );
 };

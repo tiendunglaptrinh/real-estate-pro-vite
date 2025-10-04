@@ -1104,7 +1104,7 @@ const ContentListPostFilter = () => {
             standard: post.package_name == "Standard",
             started: post.package_name == "Started",
           })}
-          onClick={() => navigate(`/post/${post._id}`)}
+          onClick={() => navigate(`/post/${post.title_slug}`)}
         >
           {post.package_name === "Premium" && (
             <div className={cx("wrap_premium_post")}>
@@ -1130,7 +1130,7 @@ const ContentListPostFilter = () => {
                   </div>
                   <button className={cx("btn_contact")}>
                     <ChevronsRight size={24} color="#777" />
-                    Xem chi tiết
+                    Xem chi tiết tin
                   </button>
                 </div>
               </div>

@@ -95,7 +95,7 @@ const HomeHubContent = () => {
 
   useEffect(() => {
     const getListProvince = async () => {
-      const url = "/location/province";
+      const url = "/location/provinces";
       const response_data = await fetchApi(url, {
         method: "get",
         skipAuth: false,

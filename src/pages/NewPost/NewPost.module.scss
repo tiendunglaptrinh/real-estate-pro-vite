@@ -415,16 +415,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent1);
   border-radius: 5px;
   height: 40px;
   font-size: 14px;
   transition: 0.2s;
   cursor: pointer;
-  color: #fff;
   font-weight: 600;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
   &:hover {
-    box-shadow: 0px 1px 4px #333;
+    box-shadow: 0px 1px 4px rgba(0,0,0,0.5);
     transition: 0.2s;
   }
 }
@@ -437,7 +436,7 @@
 .chose,
 .chose_faci {
   background-color: var(--bgbutton2);
-  box-shadow: 1px 1px 4px #363636;
+  box-shadow: 0px 1px 4px rgba(0,0,0,0.3);
   opacity: 1;
 }
 
@@ -487,7 +486,7 @@
   font-size: 15px;
   padding: 10px 40px !important;
   border-radius: 5px;
-  background-color: #7e7e7e;
+  background-color: var(--bgbutton4);
   color: #fff;
   font-weight: 600;
 }
@@ -499,7 +498,7 @@
   font-size: 17px;
   padding: 10px 40px !important;
   border-radius: 5px;
-  background: var(--bgbutton3);
+  background: var(--accent1);
   color: #fff;
   font-weight: 600;
 }

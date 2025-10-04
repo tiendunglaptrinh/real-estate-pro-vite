@@ -110,7 +110,7 @@
 
 // -------------- NEWS -----------------------------
 .wrapper_news {
-  margin-top: 200px;
+  margin-top: 20px;
   padding: 0 100px 30px 100px;
   border-bottom: 1px solid #ccc;
   margin-bottom: 30px;
@@ -305,4 +305,66 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+/* SubFilter.module.css */
+.filter_container {
+  display: flex;
+  gap: 30px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.filter_item {
+  position: relative;
+  width: 20%;
+  height: 200px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+  transition: transform 0.3s ease; /* scale effect */
+}
+
+/* Backgrounds cho từng item */
+.filter_item:nth-child(1) {
+  background-image: url('@backgrounds/tro1.jpg');
+}
+
+.filter_item:nth-child(2) {
+  background-image: url('@backgrounds/decord1.jpg');
+}
+
+.filter_item:nth-child(3) {
+  background-image: url('@backgrounds/img1.jpg');
+}
+
+.filter_item:nth-child(4) {
+  background-image: url('@backgrounds/datnen1.jpg');
+}
+
+.overlay_filter {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* overlay đen 50% */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 17px;
+  text-align: center;
+  padding: 8px;
+  transition: opacity 0.3s ease; /* fade effect */
+}
+
+/* Hover effect */
+.filter_item:hover .overlay_filter {
+  opacity: 0; /* overlay biến mất */
+}
+
+.filter_item:hover {
+  transform: scale(1.1); /* zoom background */
 }

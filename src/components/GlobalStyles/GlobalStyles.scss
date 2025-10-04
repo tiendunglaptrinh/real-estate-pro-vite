@@ -11,7 +11,7 @@
   --accent2: #355c7d;
   --accent3: radial-gradient(
       circle at top left,
-      rgba(255, 223, 128, 0.25),  
+      #ffdf8040,  
       transparent 60%
     ),
     linear-gradient(135deg, #ffffff 0%, #fffaf0 50%, #fdf6e3 100%);
@@ -32,6 +32,8 @@
   --bgbutton1: #c7e5ff;
   --bgbutton2: #ffe280;
   --bgbutton3: #c67e56;
+  --bgbutton4: #aa2c2c;
+  --bgbutton4-hover: #912323;
 
   --white: #ffffff;
   --black: #000000;

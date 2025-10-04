@@ -22,6 +22,9 @@ import {
   RequireLogin,
   QuickNav,
   ScrollToTop,
+  CopyClipBoard,
+  FormWarning,
+  FormContact
 } from "@components/component";
 import classnames from "classnames/bind";
 import styles from "./postDetail.module.scss";
@@ -308,9 +311,11 @@ const ContentPostDetail = () => {
                 </div>
               </div>
               <div className={cx("post_detail_evaluate")}>
-                <Link color="#333" size={24} />
-                <AlertTriangle color="#333" size={24} />
-                <Heart color="#333" size={24} />
+                <CopyClipBoard url="test_url">
+                  <Link color="#333" size={24} />
+                </CopyClipBoard>
+                <FormWarning type="post"><AlertTriangle color="#333" size={24} /></FormWarning>
+                <FormContact receive_id={postData ? postData.user_id : ""}><Heart color="#333" size={24} /></FormContact>
               </div>
             </div>
             <div className={cx("break_line")}></div>

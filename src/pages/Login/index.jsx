@@ -61,30 +61,32 @@ const LoginPage = () => {
     }
   };
 
-useEffect(() => {
-  let timer;
-  setLoading(true);
+  useEffect(() => {
+    let timer;
+    setLoading(true);
 
-  const checkLogin = async () => {
-    const data = await getUser();
-    if (data?.success) {
-      console.log(">>>")
-      console.log("✅ Haved login before");
-      timer = setTimeout(() => navigate("/"), 2000);
-    } else {
-      console.log("❌ Not logged in");
-      setFlagLogin(false);
-    }
-  };
+    const checkLogin = async () => {
+      const data = await getUser();
+      if (data?.success) {
+        console.log(">>>");
+        console.log("✅ Haved login before");
+        timer = setTimeout(() => navigate("/"), 2000);
+      } else {
+        console.log("❌ Not logged in");
+        setFlagLogin(false);
+      }
+    };
 
-  checkLogin();
+    checkLogin();
 
-  return () => clearTimeout(timer);
-}, [navigate]);
+    return () => clearTimeout(timer);
+  }, [navigate]);
 
   useEffect(() => {
-    if (!flagLogin) { setLoading(false); }
-  }, [flagLogin])
+    if (!flagLogin) {
+      setLoading(false);
+    }
+  }, [flagLogin]);
 
   useEffect(() => {
     if (!isShowSuccess) return;
@@ -126,61 +128,64 @@ useEffect(() => {
   }, [locktime]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-  if (showCaptcha) {
-    const captchaToken = re_captcha.current?.getValue();
-    if (!captchaToken) {
-      setError("Vui lòng xác nhận captcha trước khi đăng nhập!");
-      return;
-    }
+  e.preventDefault();
+
+  const captchaToken = re_captcha.current?.getValue();
+
+  if (showCaptcha && !captchaToken) {
+    setError("Vui lòng xác nhận captcha trước khi đăng nhập!");
+    return;
   }
 
+  setLoading(true);
+  setError(null);
 
-    setLoading(true);
-    setError(null);
-    try {
-      const captchaToken = re_captcha.current?.getValue();
-      const body = {
-        info_user: infoUser,
-        password: password,
-        token_captcha: captchaToken,
-      };
-      const url_login = "/account/login";
-      const response_data = await fetchApi(url_login, {
-        method: "post",
-        body,
-        skipAuth: true,
-      });
+  try {
+    const body = {
+      info_user: infoUser,
+      password: password,
+      token_captcha: captchaToken,
+    };
+    const url_login = "/account/login";
+    const response_data = await fetchApi(url_login, {
+      method: "post",
+      body,
+      skipAuth: true,
+    });
 
-      if (response_data.success) {
-        localStorage.setItem(import.meta.env.VITE_TOKEN_LOGIN, response_data.access_token);
-      }
-      console.log("LOGIN >>> check data fetch: ", response_data);
+    if (response_data.success) {
+      localStorage.setItem(
+        import.meta.env.VITE_TOKEN_LOGIN,
+        response_data.access_token
+      );
       setShowSuccess(true);
-    } catch (err) {
-      const data = err.response?.data;
-      if (data) {
-        console.log(">>> check error response: ", data);
-        if (data.captcha_required) {
-          const waitSeconds = Number(data.wait_seconds) || 0;
-          const expireAt = Date.now() + waitSeconds * 1000;
-          console.log(">> lock in: ", expireAt);
-          localStorage.setItem("LOGIN_LOCK_EXPIRE", expireAt);
-          setShowcaptcha(true);
-          console.log(">> update locktime from server: ", waitSeconds);
-          setLocktime(waitSeconds);
-          setLocked(true);
-          setError(`Bị khóa đăng nhập trong ${waitSeconds} giây!`);
-        } else {
-          setShowcaptcha(false);
-          setError(data.message);
-        }
+      re_captcha.current?.reset();
+    } else {
+      // xử lý lỗi trả về từ server mà không throw
+      if (response_data.captcha_required) {
+        const waitSeconds = Number(response_data.wait_seconds) || 0;
+        const expireAt = Date.now() + waitSeconds * 1000;
+        localStorage.setItem("LOGIN_LOCK_EXPIRE", expireAt);
+        setShowcaptcha(true);
+        setLocktime(waitSeconds);
+        setLocked(true);
+        setError(`Bị khóa đăng nhập trong ${waitSeconds} giây!`);
+      } else {
+        setShowcaptcha(false);
+        setError(response_data.message || "Đăng nhập thất bại");
       }
-    } finally {
-      setLoading(false);
       re_captcha.current?.reset();
     }
-  };
+  } catch (err) {
+    // xử lý network / error khác
+    console.error("Login error: ", err);
+    setError("Lỗi hệ thống, vui lòng thử lại sau!");
+    re_captcha.current?.reset();
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className={cx("wrapper_loginform")}>

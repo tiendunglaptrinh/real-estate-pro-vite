@@ -138,19 +138,20 @@ const ContentNewPost = () => {
       }
     };
     getWardFromProvince();
+
   }, [codeProvince]);
 
   useEffect(() => {
     const getLocation = async () => {
       try {
-        const url = "/location/province";
+        const url = "/location/list-province";
         const response_data = await fetchApi(url, {
           method: "get",
           skipAuth: true,
         });
 
         if (response_data.success) {
-          setProvinces(response_data.provinces);
+          setProvinces(response_data.data);
         }
       } catch (err) {
         console.error(err);
@@ -206,6 +207,7 @@ const ContentNewPost = () => {
           skipAuth: true,
         });
         setCategories(response_data.categories);
+        setFirstFocus(true);
       } catch (err) {
         setError(err.message);
       }
@@ -936,11 +938,12 @@ const ContentNewPost = () => {
                         }}
                       >
                         <option value="">-- Chọn Tỉnh/Thành phố --</option>
-                        {provinces.map((p, index) => (
-                          <option key={index} value={p.code}>
-                            {p.name}
-                          </option>
-                        ))}
+                        {Array.isArray(provinces) &&
+                          provinces.map((p, index) => (
+                            <option key={index} value={p.code}>
+                              {p.name}
+                            </option>
+                          ))}
                       </select>
 
                       {/* Ward */}
